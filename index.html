@@ -56,7 +56,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none !important}
 html{-webkit-text-size-adjust:100%}
-body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-body);
+body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-body);
   padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
 .wrap{max-width:1000px; margin:0 auto}
 .han{font-family:var(--f-han); font-weight:700}
@@ -98,7 +98,6 @@ body.nolabels .tile .lbl{display:none}
 .tiles{display:inline-flex; gap:2px; flex-wrap:wrap; align-items:flex-end; vertical-align:middle}
 .tiles .gap{width:8px}
 .meld,.bonus{display:inline-flex; gap:1px; align-items:flex-end}
-.tile.last{outline:2px solid var(--accent); outline-offset:1px}
 @keyframes drop{from{transform:translateY(-35%) scale(1.15); opacity:0} to{transform:none; opacity:1}}
 .tile.fresh{animation:drop .34s ease-out}
 
@@ -117,6 +116,9 @@ body.nolabels .tile .lbl{display:none}
 .btn:disabled{opacity:.45; cursor:default}
 .btn.primary{background:var(--go); color:var(--go-ink); border-color:transparent}
 .btn.small{min-height:34px; padding:6px 12px; font-size:13.5px}
+.ib{width:40px; height:40px; flex:none; display:grid; place-items:center; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--muted); cursor:pointer; padding:0}
+.ib svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.av{display:inline-grid; place-items:center; width:28px; height:28px; border-radius:50%; background:var(--tile-face); color:var(--t-navy); font-family:var(--f-han); font-weight:700; font-size:15px; flex:none; box-shadow:inset 0 0 0 1px var(--tile-edge)}
 
 /* ===== play screen: one committed look (lacquer red room, green felt, blue-backed tiles), same in light and dark ===== */
 body.playing{background:#6e1a15 radial-gradient(circle at 50% 0%, #8c241c 0%, #6e1a15 55%, #571310 100%) fixed; color:#fbf3df}
@@ -124,7 +126,7 @@ body.playing .wrap{max-width:none}
 body.playing .masthead{display:none}
 #v-play{--gold:#f4cd6a; --gold-dim:#d6a94a; --cream:#fbf3df; --felt-a:#2f8d4f; --felt-b:#1e6a38; --rim:#4b2414; --rim-2:#6e3b1d;
   --back:#2f5fb3; --back-2:#1e4489; --banner:#fffaf0; --banner-ink:#c41f1c;
-  display:flex; flex-direction:column; gap:6px; height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); min-height:0; padding-bottom:6px}
+  display:flex; flex-direction:column; gap:6px; height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); min-height:0; padding-bottom:6px}
 .gbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:6px}
 .gl{display:flex; align-items:center; gap:10px; min-width:0}
 .ginfo{font:500 12.5px var(--f-ui); color:rgba(251,243,223,.8); white-space:nowrap}
@@ -135,11 +137,11 @@ body.playing .masthead{display:none}
 .gb[aria-pressed="false"]{color:rgba(244,205,106,.5)}
 .stage{flex:1; min-height:0; position:relative; perspective:1150px; perspective-origin:50% 0%; display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
 .plane{--pw:20px; --mw:12px; --tilt:28deg; --rackw:calc(var(--pw)*1.1); --rackh:calc(var(--pw)*1.25); --sidew:calc(var(--mw)*3.4 + 26px); --rw:calc(var(--pw)*.5);
-  width:max-content; transform-origin:50% 100%; transform:rotateX(var(--tilt));
+  width:max-content; transform-origin:50% 100%; transform:scale(var(--fit,1)) rotateX(var(--tilt));
   display:grid; gap:calc(var(--pw)*.3); padding:calc(var(--pw)*.5) calc(var(--pw)*.5) calc(var(--pw)*.35);
   grid-template-columns:var(--rackw) var(--sidew) auto var(--sidew) var(--rackw);
-  grid-template-rows:var(--rackh) auto auto;
-  grid-template-areas:". rT rT rT ." "rL . iT . rR" "rL iL ring iR rR";
+  grid-template-rows:var(--rackh) auto auto auto;
+  grid-template-areas:". rT rT rT ." "rL . iT . rR" "rL iL ring iR rR" ". . iB . .";
   background:radial-gradient(90% 80% at 50% 45%, var(--felt-a), var(--felt-b)); color:#f1f7ef;
   border:calc(var(--pw)*.45) solid var(--rim); border-radius:calc(var(--pw)*.9);
   box-shadow:0 0 0 2px var(--rim-2), inset 0 0 calc(var(--pw)*2) rgba(0,0,0,.28), 0 30px 50px rgba(0,0,0,.35)}
@@ -156,6 +158,8 @@ body.playing .masthead{display:none}
 .info-t{grid-area:iT; justify-content:center; flex-wrap:wrap}
 .info-l,.info-r{flex-direction:column; align-self:center}
 .info-l{grid-area:iL} .info-r{grid-area:iR}
+.info-b{grid-area:iB; justify-content:center}
+.info-b .tag{font-size:14px; padding:4px 12px}
 .info .tag{display:inline-flex; align-items:center; gap:6px; font:500 12.5px var(--f-ui); color:#f1f7ef; white-space:nowrap; padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.18)}
 .info-l .tag,.info-r .tag{flex-direction:column; padding:6px 3px; gap:5px}
 .info-l .tag b,.info-l .tag .num{writing-mode:vertical-rl; transform:rotate(180deg)}
@@ -201,14 +205,17 @@ body.playing .masthead{display:none}
 .tile.last{outline:2px solid var(--gold); outline-offset:1px}
 
 /* floating coach + claim banners */
-.coachfloat{position:absolute; top:4px; left:4px; max-width:min(360px, 58%); z-index:3}
+.coachfloat{position:absolute; bottom:4px; left:4px; max-width:min(330px, 32%); z-index:3}
 .coachfloat .coach{background:rgba(20,12,8,.72); color:#fbf3df; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(244,205,106,.28); border-radius:14px; padding:8px 10px; font-size:13px; line-height:1.4; box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .coachfloat .coach-main svg{stroke:var(--gold)}
 .coachfloat .coach-sub{color:rgba(251,243,223,.72)}
 .coachfloat .chip-s{background:rgba(255,255,255,.1); border-color:transparent; color:rgba(251,243,223,.85)}
 .coachfloat .chip-s.good{color:#9be3b6}
 .coachfloat .chip-s.warn{background:rgba(196,31,28,.35); color:#ffd7cf}
-.banners{position:absolute; right:4px; top:50%; transform:translateY(-50%); z-index:4; display:flex; flex-direction:column; gap:8px; align-items:flex-end; max-height:100%; overflow:auto; padding:2px}
+.why{font:600 11.5px var(--f-ui); color:#3b2408; background:var(--gold); border:0; border-radius:999px; padding:2px 9px; margin-left:4px; cursor:pointer; vertical-align:1px}
+.coachfloat .chip-s[data-tip]{cursor:pointer}
+.tipex{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; padding:10px 12px; background:var(--surface-2); border-radius:12px; font-size:14px}
+.banners{position:absolute; right:0; top:50%; transform:translateY(-50%); z-index:4; display:flex; flex-direction:column; gap:12px; align-items:flex-end; max-height:100%; overflow:auto; padding:10px 10px 10px 12px}
 .ban{display:flex; align-items:center; gap:10px; background:var(--banner); border:0; border-radius:12px; padding:6px 10px 6px 14px; cursor:pointer; box-shadow:0 0 0 3px #3b1d0e, 0 0 0 5px var(--gold-dim), 0 8px 18px rgba(0,0,0,.35); animation:slidein .25s ease-out}
 @keyframes slidein{from{transform:translateX(30px); opacity:0} to{transform:none; opacity:1}}
 .ban .bl{font:400 22px/1 'Lilita One', var(--f-ui); color:var(--banner-ink); letter-spacing:.03em; text-shadow:0 1px 0 rgba(0,0,0,.08)}
@@ -219,6 +226,18 @@ body.playing .masthead{display:none}
 .ban.go{background:var(--gold)} .ban.go .bl{color:#5a1410}
 .t-ban{--w:26px}
 
+/* portrait phones and tablets: no side racks, narrower side ponds, coach in the flow above your hand */
+#v-play.portrait .stage{flex-direction:column; align-items:center; justify-content:flex-end; gap:6px}
+#v-play.portrait .plane{--sidew:calc(var(--mw)*3.2 + 4px);
+  grid-template-columns:var(--sidew) auto var(--sidew); grid-template-rows:var(--rackh) auto auto auto;
+  grid-template-areas:". rT ." ". iT ." "iL ring iR" ". iB ."}
+#v-play.portrait .rack-l,#v-play.portrait .rack-r{display:none}
+#v-play.portrait .pz{grid-template-columns:calc(3*var(--slot)) calc(6*var(--slot)) calc(3*var(--slot));
+  grid-template-rows:minmax(calc(4*var(--row)),auto) minmax(calc(8*var(--row)),auto) minmax(calc(4*var(--row)),auto)}
+#v-play.portrait .pond-l,#v-play.portrait .pond-r{grid-template-columns:repeat(3,var(--pw))}
+#v-play.portrait .coachfloat{position:static; max-width:none; width:100%; flex:none}
+#v-play.portrait .coachfloat:empty{display:none}
+
 /* your hand */
 .myarea{display:flex; flex-direction:column; gap:4px; align-items:center}
 .myrow{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; width:100%; max-width:calc(var(--hw)*15.4); min-height:20px}
@@ -226,7 +245,7 @@ body.playing .masthead{display:none}
 .mysets .bonus{display:inline-flex; gap:1px}
 .myprompt{font:400 16px 'Lilita One', var(--f-ui); color:var(--gold); letter-spacing:.03em; text-align:right; text-shadow:0 2px 0 rgba(0,0,0,.3)}
 .myprompt.claim{color:#fff4cf; background:#c41f1c; padding:4px 10px; border-radius:999px}
-.t-my{--w:calc(var(--hw)*.62)}
+.t-my{--w:max(20px, calc(var(--hw)*.62))}
 .hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:10px}
 .tile.t-hand{height:calc(var(--w)*1.5); border-top:calc(var(--w)*.17) solid var(--back); border-radius:calc(var(--w)*.14);
   box-shadow:inset 0 0 0 1px var(--tile-edge), 0 3px 0 #d3c9b1, 0 8px 14px rgba(0,0,0,.35); cursor:pointer; transition:transform .14s ease; margin-bottom:3px}
@@ -239,7 +258,7 @@ body.playing .masthead{display:none}
 .gstatus b{color:var(--gold); font-weight:600}
 .rot-tip{display:none}
 @media (orientation:portrait) and (max-width:620px){ .rot-tip{display:inline} }
-@media (max-width:440px){ .gb{font-size:13px; padding:6px 6px} .ginfo{display:none} }
+@media (max-width:440px){ .gb{font-size:12px; padding:6px 5px} .ginfo{display:none} .coachfloat{max-width:calc(100% - 8px)} }
 @media (max-height:520px){ .coachfloat{max-width:min(290px,38%)} .coachfloat .coach{font-size:12px; padding:6px 8px} .coachfloat .coach-sub{display:none} .gb{font-size:13px; padding:6px 7px} .gbar{padding-top:2px} .gstatus{display:none} .myprompt{font-size:13px} .hand{padding-top:6px} #v-play{gap:3px} .ban .bl{font-size:18px} .t-ban{--w:20px} }
 
 /* menu sheet */
@@ -253,7 +272,7 @@ button.menu-link{background:none; border-left:0; border-right:0; border-top:0; t
 .modal{position:fixed; inset:0; z-index:40; background:rgba(10,22,18,.42); display:flex; align-items:flex-end; justify-content:center;
   padding:max(12px, env(safe-area-inset-top,0px)) max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px))}
 @media (min-width:640px){ .modal{align-items:center; padding-bottom:24px} }
-.sheet{background:var(--surface); color:var(--ink); width:100%; max-width:640px; max-height:88vh; overflow:auto; border-radius:22px 22px 0 0;
+.sheet{background:var(--surface); color:var(--ink); width:100%; max-width:640px; max-height:88vh; max-height:88dvh; overflow:auto; border-radius:22px 22px 0 0;
   padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow)}
 @media (min-width:640px){ .sheet{border-radius:22px} }
 .sheet-head{display:flex; align-items:center; gap:12px}
@@ -379,11 +398,12 @@ dl.gloss dd{margin:0; color:var(--muted)}
     <!-- PLAY -->
     <section id="v-play" class="view" aria-label="Practice table">
       <div class="gbar">
-        <div class="gl"><button class="gb" id="gb-menu" type="button">Menu</button><span class="ginfo" id="ginfo"></span></div>
+        <div class="gl"><button class="gb" id="gb-menu" type="button">Learn</button><span class="ginfo" id="ginfo"></span></div>
         <div class="gr">
           <button class="gb" id="gb-coach" type="button" aria-pressed="true">Coach</button>
           <button class="gb" id="gb-sound" type="button" aria-pressed="true">Sound</button>
-          <button class="gb" id="gb-speed" type="button">Speed 1×</button>
+          <button class="gb" id="gb-music" type="button" aria-pressed="true">Music</button>
+          <button class="gb" id="gb-speed" type="button">1×</button>
           <button class="gb" id="gb-opt" type="button">Options</button>
         </div>
       </div>
@@ -890,6 +910,7 @@ function chooseDiscard(p){
     c[r.k]--; let u=0;
     for(let t=0;t<34;t++){
       if(c[t]>=4) continue;
+      if(!c[t]&&(t>=27||![-2,-1,1,2].some(d=>{const x=t+d; return x>=0&&x<27&&suitOf(x)===suitOf(t)&&c[x]>0;}))) continue;
       const rem=Math.max(0,4-vis[t]-c[t]);
       c[t]++;
       const better = r.s===0 ? isComplete(c,m) : shantenStd(c,m)<r.s;
@@ -964,8 +985,11 @@ function botClaim(p,d,k){
   const o=claimOptions(p,d,k), pl=S.players[p];
   if(o.hu) return {type:'hu',p,k};
   const val=isValuable(p,k), cur=shantenStd(counts(pl.hand),pl.melds.length);
-  if(o.kong&&(val||Math.random()<.5)) return {type:'kong',p,k};
-  if(o.pong){ if(val) return {type:'pong',p,k}; if(claimShanten(p,'pong',k)<cur&&Math.random()<.7) return {type:'pong',p,k}; }
+  if(o.kong&&(val||claimShanten(p,'kong',k)<=cur)) return {type:'kong',p,k};
+  if(o.pong&&val) return {type:'pong',p,k};
+  /* without any tai in hand, open sets only make sense on the way to a one-suit hand */
+  if(!bankedItems(p).length){ const su=new Set([...pl.hand,...pl.melds.map(m=>m.k)].filter(isSuit).map(suitOf)); if(su.size>1) return null; }
+  if(o.pong){ if(claimShanten(p,'pong',k)<cur&&Math.random()<.7) return {type:'pong',p,k}; }
   if(o.chows){
     let best=null; for(const s of o.chows){ const a=claimShanten(p,'chow',k,s); if(a<cur&&(!best||a<best.a)) best={a,s}; }
     if(best&&Math.random()<.45) return {type:'chow',p,k,s:best.s};
@@ -1072,7 +1096,7 @@ function bankedItems(p){
 <script>
 /* ======== UI ======== */
 const $=s=>document.querySelector(s);
-const SET={coach:true,labels:true,speed:650,sound:true,music:true};
+const SET={coach:true,labels:true,speed:450,sound:true,music:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
 function saveSet(){try{localStorage.setItem('sgmj-set',JSON.stringify(SET));}catch(e){}}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1214,10 +1238,6 @@ const TS=(ks,cls='t-sm')=>`<span class="tiles">${ks.map(k=>k==='|'?'<i class="ga
 const I=d=>`<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
 const ICON={
   bulb:I('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>'),
-  sound:I('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'),
-  mute:I('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9.5l5 5M22 9.5l-5 5"/>'),
-  log:I('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'),
-  set:I('<path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/>'),
   x:I('<path d="M6 6l12 12M18 6L6 18"/>')
 };
 
@@ -1226,7 +1246,7 @@ let SHEET=null, newArmed=null;
 var ui={
   render(){ renderPlay(); },
   sleep(ms){ return sleep(ms); },
-  speed(){ return +SET.speed||650; },
+  speed(){ return +SET.speed||450; },
   humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
   humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
   handOver(){ S.showResult=true; SHEET=null; renderPlay(); },
@@ -1235,6 +1255,20 @@ var ui={
 };
 function act(a){ if(!S.resolve) return; const r=S.resolve; S.resolve=null; S.ui={mode:'wait'}; S.sel=null; r(a); }
 
+/* ---- strategy tips, shared by the Strategy page and the coach's "Why?" buttons ---- */
+const TIPS={
+  tai:{t:'Know where your tai will come from',b:"You can't win with 0 tai. Early on, check what you already have: animals, your seat flowers, a pair of dragons or of your own wind. If you have none, steer toward Ping Hu, a flush or Pong Pong."},
+  honours:{t:'Throw lonely honours first, but not all of them',b:"A single wind that is neither your seat nor the round wind can never score, so discard it early while it is still safe. Hold a lone dragon or your own wind a little longer: a second copy gives you a pair worth a pong."},
+  middle:{t:'Middle tiles are worth more than edges',b:"A 5 can join 3-4-5, 4-5-6 or 5-6-7. A 1 or 9 only fits one chow. When everything else is equal, discard terminals before middle tiles.",ex:[[22],'A 5 fits three different chows'],},
+  waits:{t:'Prefer two-sided waits',b:"4-5 waits on 3 or 6: up to 8 tiles. 1-2 waits only on 3: 4 tiles at most. When you can choose, keep the shape that leaves more winning tiles. Ping Hu also needs an open wait.",ex:[[12,13],'waits on 3 or 6 Dots']},
+  pinghu:{t:'Ping Hu is the big prize for a plain hand',b:"No flowers or animals and a hand of chows? Keep it all chows and don't pong anything: Ping Hu is 4 tai. Once you draw a bonus tile it drops to 1 tai, but by then the bonus tile itself pays."},
+  claim:{t:'Claim selectively',b:"Pong dragons and your scoring winds straight away. Chi only when it clearly moves you closer to ready. Every open set shows the table your plan and leaves you fewer ways to finish."},
+  flush:{t:'Lean into flushes',b:"With eight or nine tiles of one suit, a Half Flush (2 tai) or Full Flush (4 tai) is often closer than it looks. Discard the other suits."},
+  read:{t:'Read the table',b:"Someone showing three sets of dots is hunting a flush, so stop feeding dots. Someone showing two dragon pongs: never discard the third dragon, because you'd pay for everyone."},
+  count:{t:"Count what's gone",b:"If three of the four tiles you're waiting on are already in the rivers, change your wait. The coach shows how many of each winning tile are still live (×2 means two left)."},
+  safe:{t:'Play safe late',b:"When the wall is short, discard tiles that already appear in other players' discards. A fresh tile late in the hand is the classic way to feed a big hand."}
+};
+const why=id=>id?` <button type="button" class="why" data-tip="${id}">Why?</button>`:'';
 /* ---- coach ---- */
 function coachDiscard(){
   const key=S.handNo+'|'+S.players[0].hand.join(',')+'|'+S.discardCount+'|'+S.players[0].melds.length;
@@ -1275,7 +1309,8 @@ function coachHTML(){
     if(o.hu) main=`<b>You can win now.</b> Tap Hu for ${o.hu.tai} tai.`;
     else {
       const cd=coachDiscard(), b=cd.best;
-      main=`Try discarding ${T(b.k)} <b>${nm(b.k)}</b>. `+(b.s===0?`You'll be ready, waiting on ${waitsLine(b.waits)}.`:`You'll be ${b.s} from ready with ${b.u} useful draws.`);
+      const tip=isHonor(b.k)?'honours':isTerminal(b.k)?'middle':b.s===0?'waits':(!pl.bonus.length&&!pl.melds.length?'pinghu':'middle');
+      main=`Try discarding ${T(b.k)} <b>${nm(b.k)}</b>. `+(b.s===0?`You'll be ready, waiting on ${waitsLine(b.waits)}.`:`You'll be ${b.s} from ready with ${b.u} useful draws.`)+why(tip);
       if(o.huZero) sub=`Your hand is complete but worth 0 tai, so it can't be declared yet.`;
       else if(S.sel!=null){
         const k=S.disp[S.sel], ev=cd.all.find(r=>r.k===k);
@@ -1285,17 +1320,17 @@ function coachHTML(){
         else if(ev) sub=`${nm(k)} is just as good.`;
       } else sub=honorNote(b.k);
     }
-  } else if(S.ui.mode==='claim') main=S.ui.advice;
+  } else if(S.ui.mode==='claim') main=S.ui.advice+why('claim');
   else {
     const c=counts(pl.hand), m=pl.melds.length;
-    if(pl.hand.length%3===1){ const w=waitsOf(c,m), s=shantenStd(c,m); main=w.length?`You're ready. Waiting on ${waitsLine(w)}.`:`You're ${s} tile${s>1?'s':''} from ready. Watch what others throw.`; }
+    if(pl.hand.length%3===1){ const w=waitsOf(c,m), s=shantenStd(c,m); main=w.length?`You're ready. Waiting on ${waitsLine(w)}.`+why('count'):`You're ${s} tile${s>1?'s':''} from ready. Watch what others throw.`+why('read'); }
     else main='Watching the table…';
   }
   const bank=bankedItems(0), chips=[];
-  chips.push(bank.length?`<span class="chip-s good">${bank.reduce((a,x)=>a+x.tai,0)} tai in hand · ${bank.map(x=>x.label.replace(' tile','').replace('Seat flower: ','')).join(', ')}</span>`:`<span class="chip-s">No tai yet · need ${MIN_TAI} to win</span>`);
+  chips.push(bank.length?`<span class="chip-s good">${bank.reduce((a,x)=>a+x.tai,0)} tai in hand · ${bank.map(x=>x.label.replace(' tile','').replace('Seat flower: ','')).join(', ')}</span>`:`<span class="chip-s" data-tip="tai" role="button" tabindex="0">No tai yet · need ${MIN_TAI} to win · why?</span>`);
   const dn=[]; for(const p of [1,2,3]) dn.push(...dangerFor(p,true)); if(S.wall.length-DEAD<24) dn.push('Short wall: play safe tiles');
-  for(const d of dn.slice(0,2)) chips.push(`<span class="chip-s warn">${d}</span>`);
-  return `<div class="coach" role="status"><div class="coach-main">${ICON.bulb}<div><p>${main}</p>${sub?`<p class="coach-sub">${sub}</p>`:''}</div></div><div class="coach-chips">${chips.join('')}</div></div>`;
+  for(const d of dn.slice(0,2)) chips.push(`<span class="chip-s warn" data-tip="${d.startsWith('Short')?'safe':'read'}" role="button" tabindex="0">${d}</span>`);
+  return `<div class="coach"><div class="coach-main">${ICON.bulb}<div><p>${main}</p>${sub?`<p class="coach-sub">${sub}</p>`:''}</div></div><div class="coach-chips">${chips.join('')}</div></div>`;
 }
 
 /* ---- table (Mahjong Leh-style perspective view) ---- */
@@ -1307,7 +1342,7 @@ function rackHTML(p){ return `<div class="rack rack-${POSN[p]}${live()&&S.turn==
 function infoHTML(p){
   const pl=S.players[p], seat=seatOf(p), on=live()&&S.turn===p;
   const think=on&&S.ui.mode==='wait'?'<span class="think" aria-hidden="true"><i></i><i></i><i></i></span>':'';
-  const sets=pl.melds.map(m=>meldHTML(m,'t-m')).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,'t-m')).join('')}</span>`:'');
+  const sets=p===0?'':pl.melds.map(m=>meldHTML(m,'t-m')).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,'t-m')).join('')}</span>`:'');
   return `<div class="info info-${POSN[p]}${on?' on':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${pl.name}, ${WINDS[seat]} seat, ${pl.chips} points. Show details">
     <span class="tag"><span class="han">${WINDS_ZH[seat]}</span><b>${pl.name}</b><span class="num">${pl.chips}</span>${p===S.dealer?'<span class="dealer" title="Dealer">D</span>':''}${think}</span>
     ${sets?`<span class="sets">${sets}</span>`:''}</div>`;
@@ -1332,7 +1367,7 @@ function compassHTML(){
 }
 function planeHTML(){
   const w=wallHTML();
-  return `${rackHTML(2)}${rackHTML(3)}${rackHTML(1)}${infoHTML(2)}${infoHTML(3)}${infoHTML(1)}
+  return `${rackHTML(2)}${rackHTML(3)}${rackHTML(1)}${infoHTML(2)}${infoHTML(3)}${infoHTML(1)}${infoHTML(0)}
     <div class="ring"><div class="ws ws-t">${w[0]}</div><div class="ws ws-r">${w[1]}</div><div class="ws ws-b">${w[2]}</div><div class="ws ws-l">${w[3]}</div>
     <div class="pz">${pondHTML(2)}${pondHTML(3)}${compassHTML()}${pondHTML(1)}${pondHTML(0)}</div></div>`;
 }
@@ -1359,7 +1394,7 @@ function handHTML(){
 }
 function promptHTML(){
   const m=S.ui.mode;
-  if(m==='turn') return `<span class="myprompt">${S.ui.opts.hu?'You can win!':S.justClaimed?'Discard a tile':'Your turn · tap a tile twice to discard'}</span>`;
+  if(m==='turn') return `<span class="myprompt">${S.ui.opts.hu?'You can win!':S.justClaimed?'Discard a tile':'Your turn · tap twice to discard'}</span>`;
   if(m==='claim'){ const o=S.ui.o, can=[o.hu&&'Hu',o.kong&&'Gang',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean); return `<span class="myprompt claim">You can ${can.join(' or ')}!</span>`; }
   if(m==='result') return `<span class="myprompt">${S.result.type==='draw'?'Draw game':S.result.w===0?'You win!':S.players[S.result.w].name+' wins'}</span>`;
   return `<span class="myprompt" style="opacity:.75">${S.players[S.turn].name} is playing…</span>`;
@@ -1386,7 +1421,7 @@ function bannersHTML(){
     if(o.chows) for(const s of o.chows) h+=B('c-chow','CHI',[s,s+1,s+2],'',`data-s="${s}"`);
     h+=B('pass','PASS',null,'pass');
   } else if(m==='result'){
-    h+=B('show','SCORING',null,'pass')+B('next','NEXT HAND',null,'go');
+    h+=B('show',S.result&&S.result.type==='draw'?'RESULT':'SCORING',null,'pass')+B('next','NEXT HAND',null,'go');
   }
   return h;
 }
@@ -1395,8 +1430,10 @@ const speedLabel=()=>SET.speed>=700?'1×':SET.speed>=300?'2×':'4×';
 function syncIcons(){
   const c=$('#gb-coach'), s=$('#gb-sound'), sp=$('#gb-speed'); if(!c) return;
   c.setAttribute('aria-pressed',String(!!SET.coach));
-  const on=SET.sound||SET.music; s.setAttribute('aria-pressed',String(on)); s.textContent=on?'Sound':'Muted';
-  sp.textContent='Speed '+speedLabel();
+  s.setAttribute('aria-pressed',String(!!SET.sound));
+  const mu=$('#gb-music'); mu.setAttribute('aria-pressed',String(!!SET.music));
+  s.setAttribute('aria-label',SET.sound?'Sound effects on':'Sound effects off'); mu.setAttribute('aria-label',SET.music?'Music on':'Music off');
+  sp.innerHTML='<span class="hide-sm">Speed </span>'+speedLabel();
 }
 function renderPlay(){
   if(!S) return;
@@ -1407,18 +1444,21 @@ function renderPlay(){
   $('#plane').innerHTML=planeHTML();
   const me=S.players[0];
   $('#gstatus').innerHTML=`<span>Dealer: <b>${S.dealer===0?'You':S.players[S.dealer].name}</b></span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span><span><b class="num">${me.chips}</b> pts</span><span>${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span> · hand ${S.handNo}</span><span class="rot-tip">Turn sideways for a bigger table</span>`;
-  $('#ginfo').innerHTML=`Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> · ${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span>`;
+  $('#ginfo').innerHTML=`You <b class="num">${S.players[0].chips}</b> pts · Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> · ${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span>`;
   S.animKey=S.discardCount;
   fitTable();
-  renderModal(false);
+  renderModal(!!(SHEET&&typeof SHEET==='object'&&SHEET.p!=null));
 }
 function fitTable(){
   const v=$('#v-play'), st=$('#stage'), pl=$('#plane'); if(!st||!pl||v.hidden) return;
   const W=v.clientWidth||window.innerWidth, H=window.innerHeight;
   const hw=Math.max(20,Math.min(64,(W-30)/14.9,H<520?H*.1:H*.12));
   v.style.setProperty('--hw',hw.toFixed(1)+'px');
-  const sw=st.clientWidth, sh=st.clientHeight; if(!sw||!sh) return;
-  const tilt=sw>sh*1.2?30:20;
+  const portrait=W<H*0.95;
+  v.classList.toggle('portrait',portrait);
+  const cf=$('#coachfloat');
+  const sw=st.clientWidth, sh=st.clientHeight-(portrait&&cf?cf.offsetHeight+6:0); if(!sw||sh<=0) return;
+  const tilt=portrait?14:(sw>sh*1.2?30:20);
   pl.style.setProperty('--tilt',tilt+'deg');
   let pw=parseFloat(pl.style.getPropertyValue('--pw'))||20;
   const cos=Math.cos(tilt*Math.PI/180);
@@ -1429,6 +1469,12 @@ function fitTable(){
     pl.style.setProperty('--pw',pw.toFixed(2)+'px');
     pl.style.setProperty('--mw',Math.max(9,Math.min(22,pw*.62)).toFixed(2)+'px');
   }
+  /* final exact fit: measure the real projected size (perspective included) and scale down if it still overflows */
+  pl.style.setProperty('--fit','1');
+  const r=pl.getBoundingClientRect(), sr=st.getBoundingClientRect();
+  const over=Math.max(0, sr.top-r.top);
+  const fit=Math.min(1,(sw-4)/r.width,(sh-4)/(r.height+over));
+  if(fit<1) pl.style.setProperty('--fit',fit.toFixed(3));
 }
 
 /* ---- sheets ---- */
@@ -1457,6 +1503,7 @@ function resultHTML(){
       ${sc.lims.map(i=>`<tr><td>${i.label}<span class="zh">${i.zh}</span></td><td>Limit</td></tr>`).join('')}
       <tr class="total"><td>Total${sc.lims.length?' (limit hand)':sc.capped?` (capped from ${sc.raw})`:''}</td><td>${sc.tai} tai</td></tr>
     </tbody></table>
+    <p class="sub"><a href="#tai">How tai are counted</a></p>
     <ul class="pays">${r.pays.map(p=>`<li>${S.players[p.p].name} pay${p.p===0?'':'s'} <b class="num">${p.amt}</b>${!r.selfDrawn&&p.p===r.d?' (shooter, double)':''}</li>`).join('')}</ul>`;
   }
   const others=S.players.map((pl,i)=>(r.type==='win'&&i===r.w)?'':`<div><b>${pl.name}</b> held: <span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k)).join('')}</span></div>`).join('');
@@ -1484,22 +1531,30 @@ function settingsHTML(){
     <div class="row"><button class="btn" data-act="log" type="button">Table log</button><button class="btn" data-act="newgame" type="button">${newArmed?'Tap again to restart':'Start a new game'}</button></div>`;
 }
 function logHTML(){ return `<div class="sheet-head"><div><h2>Table log</h2><p class="sub">Newest first</p></div>${closeBtn()}</div><ol class="loglist">${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol>`; }
+function tipHTML(id){
+  const t=TIPS[id]; if(!t) return '';
+  return `<div class="sheet-head"><div><p class="sub">Strategy tip</p><h2>${t.t}</h2></div>${closeBtn()}</div>
+    <p>${t.b}</p>${t.ex?`<div class="tipex">${TS(t.ex[0],'t-md')}<span>${t.ex[1]}</span></div>`:''}
+    <div class="row"><a class="btn" href="#strategy">All strategy tips</a><button class="btn primary" data-act="close" type="button">Back to the game</button></div>`;
+}
 function menuHTML(){
   const L=[['tiles','Tiles','Every tile with its name and what it does'],['rules','Rules','Turns, claiming, kongs, paying out'],['tai','Tai','The scoring table with examples'],['strategy','Strategy','Ten tips the coach uses'],['quiz','Quiz','Name the tile, count the tai, find the wait']];
-  return `<div class="sheet-head"><div><h2>Menu</h2><p class="sub">Learn more, then come back to the table. Your game keeps its place.</p></div>${closeBtn()}</div>
+  return `<div class="sheet-head"><div><h2>Learn</h2><p class="sub">Everything from the guide. Your game waits where you left it; tap Play at the top to come back.</p></div>${closeBtn()}</div>
     <nav class="menu-list">${L.map(([h,t,d])=>`<a class="menu-link" href="#${h}"><b>${t}</b><span>${d}</span></a>`).join('')}<button type="button" class="menu-link" data-act="log"><b>Table log</b><span>Everything that has happened this hand</span></button></nav>`;
 }
 function renderModal(force){
   const md=$('#modal');
   if(!S||$('#v-play').hidden){ md.hidden=true; md.dataset.kind=''; return; }
   let kind='', body='';
-  if(SHEET){ kind=typeof SHEET==='object'?'inspect'+SHEET.p:SHEET; }
+  if(SHEET){ kind=typeof SHEET==='object'?(SHEET.tip?'tip-'+SHEET.tip:'inspect'+SHEET.p):SHEET; }
   else if(S.showResult&&S.result) kind='result'+S.handNo;
   if(!kind){ md.hidden=true; md.dataset.kind=''; return; }
   if(force||md.dataset.kind!==kind){
-    body= kind.startsWith('result')?resultHTML(): kind==='settings'?settingsHTML(): kind==='log'?logHTML(): kind==='menu'?menuHTML(): inspectHTML(SHEET.p);
-    md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true">${body}</div>`;
+    body= kind.startsWith('result')?resultHTML(): kind==='settings'?settingsHTML(): kind==='log'?logHTML(): kind==='menu'?menuHTML(): kind.startsWith('tip-')?tipHTML(SHEET.tip): inspectHTML(SHEET.p);
+    const first=md.dataset.kind!==kind;
+    md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${kind.startsWith('result')?'Hand result':kind==='settings'?'Settings':kind==='log'?'Table log':kind==='menu'?'Learn':kind.startsWith('tip-')?'Strategy tip':'Player details'}">${body}</div>`;
     md.dataset.kind=kind;
+    if(first){ const f=md.querySelector('[data-act="close"]'); if(f) f.focus({preventScroll:true}); }
   }
   md.hidden=false;
 }
@@ -1515,8 +1570,8 @@ function onAct(el){
   else if(a==='c-kong') act({type:'kong'});
   else if(a==='c-chow') act({type:'chow',s:+el.dataset.s});
   else if(a==='pass') act({type:'pass'});
-  else if(a==='next'){ SHEET=null; nextHand(); }
-  else if(a==='show'){ SHEET=null; S.showResult=true; renderModal(true); }
+  else if(a==='next'){ if(S.ui.mode!=='result') return; SHEET=null; nextHand(); }
+  else if(a==='show'){ if(!S.result) return; SHEET=null; S.showResult=true; renderModal(true); }
   else if(a==='close'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
   else if(a==='log') openSheet('log');
   else if(a==='newgame'){
@@ -1553,10 +1608,15 @@ $('#modal').addEventListener('change',e=>{
 });
 $('#gb-menu').addEventListener('click',()=>openSheet('menu'));
 $('#gb-coach').addEventListener('click',()=>{ SET.coach=!SET.coach; saveSet(); renderPlay(); });
-$('#gb-sound').addEventListener('click',()=>{ const on=!(SET.sound||SET.music); SET.sound=on; SET.music=on; saveSet(); audioInit(); on?musicOn():musicOff(); syncIcons(); });
+$('#gb-sound').addEventListener('click',()=>{ SET.sound=!SET.sound; saveSet(); audioInit(); if(SET.sound) setTimeout(()=>SFX.tap(),60); syncIcons(); });
+$('#gb-music').addEventListener('click',()=>{ SET.music=!SET.music; saveSet(); audioInit(); SET.music?musicOn():musicOff(); syncIcons(); });
+function tipFrom(e){ const t=e.target.closest('[data-tip]'); if(t){ openSheet({tip:t.dataset.tip}); return true; } return false; }
+$('#coachfloat').addEventListener('click',tipFrom);
+$('#coachfloat').addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-tip]')){ e.preventDefault(); tipFrom(e); } });
 $('#gb-speed').addEventListener('click',()=>{ const i=SPEEDS.findIndex(s=>s[1]===speedLabel()); SET.speed=SPEEDS[(i+1)%SPEEDS.length][0]; saveSet(); syncIcons(); });
 $('#gb-opt').addEventListener('click',()=>openSheet('settings'));
 window.addEventListener('resize',()=>fitTable());
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#modal').hidden){ if(SHEET) SHEET=null; else if(S) S.showResult=false; renderModal(true); } });
 window.addEventListener('orientationchange',()=>setTimeout(fitTable,300));
 
 /* ---- tiles guide ---- */
