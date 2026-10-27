@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c5a4b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahjong">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Singapore Mahjong Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Serif+TC:wght@700&display=swap">
+<style>
+/* Layout: a jade felt table stacked top to bottom (opponents, rivers), with your rack docked to the bottom edge; reference tabs ride above. */
+:root{
+  --bg:#e9f0ed; --surface:#ffffff; --surface-2:#f2f7f5; --ink:#10302a; --muted:#536b65; --line:#cad9d3;
+  --felt:#1c5a4b; --felt-2:#164b3e; --felt-ink:#e7f3ed; --felt-muted:#a6c9bc; --felt-line:#2c6e5d;
+  --accent:#c3362c; --accent-ink:#ffffff; --coach:#9a5f0c; --coach-bg:#fbf0d9; --ok:#1b7546; --bad:#b0332a;
+  --tile-face:#fbf8ef; --tile-edge:#d9d0bc; --tile-back:#2c7862; --tile-back-2:#22604f;
+  --t-red:#c0322a; --t-green:#1b774a; --t-blue:#1f4f9c; --t-navy:#1a2340; --t-brown:#8c4f1d;
+  --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-han:'Noto Serif TC','Songti TC','PingFang TC','Hiragino Mincho ProN','Microsoft JhengHei',serif;
+  --hw:clamp(20px, calc((100vw - 32px - 44px) / 14.6), 54px);
+  --rv:clamp(17px, calc((100vw - 32px) / 19), 26px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0b1513; --surface:#13201d; --surface-2:#192925; --ink:#e1eee9; --muted:#93aba4; --line:#283c37;
+  --felt:#113a30; --felt-2:#0d3028; --felt-ink:#e1f0e9; --felt-muted:#8db5a7; --felt-line:#1f5546;
+  --accent:#e2574c; --accent-ink:#ffffff; --coach:#e6a84d; --coach-bg:#2a2213; --ok:#53c48a; --bad:#f07d73;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0b1513; --surface:#13201d; --surface-2:#192925; --ink:#e1eee9; --muted:#93aba4; --line:#283c37;
+  --felt:#113a30; --felt-2:#0d3028; --felt-ink:#e1f0e9; --felt-muted:#8db5a7; --felt-line:#1f5546;
+  --accent:#e2574c; --accent-ink:#ffffff; --coach:#e6a84d; --coach-bg:#2a2213; --ok:#53c48a; --bad:#f07d73;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-body);
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+.wrap{max-width:1000px; margin:0 auto}
+.han{font-family:var(--f-han); font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--f-display); text-wrap:balance; line-height:1.15; margin:0}
+a{color:inherit}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--coach); outline-offset:2px}
+
+/* masthead */
+.masthead{display:flex; flex-direction:column; gap:10px; padding-block:14px 8px}
+.brand{display:flex; align-items:center; gap:12px}
+.mark{width:42px; height:56px; flex:none; display:grid; place-items:center; font-size:30px; color:var(--t-red);
+  background:var(--tile-face); border-radius:6px; box-shadow:inset 0 0 0 1px var(--tile-edge), 0 4px 0 var(--tile-back), 0 6px 10px rgba(0,0,0,.18)}
+.brand h1{font-size:clamp(22px,5.4vw,32px); font-weight:800; letter-spacing:-.01em}
+.brand p{margin:2px 0 0; color:var(--muted); font-size:14px}
+.tabs{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; margin-inline:-4px; padding:2px 4px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none; text-decoration:none; padding:8px 14px; border-radius:999px; font-weight:700; font-size:15px; color:var(--muted); border:1px solid transparent}
+.tabs a[aria-current="page"]{background:var(--ink); color:var(--bg)}
+.tabs a:not([aria-current]):hover{border-color:var(--line)}
+
+/* tiles */
+.tile{--w:40px; width:var(--w); height:calc(var(--w)*1.333); flex:none; display:inline-block; position:relative; vertical-align:bottom;
+  background:var(--tile-face); border:0; padding:0; border-radius:calc(var(--w)*.13);
+  box-shadow:inset 0 0 0 1px var(--tile-edge), 0 calc(var(--w)*.075) 0 var(--tile-back), 0 calc(var(--w)*.1) calc(var(--w)*.14) rgba(0,0,0,.22);
+  margin-bottom:calc(var(--w)*.08)}
+.tile svg{width:100%; height:100%; display:block}
+.tile.back{background:linear-gradient(160deg,var(--tile-back),var(--tile-back-2)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.15), 0 calc(var(--w)*.075) 0 var(--tile-face), 0 calc(var(--w)*.1) calc(var(--w)*.14) rgba(0,0,0,.22)}
+.tile svg text{font-family:var(--f-han); font-weight:700}
+.tile svg .r{fill:var(--t-red)} .tile svg .g{fill:var(--t-green)} .tile svg .bl{fill:var(--t-blue)}
+.tile svg .n{fill:var(--t-navy)} .tile svg .a{fill:var(--t-brown)} .tile svg .face{fill:var(--tile-face)}
+.tile svg .frame{fill:none; stroke:var(--t-blue); stroke-width:3.2} .tile svg .frame.thin{stroke-width:1.4}
+.tile svg .tail{fill:none; stroke:var(--t-green); stroke-width:3; stroke-linecap:round}
+.tile svg .lbl rect{fill:var(--tile-face); stroke:var(--tile-edge); stroke-width:1}
+.tile svg .lbl text{fill:var(--t-navy); font-family:var(--f-body); font-size:10.5px; font-weight:700}
+.tile svg .corner{font-family:var(--f-body); font-size:12px; font-weight:700}
+body.nolabels .tile .lbl{display:none}
+.t-xs{--w:var(--rv)} .t-sm{--w:28px} .t-md{--w:36px} .t-lg{--w:64px} .t-xl{--w:92px} .t-hand{--w:var(--hw)}
+.tiles{display:inline-flex; gap:2px; flex-wrap:wrap; align-items:flex-end; vertical-align:middle}
+.tiles .gap{width:8px}
+
+/* play */
+.playbar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between; padding-block:8px}
+.meta{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; color:var(--muted)}
+.meta b{color:var(--ink)}
+.controls{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; font-size:14px}
+.toggle{display:inline-flex; gap:6px; align-items:center; cursor:pointer}
+.toggle input{width:18px; height:18px; accent-color:var(--felt)}
+.controls select{font:16px var(--f-body); padding:4px 6px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.felt{background:radial-gradient(120% 90% at 50% 10%, var(--felt), var(--felt-2)); color:var(--felt-ink); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px}
+.opps{display:grid; grid-template-columns:1fr; gap:8px}
+@media (min-width:760px){ .opps{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.opp{border:1px solid var(--felt-line); border-radius:12px; padding:8px 10px; min-width:0; display:flex; flex-direction:column; gap:6px; transition:border-color .2s, background .2s}
+.opp.active{border-color:var(--felt-ink); background:rgba(255,255,255,.05)}
+.who{display:flex; align-items:center; gap:8px; font-size:14px; min-width:0}
+.who b{font-family:var(--f-display); font-weight:700; font-size:15px; white-space:nowrap}
+.who .pos{color:var(--felt-muted); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.who .sp{flex:1}
+.wind{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:6px; background:var(--tile-face); color:var(--t-navy); font-size:15px; flex:none}
+.tag{font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:1px 6px; border-radius:4px; background:var(--accent); color:var(--accent-ink)}
+.sets{display:flex; flex-wrap:wrap; gap:6px; align-items:flex-end; min-height:22px}
+.backs{font-size:12.5px; color:var(--felt-muted); align-self:center}
+.meld,.bonus{display:inline-flex; gap:1px; align-items:flex-end}
+.bonus{padding-left:4px; border-left:1px dashed var(--felt-line)}
+.river{display:flex; flex-wrap:wrap; gap:2px; min-height:calc(var(--rv)*1.4)}
+.river:empty::before{content:"No discards yet"; font-size:12.5px; color:var(--felt-muted)}
+.tile.last{outline:2px solid var(--coach); outline-offset:1px}
+.center{display:flex; align-items:center; gap:12px; padding:6px 2px; min-height:56px}
+.center .status{font-family:var(--f-display); font-weight:600; font-size:17px}
+.center .sub{font-size:13px; color:var(--felt-muted)}
+.mine-river{border-top:1px solid var(--felt-line); padding-top:8px}
+.label{font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--felt-muted); font-weight:700}
+.log{margin-top:2px; font-size:13.5px}
+.log summary{cursor:pointer; color:var(--felt-muted); font-weight:700}
+.log ol{list-style:none; margin:6px 0 0; padding:0; max-height:220px; overflow:auto; display:flex; flex-direction:column; gap:3px}
+.log li{color:var(--felt-ink)} .log li.pay{color:#f2cf8a} .log li.win{color:#ffd9d4; font-weight:700} .log li.coach{color:var(--felt-muted); font-style:italic}
+
+.dock{position:sticky; bottom:0; z-index:5; margin-top:10px; background:var(--surface); border:1px solid var(--line); border-bottom:0; border-radius:16px 16px 0 0;
+  padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 24px rgba(0,0,0,.12); display:flex; flex-direction:column; gap:8px}
+.coachbox{background:var(--coach-bg); color:var(--ink); border-radius:10px; padding:8px 10px; font-size:14px; line-height:1.45; display:flex; flex-direction:column; gap:4px}
+.coachbox .ttl{font-weight:700; color:var(--coach); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase}
+.coachbox p{margin:0}
+.coachbox .tile{--w:20px; margin-bottom:2px}
+.mine{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end; font-size:13.5px; color:var(--muted)}
+.mine b{color:var(--ink); font-family:var(--f-display)}
+.mine .wind{box-shadow:inset 0 0 0 1px var(--tile-edge)}
+.hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:12px; min-height:calc(var(--hw)*1.45 + 12px)}
+.hand .tile{cursor:pointer; transition:transform .12s ease}
+.hand .tile.sel{transform:translateY(-24%)}
+.hand .tile.hint{outline:2px solid var(--coach); outline-offset:1px}
+.hand .tile.drawn{margin-left:calc(var(--hw)*.35)}
+.hand.idle .tile{cursor:default}
+.hand .tile.use{outline:2px solid var(--accent); outline-offset:1px; transform:translateY(-12%)}
+.dock.alert{border-color:var(--accent); box-shadow:0 -8px 24px rgba(0,0,0,.12), 0 0 0 2px var(--accent)}
+.claimhead{width:100%; text-align:center; font-family:var(--f-display); font-weight:800; font-size:18px; color:var(--accent)}
+.actions{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center}
+.prompt{width:100%; text-align:center; font-size:14px; color:var(--muted)}
+.prompt .tile{--w:22px}
+.btn{font:700 15px/1.2 var(--f-body); padding:10px 16px; min-height:44px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+.btn:disabled{opacity:.45; cursor:default}
+.btn.primary{background:var(--felt); color:var(--felt-ink); border-color:transparent}
+.btn.hu{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-family:var(--f-display); font-size:17px}
+.btn.small{min-height:36px; padding:6px 12px; font-size:14px}
+.btn .han{font-weight:700}
+
+/* modal */
+.modal{position:fixed; inset:0; z-index:40; background:rgba(4,14,11,.6); display:flex; align-items:flex-end; justify-content:center;
+  padding:max(12px, env(safe-area-inset-top,0px)) max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px))}
+@media (min-width:640px){ .modal{align-items:center; padding-bottom:24px} }
+.sheet{background:var(--surface); color:var(--ink); width:100%; max-width:660px; max-height:90vh; overflow:auto; border-radius:18px 18px 0 0;
+  padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:14px}
+@media (min-width:640px){ .sheet{border-radius:18px} }
+.sheet h2{font-size:26px; font-weight:800}
+.sheet .sub{color:var(--muted); margin-top:4px}
+.handshow{display:flex; flex-wrap:wrap; gap:8px 10px; align-items:flex-end}
+.handshow .tile.win{outline:2px solid var(--accent); outline-offset:1px}
+.scoretbl{width:100%; border-collapse:collapse; font-size:15px}
+.scoretbl td{padding:7px 4px; border-bottom:1px solid var(--line); vertical-align:top}
+.scoretbl td:last-child{text-align:right; font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap}
+.scoretbl .zh{color:var(--muted); font-family:var(--f-han); font-weight:700; margin-left:6px}
+.scoretbl tr.total td{border-bottom:0; font-size:18px; font-family:var(--f-display)}
+.pays{margin:0; padding-left:18px; font-size:14.5px}
+.others{display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--muted)}
+.others .tile{--w:20px}
+.row{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+
+/* reading pages */
+.page{max-width:760px; padding-block:12px 64px; display:flex; flex-direction:column; gap:28px}
+.page section{display:flex; flex-direction:column; gap:10px}
+.page h2{font-size:clamp(24px,5vw,30px); font-weight:800}
+.page h3{font-size:19px; font-weight:700}
+.page p,.page li{max-width:66ch}
+.page p{margin:0}
+.lede{font-size:17px; color:var(--muted)}
+.page ul,.page ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px}
+.kv{display:grid; grid-template-columns:minmax(0,1fr); gap:10px}
+.ex-row{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.ex-row .cap{font-size:14px; min-width:0; flex:1 1 180px}
+.ex-row .cap b{font-family:var(--f-display)}
+.zhc{font-family:var(--f-han); font-weight:700; color:var(--muted)}
+.tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table.ref{width:100%; border-collapse:collapse; font-size:14.5px; min-width:520px}
+table.ref th{text-align:left; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:10px 10px 6px; border-bottom:1px solid var(--line)}
+table.ref td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
+table.ref tr:last-child td{border-bottom:0}
+table.ref td.t{font-family:var(--f-display); font-weight:800; font-size:17px; white-space:nowrap; font-variant-numeric:tabular-nums}
+table.ref tr.grp td{background:var(--surface-2); font-weight:700; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.note{font-size:14px; color:var(--muted); border-left:3px solid var(--line); padding-left:12px}
+.tips{counter-reset:tip; list-style:none; padding:0 !important}
+.tips li{display:flex; flex-direction:column; gap:6px; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.tips li b{font-family:var(--f-display); font-size:17px}
+dl.gloss{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; margin:0}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{margin:0; color:var(--muted)}
+
+/* tiles guide */
+.tgroups{display:flex; flex-direction:column; gap:18px}
+.tgroup h3{display:flex; gap:8px; align-items:baseline}
+.tgroup h3 small{font-family:var(--f-body); font-weight:400; color:var(--muted); font-size:14px}
+.tgrid{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.tgrid .tile{cursor:pointer; --w:clamp(36px, 9vw, 52px)}
+.tgrid .tile.on{outline:2px solid var(--coach); outline-offset:2px}
+.detail{position:sticky; top:env(safe-area-inset-top,0px); z-index:3; display:flex; gap:16px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.detail .txt{min-width:0; display:flex; flex-direction:column; gap:3px}
+.detail h3{font-size:20px}
+.detail .zh{font-family:var(--f-han); font-weight:700; font-size:18px}
+.detail p{margin:0; font-size:14.5px; color:var(--muted)}
+
+/* quiz */
+.qmodes{display:flex; flex-wrap:wrap; gap:8px}
+.qmodes .btn[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:transparent}
+.qcard{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:14px}
+.qcard .q{font-family:var(--f-display); font-size:20px; font-weight:700}
+.ctx{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font-size:13px; padding:3px 9px; border-radius:999px; background:var(--surface-2); border:1px solid var(--line)}
+.choices{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.choices.five{grid-template-columns:repeat(5,minmax(0,1fr))}
+.choices.tilech{grid-template-columns:repeat(4,minmax(0,1fr)); justify-items:center}
+.choice{font:700 15px var(--f-body); padding:12px 10px; min-height:48px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+.choice.tilebtn{padding:8px; background:transparent; border-color:transparent}
+.choice.right{background:var(--ok); color:#fff; border-color:transparent}
+.choice.wrong{background:var(--bad); color:#fff; border-color:transparent}
+.choice.tilebtn.right{background:transparent; outline:3px solid var(--ok)}
+.choice.tilebtn.wrong{background:transparent; outline:3px solid var(--bad)}
+.feedback{border-top:1px solid var(--line); padding-top:12px; display:flex; flex-direction:column; gap:8px; font-size:15px}
+.feedback .verdict{font-family:var(--f-display); font-weight:800; font-size:20px}
+.feedback .verdict.ok{color:var(--ok)} .feedback .verdict.no{color:var(--bad)}
+.qscore{font-size:14px; color:var(--muted)}
+.qhand{display:flex; flex-direction:column; gap:10px}
+.qhand .grp{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end}
+.qhand .lab{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; width:100%}
+.qhand .tile{--w:clamp(24px, 6.4vw, 40px)}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <div class="mark han" aria-hidden="true">中</div>
+      <div><h1>Singapore Mahjong Coach</h1><p><span class="han">新加坡麻將</span> · learn the tiles, the tai and the table by playing</p></div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#play">Play</a><a href="#tiles">Tiles</a><a href="#rules">Rules</a><a href="#tai">Tai</a><a href="#strategy">Strategy</a><a href="#quiz">Quiz</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- PLAY -->
+    <section id="v-play" class="view" aria-label="Practice table">
+      <div class="playbar">
+        <div id="meta" class="meta"></div>
+        <div class="controls">
+          <label class="toggle"><input type="checkbox" id="opt-coach"> Coach</label>
+          <label class="toggle"><input type="checkbox" id="opt-labels"> Tile labels</label>
+          <label class="toggle"><input type="checkbox" id="opt-sound"> Sounds</label>
+          <label class="toggle"><input type="checkbox" id="opt-music"> Music</label>
+          <label>Speed <select id="opt-speed"><option value="1100">Relaxed</option><option value="650">Normal</option><option value="250">Fast</option></select></label>
+          <button class="btn small" id="btn-new" type="button">New game</button>
+        </div>
+      </div>
+      <div id="felt" class="felt"></div>
+      <div id="dock" class="dock"></div>
+    </section>
+
+    <!-- TILES -->
+    <section id="v-tiles" class="view" hidden>
+      <div class="page" style="max-width:none">
+        <section>
+          <h2>The 148 tiles</h2>
+          <p class="lede">Singapore sets add four animal tiles to the usual 144. Tap any tile to see its name, how to say it, and what it does for your hand.</p>
+        </section>
+        <div id="tile-detail" class="detail"></div>
+        <div id="tile-groups" class="tgroups"></div>
+      </div>
+    </section>
+
+    <!-- RULES -->
+    <section id="v-rules" class="view" hidden>
+      <div class="page">
+        <section>
+          <h2>How a hand works</h2>
+          <p class="lede">Build a hand of four sets and one pair (14 tiles), and make sure it is worth at least 1 tai. That's the whole goal. Everything else is how you get there.</p>
+        </section>
+        <section>
+          <h3>The building blocks</h3>
+          <div class="kv">
+            <div class="ex-row"><span class="ex" data-tiles="11,12,13"></span><span class="cap"><b>Chow</b> <span class="zhc">吃</span> (say "chi"): three in a row of the same suit. Honours can't make chows.</span></div>
+            <div class="ex-row"><span class="ex" data-tiles="31,31,31"></span><span class="cap"><b>Pong</b> <span class="zhc">碰</span>: three identical tiles.</span></div>
+            <div class="ex-row"><span class="ex" data-tiles="25,25,25,25"></span><span class="cap"><b>Kong</b> <span class="zhc">杠</span> (say "gang"): four identical. Counts as one set; you draw a replacement tile.</span></div>
+            <div class="ex-row"><span class="ex" data-tiles="1,1"></span><span class="cap"><b>Eye</b> <span class="zhc">眼 / 將</span>: the one pair every winning hand needs.</span></div>
+          </div>
+          <div class="ex-row"><span class="ex" data-tiles="0,1,2,|,13,14,15,|,20,21,22,|,31,31,31,|,28,28"></span><span class="cap"><b>A complete hand</b>: three chows, a pong of Red Dragon (1 tai) and a pair of South.</span></div>
+        </section>
+        <section>
+          <h3>Seats, winds and the deal</h3>
+          <ul>
+            <li>Four players. The dealer sits <b>East</b>; play runs counter-clockwise East → South → West → North. In this app that means you, then the player on your right, across, and left.</li>
+            <li>Your seat number is 1 (East), 2 (South), 3 (West) or 4 (North). It decides which flower tiles and which wind are "yours".</li>
+            <li>Everyone takes 13 tiles; the dealer takes 14 and discards first.</li>
+            <li>Flowers and animals are never kept in the hand. Lay them face up and draw a replacement from the back of the wall straight away.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Your turn</h3>
+          <ol>
+            <li>Draw one tile from the wall (replace any flower or animal).</li>
+            <li>If it completes your hand, declare <b>Hu</b> <span class="zhc">胡</span>. Winning on your own draw is <b>zi mo</b> <span class="zhc">自摸</span>.</li>
+            <li>Optionally declare a kong.</li>
+            <li>Discard one tile face up. Your discards form your "river".</li>
+          </ol>
+        </section>
+        <section>
+          <h3>Claiming someone's discard</h3>
+          <ul>
+            <li><b>Chi</b> only from the player on your left, the one who plays just before you.</li>
+            <li><b>Pong</b> or <b>kong</b> from anyone. It jumps the turn order to you.</li>
+            <li><b>Hu</b> beats every other claim. If two players can win, the one next in turn order takes it (some tables let both win).</li>
+            <li>After a chi or pong you expose the set, then discard. You do not draw.</li>
+            <li>Claimed sets are open. Only sets formed from your own draws stay concealed.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Kongs</h3>
+          <ul>
+            <li><b>Exposed kong</b> <span class="zhc">明杠</span>: you hold three and claim the fourth from a discard.</li>
+            <li><b>Concealed kong</b> <span class="zhc">暗杠</span>: you draw all four yourself. Shown with the ends face down.</li>
+            <li><b>Added kong</b> <span class="zhc">加杠</span>: you draw the fourth tile of a pong you already exposed. If that tile would win for someone, they may <b>rob the kong</b> <span class="zhc">搶杠</span> and you pay as the discarder.</li>
+            <li>Every kong earns an instant payment and a replacement tile from the back of the wall.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Ending a hand</h3>
+          <ul>
+            <li>The hand ends when someone wins, or when only the 15-tile dead wall is left. That is a draw, <span class="zhc">流局</span>.</li>
+            <li>A winning hand needs at least <b>1 tai</b>. A hand with nothing scoring, sometimes called a chicken hand <span class="zhc">雞胡</span>, can't be declared at most tables.</li>
+            <li>Most tables cap a hand at <b>5 tai</b> (the limit, <span class="zhc">滿貫</span>).</li>
+            <li>The dealer keeps the deal after a win or a draw. Otherwise the deal passes to the right. Once every player has dealt, the round wind moves on: East round, then South round, and so on.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Paying out</h3>
+          <p>Each tai doubles the value. With 1 unit as the base:</p>
+          <div class="tbl-wrap"><table class="ref num">
+            <thead><tr><th>Tai</th><th>Win on discard: shooter pays</th><th>Other two pay</th><th>Self-draw: each pays</th></tr></thead>
+            <tbody>
+              <tr><td class="t">1</td><td>2</td><td>1 each</td><td>2</td></tr>
+              <tr><td class="t">2</td><td>4</td><td>2 each</td><td>4</td></tr>
+              <tr><td class="t">3</td><td>8</td><td>4 each</td><td>8</td></tr>
+              <tr><td class="t">4</td><td>16</td><td>8 each</td><td>16</td></tr>
+              <tr><td class="t">5</td><td>32</td><td>16 each</td><td>32</td></tr>
+            </tbody></table></div>
+          <p>The player whose discard you win on is the <b>shooter</b>. Many younger tables play <b>shooter pays all</b> instead: the shooter covers everyone's share and the other two pay nothing.</p>
+        </section>
+        <section>
+          <h3>Instant payments</h3>
+          <p>These are paid the moment they happen, whether or not you go on to win:</p>
+          <ul>
+            <li><b>Bite</b> <span class="zhc">咬</span>: holding Cat + Rat, or Rooster + Centipede. Everyone pays you.</li>
+            <li>Both of your <b>seat flowers</b> (the red and blue tiles with your number).</li>
+            <li>A <b>complete flower set</b> (all four of one colour) pays like a concealed kong.</li>
+            <li>Exposed kong pays like a bite; concealed kong pays double.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>When the shooter pays for everyone <span class="zhc">包</span></h3>
+          <p>At many tables a careless discard makes you cover the whole win:</p>
+          <ul>
+            <li>Feeding the third dragon pong to a player who already shows two dragon pongs.</li>
+            <li>Feeding a suit tile to a player showing three or four sets of that suit (an obvious flush).</li>
+            <li>Discarding a "fresh" tile (one not yet seen on the table) late in the hand, when it wins for someone.</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Agree on these before you play</h3>
+          <p class="note">There is no single rulebook for Singapore mahjong. Check the minimum and limit tai, whether bites and kong payments are on, shooter-pays-all, and how Ping Hu is scored. The practice table here uses: 1 tai minimum, 5 tai limit, shooter pays double, self-draw all pay double, bites 2, exposed kong 2, concealed kong 4, complete flower set 4. Robbing the kong and the 包 rules are explained above but not enforced in practice games.</p>
+        </section>
+        <section>
+          <h3>Words you'll hear at the table</h3>
+          <dl class="gloss">
+            <dt>Hu <span class="zhc">胡</span></dt><dd>Declare a win.</dd>
+            <dt>Zi mo <span class="zhc">自摸</span></dt><dd>Win on your own draw.</dd>
+            <dt>Ting <span class="zhc">聽</span></dt><dd>Ready: one tile away from winning.</dd>
+            <dt>Tai <span class="zhc">台</span></dt><dd>Scoring points; each one doubles the payout.</dd>
+            <dt>Eye <span class="zhc">眼</span></dt><dd>The pair in a winning hand.</dd>
+            <dt>Shooter</dt><dd>The player whose discard someone wins on.</dd>
+            <dt>Bite <span class="zhc">咬</span></dt><dd>Predator plus prey animal: instant payment.</dd>
+            <dt>Men qing <span class="zhc">門清</span></dt><dd>Fully concealed: no claimed sets.</dd>
+            <dt>Dead wall</dt><dd>The last 15 tiles, never drawn in normal play.</dd>
+            <dt>Fresh tile <span class="zhc">生張</span></dt><dd>A tile no one has discarded yet. Risky late in the hand.</dd>
+          </dl>
+        </section>
+      </div>
+    </section>
+
+    <!-- TAI -->
+    <section id="v-tai" class="view" hidden>
+      <div class="page">
+        <section>
+          <h2>Counting tai</h2>
+          <p class="lede">Add up everything that applies, then cap at the limit (5 tai here). You need at least 1 tai to win. Values below are the most common Singapore table rules.</p>
+        </section>
+        <div class="tbl-wrap"><table class="ref">
+          <thead><tr><th>Scores</th><th>Tai</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="3">Bonus tiles · counted even if you lose nothing else</td></tr>
+            <tr><td>Each animal <span class="zhc">貓鼠雞蜈蚣</span></td><td class="t">1</td><td><span class="ex" data-tiles="42,44"></span></td></tr>
+            <tr><td>All four animals (bonus on top)</td><td class="t">+1</td><td><span class="ex" data-tiles="42,43,44,45"></span></td></tr>
+            <tr><td>Each flower with your seat number (seat 2 shown)</td><td class="t">1</td><td><span class="ex" data-tiles="35,39"></span></td></tr>
+            <tr><td>Complete flower set of one colour (includes your seat flower)</td><td class="t">2</td><td><span class="ex" data-tiles="34,35,36,37"></span></td></tr>
+            <tr class="grp"><td colspan="3">Honour sets</td></tr>
+            <tr><td>Pong or kong of any dragon</td><td class="t">1</td><td><span class="ex" data-tiles="32,32,32"></span></td></tr>
+            <tr><td>Pong of your seat wind</td><td class="t">1</td><td><span class="ex" data-tiles="28,28,28"></span></td></tr>
+            <tr><td>Pong of the round (prevailing) wind. If it is also your seat wind, you get both: 2.</td><td class="t">1</td><td><span class="ex" data-tiles="27,27,27"></span></td></tr>
+            <tr><td>Three Lesser Scholars <span class="zhc">小三元</span>: two dragon pongs + dragon eye (total)</td><td class="t">3</td><td><span class="ex" data-tiles="31,31,31,|,32,32,32,|,33,33"></span></td></tr>
+            <tr class="grp"><td colspan="3">Hand patterns</td></tr>
+            <tr><td>Ping Hu <span class="zhc">平胡</span>: four chows, eye not a dragon or your scoring wind, waiting on 2+ tiles, no flowers or animals</td><td class="t">4</td><td><span class="ex" data-tiles="1,2,3,|,10,11,12,|,15,16,17,|,21,22,23,|,13,13"></span></td></tr>
+            <tr><td>Lesser Ping Hu <span class="zhc">小平胡</span>: same, but you have bonus tiles</td><td class="t">1</td><td></td></tr>
+            <tr><td>Pong Pong <span class="zhc">碰碰胡</span>: four pongs or kongs</td><td class="t">2</td><td><span class="ex" data-tiles="4,4,4,|,14,14,14,|,24,24,24,|,29,29,29,|,33,33"></span></td></tr>
+            <tr><td>Half Flush <span class="zhc">混一色</span>: one suit plus honours</td><td class="t">2</td><td><span class="ex" data-tiles="9,10,11,|,13,13,13,|,15,16,17,|,32,32,32,|,27,27"></span></td></tr>
+            <tr><td>Full Flush <span class="zhc">清一色</span>: one suit only</td><td class="t">4</td><td><span class="ex" data-tiles="18,19,20,|,21,22,23,|,24,25,26,|,22,22,22,|,18,18"></span></td></tr>
+            <tr><td>Mixed Terminals <span class="zhc">混么九</span>: only 1s, 9s and honours</td><td class="t">5</td><td></td></tr>
+            <tr><td>Four Lesser Blessings <span class="zhc">小四喜</span>: three wind pongs + wind eye</td><td class="t">4</td><td></td></tr>
+            <tr class="grp"><td colspan="3">How you won</td></tr>
+            <tr><td>Win on a replacement tile after a flower or kong <span class="zhc">花上 / 杠上</span></td><td class="t">1</td><td></td></tr>
+            <tr><td>Win on the very last tile of the wall <span class="zhc">海底撈月</span></td><td class="t">1</td><td></td></tr>
+            <tr><td>Rob the kong <span class="zhc">搶杠</span></td><td class="t">1</td><td></td></tr>
+            <tr><td>Self-draw (zi mo) adds no tai, but everyone pays you double</td><td class="t">0</td><td></td></tr>
+            <tr class="grp"><td colspan="3">Limit hands · straight to the cap</td></tr>
+            <tr><td>Three Great Scholars <span class="zhc">大三元</span>: all three dragon pongs</td><td class="t">Lim</td><td><span class="ex" data-tiles="31,31,31,|,32,32,32,|,33,33,33"></span></td></tr>
+            <tr><td>Four Great Blessings <span class="zhc">大四喜</span>: all four wind pongs</td><td class="t">Lim</td><td></td></tr>
+            <tr><td>Thirteen Wonders <span class="zhc">十三幺</span>: every 1, 9, wind and dragon, plus one pair</td><td class="t">Lim</td><td><span class="ex" data-tiles="0,8,9,17,18,26,27,28,29,30,31,32,33,33"></span></td></tr>
+            <tr><td>All Honours <span class="zhc">字一色</span>, Pure Terminals <span class="zhc">清么九</span>, Nine Gates <span class="zhc">九蓮寶燈</span></td><td class="t">Lim</td><td></td></tr>
+            <tr><td>Hidden Treasure <span class="zhc">坎坎胡</span>: four concealed pongs, won by self-draw</td><td class="t">Lim</td><td></td></tr>
+            <tr><td>Four kongs <span class="zhc">十八羅漢</span>, Heavenly Hand <span class="zhc">天胡</span>, all eight flowers</td><td class="t">Lim</td><td></td></tr>
+          </tbody></table></div>
+        <p class="note">Optional rules you may meet: a fully concealed self-drawn hand <span class="zhc">門清自摸</span> for +1, "no flowers" for +1, and limits of 8 or 10 tai at higher-stakes tables.</p>
+      </div>
+    </section>
+
+    <!-- STRATEGY -->
+    <section id="v-strategy" class="view" hidden>
+      <div class="page">
+        <section>
+          <h2>Playing better</h2>
+          <p class="lede">The practice table's coach applies most of these in real time. Read them once, then watch for them while you play.</p>
+        </section>
+        <ol class="tips">
+          <li><b>Know where your tai will come from</b><span>You can't win with 0 tai. Early on, check what you already have: animals, your seat flowers, a pair of dragons or of your wind. If you have none, steer toward Ping Hu, a flush or Pong Pong.</span></li>
+          <li><b>Throw lonely honours first, but not all of them</b><span>A single wind that is neither your seat nor the round wind can never score; discard it early while it is still safe. Hold a lone dragon or your own wind a little longer, since a second copy gives you a pair worth a pong.</span></li>
+          <li><b>Middle tiles are worth more than edges</b><span>A 5 can join 3-4-5, 4-5-6 or 5-6-7. A 1 or 9 only fits one chow. When everything else is equal, discard terminals before middle tiles.</span></li>
+          <li><b>Prefer two-sided waits</b><span class="ex-row"><span class="ex" data-tiles="12,13"></span><span class="cap">4-5 waits on 3 or 6: up to 8 tiles.</span></span><span class="ex-row"><span class="ex" data-tiles="0,1"></span><span class="cap">1-2 waits only on 3: 4 tiles at most.</span></span><span>Ping Hu also needs this kind of open wait.</span></li>
+          <li><b>Ping Hu is the big prize for a plain hand</b><span>No flowers or animals and a hand of chows? Keep it all chows and don't pong anything: Ping Hu is 4 tai. Once you draw a bonus tile it drops to 1 tai, but by then the bonus tile itself pays.</span></li>
+          <li><b>Claim selectively</b><span>Pong dragons and your scoring winds without thinking. Chi only when it clearly moves you closer to ready. Every open set shows the table your plan and leaves you fewer ways to finish.</span></li>
+          <li><b>Lean into flushes</b><span>With eight or nine tiles of one suit, a Half Flush (2 tai) or Full Flush (4 tai) is often closer than it looks. Discard the other suits.</span></li>
+          <li><b>Read the table</b><span>Someone showing three sets of dots is hunting a flush: stop feeding dots. Someone showing two dragon pongs: never discard the third dragon, because you'd pay for everyone.</span></li>
+          <li><b>Count what's gone</b><span>If three of the four tiles you're waiting on are already in the rivers, change your wait. The coach shows how many of your winning tiles are still live.</span></li>
+          <li><b>Play safe late</b><span>When the wall is short, discard tiles that already appear in other players' rivers. A fresh tile late in the hand is the classic way to shoot a big hand.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="v-quiz" class="view" hidden>
+      <div class="page">
+        <section>
+          <h2>Drills</h2>
+          <p class="lede">Short, repeatable questions. Each one is generated fresh and scored with the same engine as the practice table.</p>
+        </section>
+        <div class="qmodes" id="qmodes">
+          <button class="btn" type="button" data-mode="name">Name the tile</button>
+          <button class="btn" type="button" data-mode="tai">Count the tai</button>
+          <button class="btn" type="button" data-mode="wait">Which tile wins?</button>
+        </div>
+        <div id="qcard" class="qcard"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="modal" class="modal" hidden></div>
+
+<script>
+/*ENGINE START*/
+const DEAD=15, LIMIT=5, MIN_TAI=1;
+const CN=['一','二','三','四','五','六','七','八','九'];
+const CN_PY=['yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
+const WINDS=['East','South','West','North'], WINDS_ZH=['東','南','西','北'];
+const SUIT_NAMES=['Bamboo','Dots','Characters'], SUIT_ZH=['索','筒','萬'];
+const isSuit=k=>k<27, isHonor=k=>k>=27&&k<34, isBonus=k=>k>=34;
+const isWind=k=>k>=27&&k<=30, isDragon=k=>k>=31&&k<=33;
+const isTerminal=k=>k<27&&(k%9===0||k%9===8);
+const suitOf=k=>Math.floor(k/9);
+const ORPHANS=[0,8,9,17,18,26,27,28,29,30,31,32,33];
+const rand=n=>Math.floor(Math.random()*n);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function counts(arr){const c=new Array(34).fill(0);for(const k of arr) if(k<34) c[k]++;return c;}
+
+function tileInfo(k){
+  if(k<27){const s=suitOf(k),n=k%9+1;return{cat:['bamboo','dots','chars'][s],n,en:`${n} ${SUIT_NAMES[s]}`,zh:CN[n-1]+SUIT_ZH[s],py:CN_PY[n-1]+' '+['suǒ','tǒng','wàn'][s]};}
+  if(k<=30){const i=k-27;return{cat:'wind',n:i+1,en:`${WINDS[i]} Wind`,zh:WINDS_ZH[i]+'風',py:['dōng','nán','xī','běi'][i]+' fēng'};}
+  if(k<=33){const i=k-31;return{cat:'dragon',en:['Red','Green','White'][i]+' Dragon',zh:['紅中','青發','白板'][i],py:['hóng zhōng','qīng fā','bái bǎn'][i]};}
+  if(k<=37){const i=k-34;return{cat:'flower',n:i+1,en:`${['Plum','Orchid','Chrysanthemum','Bamboo'][i]} (flower ${i+1})`,zh:['梅','蘭','菊','竹'][i],py:['méi','lán','jú','zhú'][i]};}
+  if(k<=41){const i=k-38;return{cat:'season',n:i+1,en:`${['Spring','Summer','Autumn','Winter'][i]} (season ${i+1})`,zh:['春','夏','秋','冬'][i],py:['chūn','xià','qiū','dōng'][i]};}
+  const i=k-42;return{cat:'animal',en:['Cat','Rat','Rooster','Centipede'][i],zh:['貓','鼠','雞','蜈蚣'][i],py:['māo','lǎoshǔ','gōngjī','wúgōng'][i]};
+}
+const nm=k=>tileInfo(k).en;
+
+/* ---- hand analysis ---- */
+function shantenStd(c,m){
+  const need=4-m; let best=8;
+  function dfs(i,sets,tats,pair){
+    if(best===-1) return;
+    while(i<34&&c[i]===0) i++;
+    if(i>=34){const t=Math.min(tats,need-sets);const s=8-2*(sets+m)-t-pair;if(s<best)best=s;return;}
+    if(c[i]>=3){c[i]-=3;dfs(i,sets+1,tats,pair);c[i]+=3;}
+    if(i<27&&i%9<=6&&c[i+1]&&c[i+2]){c[i]--;c[i+1]--;c[i+2]--;dfs(i,sets+1,tats,pair);c[i]++;c[i+1]++;c[i+2]++;}
+    if(!pair&&c[i]>=2){c[i]-=2;dfs(i,sets,tats,1);c[i]+=2;}
+    if(sets+tats<need){
+      if(c[i]>=2){c[i]-=2;dfs(i,sets,tats+1,pair);c[i]+=2;}
+      if(i<27&&i%9<=7&&c[i+1]){c[i]--;c[i+1]--;dfs(i,sets,tats+1,pair);c[i]++;c[i+1]++;}
+      if(i<27&&i%9<=6&&c[i+2]){c[i]--;c[i+2]--;dfs(i,sets,tats+1,pair);c[i]++;c[i+2]++;}
+    }
+    c[i]--;dfs(i+1,sets,tats,pair);c[i]++;
+  }
+  dfs(0,0,0,0);
+  return best;
+}
+function canSets(c){
+  let i=0;while(i<34&&!c[i])i++;
+  if(i===34) return true;
+  if(c[i]>=3){c[i]-=3;const ok=canSets(c);c[i]+=3;if(ok)return true;}
+  if(i<27&&i%9<=6&&c[i+1]&&c[i+2]){c[i]--;c[i+1]--;c[i+2]--;const ok=canSets(c);c[i]++;c[i+1]++;c[i+2]++;if(ok)return true;}
+  return false;
+}
+function isCompleteStd(c){
+  let t=0;for(const v of c)t+=v; if(t%3!==2) return false;
+  for(let i=0;i<34;i++) if(c[i]>=2){c[i]-=2;const ok=canSets(c);c[i]+=2;if(ok)return true;}
+  return false;
+}
+function is13(c){
+  let t=0;for(const v of c)t+=v; if(t!==14) return false;
+  for(let i=0;i<34;i++){ if(ORPHANS.includes(i)){ if(!c[i]) return false; } else if(c[i]) return false; }
+  return true;
+}
+function isComplete(c,m){ return isCompleteStd(c) || (m===0 && is13(c)); }
+function waitsOf(c,m){ const w=[]; for(let k=0;k<34;k++){ if(c[k]>=4) continue; c[k]++; if(isComplete(c,m)) w.push(k); c[k]--; } return w; }
+function decomps(c){
+  const out=[];
+  function ext(sets,pair){
+    let i=0;while(i<34&&!c[i])i++;
+    if(i===34){out.push({pair,sets:sets.slice()});return;}
+    if(c[i]>=3){c[i]-=3;sets.push({t:'pong',k:i});ext(sets,pair);sets.pop();c[i]+=3;}
+    if(i<27&&i%9<=6&&c[i+1]&&c[i+2]){c[i]--;c[i+1]--;c[i+2]--;sets.push({t:'chow',k:i});ext(sets,pair);sets.pop();c[i]++;c[i+1]++;c[i+2]++;}
+  }
+  for(let i=0;i<34;i++) if(c[i]>=2){c[i]-=2;ext([],i);c[i]+=2;}
+  return out;
+}
+function meldTiles(md){ return md.t==='chow'?[md.k,md.k+1,md.k+2]:md.t==='kong'?[md.k,md.k,md.k,md.k]:[md.k,md.k,md.k]; }
+
+/* ---- scoring ---- */
+function bonusItems(bonus,seat){
+  const items=[], lims=[], has=k=>bonus.includes(k);
+  const animals=[42,43,44,45].filter(has);
+  for(const k of animals) items.push({label:`${nm(k)} tile`,zh:tileInfo(k).zh,tai:1});
+  if(animals.length===4) items.push({label:'All four animals',zh:'',tai:1});
+  const red=[34,35,36,37].every(has), blue=[38,39,40,41].every(has);
+  if(red&&blue) lims.push({label:'All eight flowers',zh:'八仙過海'});
+  for(const k of [34+seat,38+seat]) if(has(k)) items.push({label:`Seat flower: ${nm(k)}`,zh:tileInfo(k).zh,tai:1});
+  if(red) items.push({label:'Complete flower set',zh:'梅蘭菊竹',tai:1});
+  if(blue) items.push({label:'Complete season set',zh:'春夏秋冬',tai:1});
+  return {items,lims};
+}
+function evalDecomp(d,ctx,waitsBefore){
+  const items=[], lims=[];
+  const sets=d.sets.map(s=>({t:s.t,k:s.k,open:false,kong:false}));
+  for(const md of ctx.melds) sets.push({t:md.t==='chow'?'chow':'pong',k:md.k,open:!md.concealed,kong:md.t==='kong'});
+  const pongs=sets.filter(s=>s.t==='pong'), chows=sets.filter(s=>s.t==='chow');
+  const dragons=pongs.filter(s=>isDragon(s.k));
+  for(const s of dragons) items.push({label:`${nm(s.k)} set`,zh:tileInfo(s.k).zh,tai:1});
+  if(dragons.length===3) lims.push({label:'Three Great Scholars',zh:'大三元'});
+  else if(dragons.length===2&&isDragon(d.pair)) items.push({label:'Three Lesser Scholars (dragon eye)',zh:'小三元',tai:1});
+  const winds=pongs.filter(s=>isWind(s.k));
+  if(winds.length===4) lims.push({label:'Four Great Blessings',zh:'大四喜'});
+  else if(winds.length===3&&isWind(d.pair)) items.push({label:'Four Lesser Blessings',zh:'小四喜',tai:4});
+  else for(const s of winds){
+    const w=s.k-27;
+    if(w===ctx.seat) items.push({label:`Seat wind set (${WINDS[w]})`,zh:'門風',tai:1});
+    if(w===ctx.prevailing) items.push({label:`Round wind set (${WINDS[w]})`,zh:'圈風',tai:1});
+  }
+  if(pongs.length===4){
+    if(ctx.selfDrawn&&pongs.every(s=>!s.open)) lims.push({label:'Hidden Treasure: four concealed pongs',zh:'坎坎胡'});
+    else items.push({label:'Pong Pong: all pongs',zh:'碰碰胡',tai:2});
+  }
+  if(sets.filter(s=>s.kong).length===4) lims.push({label:'Four kongs',zh:'十八羅漢'});
+  const all=[...ctx.concealed]; for(const md of ctx.melds) all.push(...meldTiles(md));
+  const suits=new Set(all.filter(isSuit).map(suitOf)); const hasH=all.some(isHonor);
+  if(suits.size===0) lims.push({label:'All Honours',zh:'字一色'});
+  else if(suits.size===1){
+    if(hasH) items.push({label:`Half Flush (${SUIT_NAMES[[...suits][0]]} + honours)`,zh:'混一色',tai:2});
+    else items.push({label:`Full Flush (${SUIT_NAMES[[...suits][0]]})`,zh:'清一色',tai:4});
+  }
+  if(all.every(isTerminal)) lims.push({label:'Pure Terminals',zh:'清么九'});
+  else if(hasH&&suits.size>0&&all.every(k=>isTerminal(k)||isHonor(k))) items.push({label:'Mixed Terminals',zh:'混么九',tai:5});
+  if(ctx.melds.length===0&&suits.size===1&&!hasH){
+    const s=[...suits][0], cc=counts(ctx.concealed), pat=[3,1,1,1,1,1,1,1,3];
+    if(pat.every((v,i)=>cc[s*9+i]>=v)) lims.push({label:'Nine Gates',zh:'九蓮寶燈'});
+  }
+  const scoringPair=isDragon(d.pair)||(isWind(d.pair)&&(d.pair-27===ctx.seat||d.pair-27===ctx.prevailing));
+  if(chows.length===4&&!scoringPair&&waitsBefore>=2){
+    if(ctx.bonus.length===0) items.push({label:'Ping Hu: four chows, open wait, no bonus tiles',zh:'平胡',tai:4});
+    else items.push({label:'Lesser Ping Hu: four chows with bonus tiles',zh:'小平胡',tai:1});
+  }
+  return {items,lims,d};
+}
+function scoreHand(ctx){
+  const c=counts(ctx.concealed), m=ctx.melds.length;
+  const b=bonusItems(ctx.bonus,ctx.seat);
+  const base=[...b.items], lims=[...b.lims];
+  if(ctx.replacement&&ctx.selfDrawn) base.push({label:'Won on a replacement tile',zh:'花上 / 杠上',tai:1});
+  if(ctx.lastTile) base.push({label:'Won on the last tile of the wall',zh:'海底撈月',tai:1});
+  if(ctx.heavenly) lims.push({label:'Heavenly Hand: dealer wins on the deal',zh:'天胡'});
+  let wb=0;
+  if(ctx.winTile!=null&&c[ctx.winTile]>0){const c2=c.slice();c2[ctx.winTile]--;wb=waitsOf(c2,m).length;}
+  let best={items:[],lims:[],d:null}, bestT=-1;
+  if(m===0&&is13(c)) best={items:[],lims:[{label:'Thirteen Wonders',zh:'十三幺'}],d:null};
+  else for(const d of decomps(c)){
+    const e=evalDecomp(d,ctx,wb);
+    const t=e.lims.length?100:e.items.reduce((a,x)=>a+x.tai,0);
+    if(t>bestT){bestT=t;best=e;}
+  }
+  const items=[...base,...best.items], allLims=[...lims,...best.lims];
+  const raw=items.reduce((a,x)=>a+x.tai,0);
+  const tai=allLims.length?LIMIT:Math.min(raw,LIMIT);
+  return {items,lims:allLims,raw,tai,capped:!allLims.length&&raw>LIMIT,decomp:best.d,waitsBefore:wb};
+}
+const unitFor=t=>2**(Math.max(1,t)-1);
+
+/* ---- hand generator for drills ---- */
+function genHand(pattern,noExpose){
+  for(let tries=0;tries<400;tries++){
+    const c=new Array(34).fill(0), sets=[], S0=rand(3);
+    const chowAt=s=>s*9+rand(7);
+    let ok=true;
+    const dr=shuffle([31,32,33]);
+    for(let i=0;i<4&&ok;i++){
+      let t,k; const r=Math.random();
+      if(pattern==='pinghu'){t='chow';k=chowAt(rand(3));}
+      else if(pattern==='pongpong'){t='pong';k=Math.random()<.3?27+rand(7):rand(27);}
+      else if(pattern==='half'){ if(Math.random()<.35){t='pong';k=27+rand(7);} else if(r<.55){t='chow';k=chowAt(S0);} else {t='pong';k=S0*9+rand(9);} }
+      else if(pattern==='full'){ if(r<.6){t='chow';k=chowAt(S0);} else {t='pong';k=S0*9+rand(9);} }
+      else if(pattern==='dragons'&&i<2){t='pong';k=dr[i];}
+      else { if(r<.55){t='chow';k=chowAt(rand(3));} else if(r<.85){t='pong';k=rand(27);} else {t='pong';k=27+rand(7);} }
+      if(t==='chow'){ ok=c[k]<4&&c[k+1]<4&&c[k+2]<4; if(ok){c[k]++;c[k+1]++;c[k+2]++;} }
+      else { ok=c[k]+3<=4; if(ok)c[k]+=3; }
+      sets.push({t,k});
+    }
+    if(!ok) continue;
+    let pair;
+    if(pattern==='pinghu') pair=rand(27);
+    else if(pattern==='full') pair=S0*9+rand(9);
+    else if(pattern==='half') pair=Math.random()<.5?27+rand(7):S0*9+rand(9);
+    else if(pattern==='dragons') pair=Math.random()<.4?dr[2]:rand(34);
+    else pair=rand(34);
+    if(c[pair]+2>4) continue;
+    c[pair]+=2;
+    const melds=[], conc=[pair,pair];
+    for(const s of sets){
+      const expose=!noExpose&&pattern!=='pinghu'&&Math.random()<.35;
+      if(expose){
+        let t=s.t;
+        if(t==='pong'&&Math.random()<.15&&c[s.k]<4){c[s.k]++;t='kong';}
+        melds.push({t,k:s.k});
+      } else conc.push(...(s.t==='chow'?[s.k,s.k+1,s.k+2]:[s.k,s.k,s.k]));
+    }
+    const nb=pattern==='pinghu'?(Math.random()<.6?0:1):rand(4);
+    const bonus=shuffle([34,35,36,37,38,39,40,41,42,43,44,45]).slice(0,nb).sort((a,b)=>a-b);
+    conc.sort((a,b)=>a-b);
+    return {concealed:conc,melds,bonus,seat:rand(4),prevailing:rand(2),winTile:conc[rand(conc.length)],
+      selfDrawn:Math.random()<.5,replacement:false,lastTile:false,heavenly:false};
+  }
+  return null;
+}
+
+/* ---- game ---- */
+let S=null, GEN=0;
+const NAMES=['You','Auntie Mei','Uncle Teo','Jia Hui'];
+const seatOf=p=>(p-S.dealer+4)%4;
+function log(msg,cls){ S.log.push({msg,cls}); if(S.log.length>120) S.log.shift(); }
+
+function newMatch(){
+  S={players:NAMES.map((n,i)=>({name:n,human:i===0,chips:500,hand:[],melds:[],bonus:[],discards:[],flags:{}})),
+     dealer:0,prevailing:0,passes:0,handNo:0,log:[],result:null,showResult:false,pendingRotate:false};
+  startHand();
+}
+function startHand(){
+  const my=++GEN;
+  const wall=[]; for(let k=0;k<34;k++) for(let i=0;i<4;i++) wall.push(k); for(let k=34;k<46;k++) wall.push(k);
+  shuffle(wall);
+  Object.assign(S,{wall,result:null,showResult:false,lastDiscard:null,discardCount:0,justClaimed:false,lastDrawn:null,
+    replacement:false,lastTileFlag:false,sel:null,ui:{mode:'wait'},resolve:null,needDraw:false,turn:S.dealer,coachCache:null});
+  for(const pl of S.players){pl.hand=[];pl.melds=[];pl.bonus=[];pl.discards=[];pl.flags={};}
+  S.handNo++;
+  for(let r=0;r<13;r++) for(let i=0;i<4;i++) S.players[(S.dealer+i)%4].hand.push(S.wall.shift());
+  S.players[S.dealer].hand.push(S.wall.shift());
+  log(`Hand ${S.handNo} · ${WINDS[S.prevailing]} round · ${S.players[S.dealer].name} deals as East.`);
+  for(let i=0;i<4;i++) replaceBonus((S.dealer+i)%4);
+  ui.render();
+  loop(my);
+}
+function replaceBonus(p){
+  const pl=S.players[p];
+  for(;;){ const i=pl.hand.findIndex(isBonus); if(i<0) break; const k=pl.hand.splice(i,1)[0]; addBonus(p,k); pl.hand.push(S.wall.pop()); }
+}
+function addBonus(p,k){
+  const pl=S.players[p]; pl.bonus.push(k); pl.bonus.sort((a,b)=>a-b);
+  log(`${pl.name} ${p===0?'reveal':'reveals'} ${nm(k)} and ${p===0?'draw':'draws'} a replacement.`);
+  ui.event&&ui.event('bonus',{p});
+  checkInstant(p);
+}
+function payAll(to,amt,why){
+  for(let q=0;q<4;q++) if(q!==to){S.players[q].chips-=amt;S.players[to].chips+=amt;}
+  log(`${S.players[to].name} collect${to===0?'':'s'} ${amt} from each player: ${why}.`,'pay');
+}
+function checkInstant(p){
+  const pl=S.players[p], has=k=>pl.bonus.includes(k), seat=seatOf(p);
+  const pay=(key,amt,why)=>{ if(pl.flags[key]) return; pl.flags[key]=1; payAll(p,amt,why); };
+  if(has(42)&&has(43)) pay('cr',2,'Cat catches Rat (bite)');
+  if(has(44)&&has(45)) pay('rc',2,'Rooster eats Centipede (bite)');
+  if(has(34+seat)&&has(38+seat)) pay('sf',2,'both seat flowers');
+  if([34,35,36,37].every(has)) pay('fr',4,'complete flower set');
+  if([38,39,40,41].every(has)) pay('fb',4,'complete season set');
+}
+function draw(p){
+  const pl=S.players[p]; let k=S.wall.shift();
+  S.lastTileFlag=S.wall.length===DEAD; S.replacement=false;
+  while(isBonus(k)){ addBonus(p,k); k=S.wall.pop(); S.replacement=true; S.lastTileFlag=false; }
+  pl.hand.push(k); S.lastDrawn={p,k};
+}
+function drawReplacement(p){
+  const pl=S.players[p]; let k=S.wall.pop();
+  while(isBonus(k)){ addBonus(p,k); k=S.wall.pop(); }
+  pl.hand.push(k); S.lastDrawn={p,k}; S.replacement=true; S.lastTileFlag=false;
+}
+function visibleCounts(){
+  const v=new Array(34).fill(0);
+  for(const pl of S.players){ for(const k of pl.discards) v[k]++; for(const md of pl.melds) for(const k of meldTiles(md)) v[k]++; }
+  return v;
+}
+function isValuable(p,k){ return isDragon(k)||(isWind(k)&&(k-27===seatOf(p)||k-27===S.prevailing)); }
+function chooseDiscard(p){
+  const pl=S.players[p], c=counts(pl.hand), m=pl.melds.length, vis=visibleCounts();
+  const res=[];
+  for(const k of [...new Set(pl.hand)].sort((a,b)=>a-b)){ c[k]--; res.push({k,s:shantenStd(c,m),u:-1,waits:[]}); c[k]++; }
+  const minS=Math.min(...res.map(r=>r.s));
+  for(const r of res){
+    if(r.s>minS) continue;
+    c[r.k]--; let u=0;
+    for(let t=0;t<34;t++){
+      if(c[t]>=4) continue;
+      const rem=Math.max(0,4-vis[t]-c[t]);
+      c[t]++;
+      const better = r.s===0 ? isComplete(c,m) : shantenStd(c,m)<r.s;
+      c[t]--;
+      if(better){ u+=rem; r.waits.push(t); }
+    }
+    r.u=u; c[r.k]++;
+  }
+  for(const r of res){
+    let v=-r.s*1000+Math.max(0,r.u)*3;
+    if(isHonor(r.k)){
+      if(isValuable(p,r.k)) v-= c[r.k]>=2?60:5; else if(c[r.k]===1) v+=8;
+    } else if(isTerminal(r.k)) v+=2;
+    r.v=v+Math.random()*.5;
+  }
+  res.sort((a,b)=>b.v-a.v);
+  return {best:res[0],all:res};
+}
+function ctxFor(p,hand,winTile,selfDrawn){
+  const pl=S.players[p];
+  return {concealed:hand,melds:pl.melds,bonus:pl.bonus,seat:seatOf(p),prevailing:S.prevailing,winTile,selfDrawn,
+    replacement:selfDrawn&&S.replacement,lastTile:selfDrawn&&S.lastTileFlag,heavenly:selfDrawn&&p===S.dealer&&S.discardCount===0};
+}
+function winScore(p,extraK,selfDrawn){
+  const pl=S.players[p], hand=extraK==null?pl.hand:[...pl.hand,extraK];
+  if(!isComplete(counts(hand),pl.melds.length)) return null;
+  const wt=extraK!=null?extraK:(S.lastDrawn&&S.lastDrawn.p===p?S.lastDrawn.k:hand[hand.length-1]);
+  return scoreHand(ctxFor(p,hand,wt,selfDrawn));
+}
+function turnOptions(p){
+  const pl=S.players[p], o={hu:null,huZero:null,kongs:[]};
+  if(!S.justClaimed){
+    const sc=winScore(p,null,true);
+    if(sc){ if(sc.tai>=MIN_TAI) o.hu=sc; else o.huZero=sc; }
+    if(S.wall.length>DEAD){
+      const c=counts(pl.hand);
+      for(let k=0;k<34;k++) if(c[k]===4) o.kongs.push({k,type:'concealed'});
+      for(const md of pl.melds) if(md.t==='pong'&&c[md.k]>0) o.kongs.push({k:md.k,type:'added'});
+    }
+  }
+  return o;
+}
+function botTurn(p){
+  const o=turnOptions(p);
+  if(o.hu) return {type:'hu'};
+  if(o.kongs.length) return {type:'kong',k:o.kongs[0].k};
+  return {type:'discard',k:chooseDiscard(p).best.k};
+}
+function claimOptions(p,d,k){
+  const pl=S.players[p], c=counts(pl.hand), o={};
+  const sc=winScore(p,k,false);
+  if(sc){ if(sc.tai>=MIN_TAI) o.hu=sc; else o.huZero=sc; }
+  if(S.wall.length>DEAD){
+    if(c[k]>=2) o.pong=true;
+    if(c[k]>=3) o.kong=true;
+    if(p===(d+1)%4&&k<27){
+      const lo=suitOf(k)*9, hi=lo+8, ch=[];
+      for(const s of [k-2,k-1,k]){ if(s<lo||s+2>hi) continue; const need=[s,s+1,s+2].filter(x=>x!==k); if(need.every(x=>c[x]>0)) ch.push(s); }
+      if(ch.length) o.chows=ch;
+    }
+  }
+  return o;
+}
+function claimShanten(p,type,k,s){
+  const pl=S.players[p], c=counts(pl.hand), m=pl.melds.length+1;
+  if(type==='kong'){c[k]-=3;return shantenStd(c,m);}
+  if(type==='pong') c[k]-=2; else for(const x of [s,s+1,s+2]) if(x!==k) c[x]--;
+  let best=9; for(let i=0;i<34;i++) if(c[i]){c[i]--;best=Math.min(best,shantenStd(c,m));c[i]++;}
+  return best;
+}
+function botClaim(p,d,k){
+  const o=claimOptions(p,d,k), pl=S.players[p];
+  if(o.hu) return {type:'hu',p,k};
+  const val=isValuable(p,k), cur=shantenStd(counts(pl.hand),pl.melds.length);
+  if(o.kong&&(val||Math.random()<.5)) return {type:'kong',p,k};
+  if(o.pong){ if(val) return {type:'pong',p,k}; if(claimShanten(p,'pong',k)<cur&&Math.random()<.7) return {type:'pong',p,k}; }
+  if(o.chows){
+    let best=null; for(const s of o.chows){ const a=claimShanten(p,'chow',k,s); if(a<cur&&(!best||a<best.a)) best={a,s}; }
+    if(best&&Math.random()<.45) return {type:'chow',p,k,s:best.s};
+  }
+  return null;
+}
+function removeTiles(pl,ks){ for(const k of ks){ const i=pl.hand.indexOf(k); if(i>=0) pl.hand.splice(i,1); } }
+function doDiscard(p,k){
+  const pl=S.players[p]; removeTiles(pl,[k]); pl.discards.push(k);
+  S.lastDiscard={p,k}; S.discardCount++; S.lastDrawn=null; S.justClaimed=false;
+  ui.event&&ui.event('discard',{p,k});
+}
+function applyClaim(cl,d){
+  const pl=S.players[cl.p], k=cl.k;
+  if(cl.type==='pong'){ removeTiles(pl,[k,k]); pl.melds.push({t:'pong',k,from:d}); log(`${pl.name} pong${cl.p===0?'':'s'} ${nm(k)} from ${S.players[d].name}.`); }
+  else if(cl.type==='kong'){ removeTiles(pl,[k,k,k]); pl.melds.push({t:'kong',k,from:d}); log(`${pl.name} kong${cl.p===0?'':'s'} ${nm(k)} from ${S.players[d].name}.`); payAll(cl.p,2,'exposed kong'); }
+  else { removeTiles(pl,[cl.s,cl.s+1,cl.s+2].filter(x=>x!==k)); pl.melds.push({t:'chow',k:cl.s,from:d,claimed:k}); log(`${pl.name} chi${cl.p===0?'':'s'} ${nm(k)} for ${cl.s%9+1}-${cl.s%9+2}-${cl.s%9+3} ${SUIT_NAMES[suitOf(k)]}.`); }
+  ui.event&&ui.event('meld',{p:cl.p,type:cl.type});
+}
+function doSelfKong(p,k){
+  const pl=S.players[p], c=counts(pl.hand);
+  if(c[k]===4){ removeTiles(pl,[k,k,k,k]); pl.melds.push({t:'kong',k,concealed:true}); log(`${pl.name} declare${p===0?'':'s'} a concealed kong of ${nm(k)}.`); payAll(p,4,'concealed kong'); }
+  else { const md=pl.melds.find(x=>x.t==='pong'&&x.k===k); md.t='kong'; removeTiles(pl,[k]); log(`${pl.name} add${p===0?'':'s'} ${nm(k)} to make a kong.`); payAll(p,2,'added kong'); }
+  ui.event&&ui.event('meld',{p,type:'kong'});
+}
+async function resolveClaims(d,k,my){
+  const order=[1,2,3].map(i=>(d+i)%4), intents=[];
+  for(const p of order){ if(S.players[p].human) continue; const c=botClaim(p,d,k); if(c) intents.push(c); }
+  if(d!==0){
+    const o=claimOptions(0,d,k), any=o.hu||o.pong||o.kong||o.chows, botHu=intents.some(i=>i.type==='hu');
+    if(any&&!(botHu&&!o.hu)){
+      const ch=await ui.humanClaim(o,d,k);
+      if(my!==GEN) return null;
+      if(ch&&ch.type!=='pass') intents.push({...ch,p:0,k});
+    } else if(o.huZero&&!botHu) ui.note(`${nm(k)} would complete your hand, but it scores 0 tai, so you can't call Hu (minimum is ${MIN_TAI}).`);
+  }
+  if(!intents.length) return null;
+  const rank={hu:3,kong:2,pong:2,chow:1};
+  intents.sort((a,b)=>rank[b.type]-rank[a.type]||order.indexOf(a.p)-order.indexOf(b.p));
+  return intents[0];
+}
+async function loop(my){
+  for(;;){
+    if(my!==GEN) return;
+    const p=S.turn, pl=S.players[p];
+    if(S.needDraw){
+      if(S.wall.length<=DEAD) return endDraw();
+      draw(p); S.needDraw=false; S.justClaimed=false; ui.render();
+    }
+    let act;
+    if(pl.human) act=await ui.humanTurn();
+    else { await ui.sleep(ui.speed()); if(my!==GEN) return; act=botTurn(p); }
+    if(my!==GEN) return;
+    if(act.type==='hu') return endWin(p,null);
+    if(act.type==='kong'){ doSelfKong(p,act.k); drawReplacement(p); ui.render(); continue; }
+    doDiscard(p,act.k);
+    if(!pl.human) log(`${pl.name} discards ${nm(act.k)}.`);
+    ui.render();
+    const cl=await resolveClaims(p,act.k,my);
+    if(my!==GEN) return;
+    if(!cl){ S.turn=(p+1)%4; S.needDraw=true; continue; }
+    S.players[p].discards.pop();
+    if(cl.type==='hu'){ S.players[cl.p].hand.push(act.k); return endWin(cl.p,p); }
+    applyClaim(cl,p);
+    S.turn=cl.p; S.justClaimed=true; S.lastDrawn=null; S.replacement=false; S.lastTileFlag=false;
+    if(cl.type==='kong'){ drawReplacement(cl.p); S.justClaimed=false; }
+    ui.render();
+  }
+}
+function endWin(w,d){
+  const pl=S.players[w], selfDrawn=d==null;
+  const winTile=selfDrawn?(S.lastDrawn&&S.lastDrawn.p===w?S.lastDrawn.k:pl.hand[pl.hand.length-1]):S.lastDiscard.k;
+  const sc=scoreHand(ctxFor(w,pl.hand,winTile,selfDrawn));
+  const u=unitFor(sc.tai), pays=[];
+  for(let q=0;q<4;q++){ if(q===w) continue; const amt=selfDrawn?2*u:(q===d?2*u:u); S.players[q].chips-=amt; pl.chips+=amt; pays.push({p:q,amt}); }
+  S.result={type:'win',w,d,selfDrawn,sc,winTile,pays,seat:seatOf(w),dealer:S.dealer,prevailing:S.prevailing};
+  log(`${pl.name} win${w===0?'':'s'} ${selfDrawn?'by self-draw':'on '+S.players[d].name+"'s discard"} for ${sc.tai} tai.`,'win');
+  S.pendingRotate=w!==S.dealer;
+  ui.event&&ui.event('win',{w,selfDrawn});
+  S.ui={mode:'result'}; ui.handOver();
+}
+function endDraw(){
+  S.result={type:'draw'}; S.pendingRotate=false;
+  ui.event&&ui.event('draw',{});
+  log('Draw game: only the dead wall is left. The dealer keeps the deal.','win');
+  S.ui={mode:'result'}; ui.handOver();
+}
+function nextHand(){
+  if(S.pendingRotate){ S.dealer=(S.dealer+1)%4; S.passes++; if(S.passes%4===0) S.prevailing=(S.prevailing+1)%4; }
+  S.pendingRotate=false; startHand();
+}
+function bankedItems(p){
+  const pl=S.players[p], items=[...bonusItems(pl.bonus,seatOf(p)).items];
+  for(const md of pl.melds){
+    if(md.t==='chow') continue;
+    if(isDragon(md.k)) items.push({label:`${nm(md.k)} set`,tai:1});
+    if(isWind(md.k)){ if(md.k-27===seatOf(p)) items.push({label:'Seat wind set',tai:1}); if(md.k-27===S.prevailing) items.push({label:'Round wind set',tai:1}); }
+  }
+  return items;
+}
+/*ENGINE END*/
+</script>
+
+<script>
+/* ======== UI ======== */
+const $=s=>document.querySelector(s);
+const SET={coach:true,labels:true,speed:650,sound:true,music:true};
+try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
+function saveSet(){try{localStorage.setItem('sgmj-set',JSON.stringify(SET));}catch(e){}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+
+/* ---- sound: everything synthesised with Web Audio, nothing to download ---- */
+const AU={ctx:null,sfx:null,mus:null,noise:null,timer:null,next:0,step:0,deg:4,last:{}};
+function audioInit(){
+  if(AU.ctx){ if(AU.ctx.state==='suspended'&&!document.hidden) AU.ctx.resume().catch(()=>{}); return; }
+  const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+  try{ AU.ctx=new AC(); }catch(e){ return; }
+  const c=AU.ctx, master=c.createGain(); master.gain.value=.9; master.connect(c.destination);
+  AU.sfx=c.createGain(); AU.sfx.gain.value=.75; AU.sfx.connect(master);
+  AU.mus=c.createGain(); AU.mus.gain.value=0; AU.mus.connect(master);
+  // a soft echo so the music has some room
+  const dl=c.createDelay(1), fb=c.createGain(), lp=c.createBiquadFilter();
+  dl.delayTime.value=.36; fb.gain.value=.28; lp.type='lowpass'; lp.frequency.value=2200;
+  AU.mus.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(master);
+  const len=Math.floor(c.sampleRate*.2), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+  AU.noise=buf;
+  if(c.state==='suspended') c.resume().catch(()=>{});
+  if(SET.music) musicOn();
+}
+['pointerdown','touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,audioInit,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(!AU.ctx) return; if(document.hidden) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}); });
+function ok(name,gap=.06){ if(!AU.ctx||!SET.sound||AU.ctx.state!=='running') return false; const t=AU.ctx.currentTime; if(AU.last[name]&&t-AU.last[name]<gap) return false; AU.last[name]=t; return true; }
+function env(g,t,peak,dur){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+dur); }
+function clack(when=0,vol=1,pitch=1){
+  const c=AU.ctx, t=c.currentTime+when;
+  const src=c.createBufferSource(); src.buffer=AU.noise;
+  const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2500*pitch; bp.Q.value=2;
+  const g=c.createGain(); env(g,t,.5*vol,.07);
+  src.connect(bp); bp.connect(g); g.connect(AU.sfx); src.start(t); src.stop(t+.1);
+  const o=c.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(330*pitch,t); o.frequency.exponentialRampToValueAtTime(150*pitch,t+.05);
+  const g2=c.createGain(); env(g2,t,.32*vol,.09); o.connect(g2); g2.connect(AU.sfx); o.start(t); o.stop(t+.12);
+}
+function tone(f,when,dur,vol,dest,type='sine'){
+  const c=AU.ctx, t=c.currentTime+when;
+  [[1,1],[2,.28],[3,.1]].forEach(([h,a])=>{ const o=c.createOscillator(); o.type=type; o.frequency.value=f*h; const g=c.createGain(); env(g,t,vol*a,dur); o.connect(g); g.connect(dest); o.start(t); o.stop(t+dur+.05); });
+}
+const NOTE=[293.66,329.63,369.99,440,493.88,587.33,659.25,739.99,880,987.77,1174.66];
+const SFX={
+  tap(){ if(ok('tap')) clack(0,.45,1.35); },
+  discard(){ if(ok('discard')) clack(0,1,1); },
+  meld(){ if(ok('meld',.2)){ clack(0,.9,.95); clack(.09,.9,1.05); clack(.18,.7,1); } },
+  bonus(){ if(ok('bonus',.15)){ tone(1318.5,0,.18,.12,AU.sfx); tone(1760,.07,.25,.1,AU.sfx); } },
+  turn(){ if(ok('turn',.4)){ tone(NOTE[5],0,.35,.12,AU.sfx); tone(NOTE[8],.12,.45,.12,AU.sfx); } },
+  claim(){ if(ok('claim',.4)){ [5,7,8,10].forEach((n,i)=>tone(NOTE[n],i*.09,.4,.16,AU.sfx)); } },
+  win(){ if(ok('win',1)){ [0,1,2,3,4,5,6,7,8,10].forEach((n,i)=>tone(NOTE[n],i*.08,.7,.14,AU.sfx)); } },
+  lose(){ if(ok('lose',1)){ [7,5,3,0].forEach((n,i)=>tone(NOTE[n],i*.16,.6,.11,AU.sfx)); } },
+  drawGame(){ if(ok('drawg',1)){ tone(NOTE[3],0,.6,.11,AU.sfx); tone(NOTE[0],.2,.8,.11,AU.sfx); } }
+};
+/* gentle generative music in D pentatonic, plucked like a guzheng */
+function musicTick(){
+  const c=AU.ctx; if(!c) return;
+  const beat=.42;
+  while(AU.next<c.currentTime+.6){
+    const t=AU.next-c.currentTime, st=AU.step%32;
+    if(st%8===0) tone([73.42,110,98,82.41][(AU.step/8|0)%4],Math.max(0,t),3.2,.16,AU.mus);
+    const rest=st>=28||(st%8===7);
+    if(!rest&&Math.random()<(st%2===0?.75:.35)){
+      AU.deg=Math.min(10,Math.max(0,AU.deg+[-2,-1,-1,0,1,1,2][rand(7)]));
+      tone(NOTE[AU.deg],Math.max(0,t),1.6,.09,AU.mus,'triangle');
+      if(Math.random()<.18&&AU.deg>=2) tone(NOTE[AU.deg-2],Math.max(0,t)+.02,1.4,.05,AU.mus,'triangle');
+    }
+    AU.next+=beat/2; AU.step++;
+  }
+}
+function musicOn(){
+  if(!AU.ctx) return;
+  AU.mus.gain.cancelScheduledValues(AU.ctx.currentTime);
+  AU.mus.gain.setTargetAtTime(1,AU.ctx.currentTime,.4);
+  if(!AU.timer){ AU.next=AU.ctx.currentTime+.1; AU.timer=setInterval(musicTick,120); }
+}
+function musicOff(){
+  if(!AU.ctx) return;
+  AU.mus.gain.cancelScheduledValues(AU.ctx.currentTime);
+  AU.mus.gain.setTargetAtTime(0,AU.ctx.currentTime,.25);
+  if(AU.timer){ clearInterval(AU.timer); AU.timer=null; }
+}
+
+/* ---- tile faces ---- */
+function lbl(t){const w=t.length>1?22:13;return `<g class="lbl"><rect x="1.5" y="1.5" width="${w}" height="13" rx="3"/><text x="${1.5+w/2}" y="11.6" text-anchor="middle">${t}</text></g>`;}
+function dot(x,y,r,c){return `<circle cx="${x}" cy="${y}" r="${r}" class="${c}"/><circle cx="${x}" cy="${y}" r="${(r*.62).toFixed(2)}" class="face"/><circle cx="${x}" cy="${y}" r="${(r*.3).toFixed(2)}" class="${c}"/>`;}
+function dotsSVG(n){
+  if(n===1) return `<circle cx="30" cy="40" r="21" class="g"/><circle cx="30" cy="40" r="17" class="face"/><circle cx="30" cy="40" r="13.5" class="bl"/><circle cx="30" cy="40" r="9.5" class="face"/><circle cx="30" cy="40" r="6" class="r"/>`;
+  const L={
+    2:[[30,22,11,'g'],[30,58,11,'bl']],
+    3:[[15,17,10,'bl'],[30,40,10,'r'],[45,63,10,'g']],
+    4:[[19,22,10,'bl'],[41,22,10,'g'],[19,58,10,'g'],[41,58,10,'bl']],
+    5:[[17,19,9,'bl'],[43,19,9,'g'],[30,40,9,'r'],[17,61,9,'g'],[43,61,9,'bl']],
+    6:[[19,15,8.5,'g'],[41,15,8.5,'g'],[19,44,8.5,'r'],[41,44,8.5,'r'],[19,65,8.5,'r'],[41,65,8.5,'r']],
+    7:[[13,12,7.5,'g'],[30,21,7.5,'g'],[47,30,7.5,'g'],[19,51,7.5,'r'],[41,51,7.5,'r'],[19,69,7.5,'r'],[41,69,7.5,'r']],
+    8:[19,41].flatMap(x=>[12,31,50,69].map(y=>[x,y,8,'bl'])),
+    9:[15,40,65].flatMap((y,ri)=>[14,30,46].map(x=>[x,y,7.8,['bl','r','g'][ri]]))
+  };
+  return L[n].map(a=>dot(...a)).join('');
+}
+function stick(x,y,h,c){return `<rect x="${x-3.6}" y="${y-h/2}" width="7.2" height="${h}" rx="3.6" class="${c}"/><rect x="${x-3.6}" y="${y-.9}" width="7.2" height="1.8" class="face"/><rect x="${x-1}" y="${y-h/2+3}" width="2" height="${h-6}" rx="1" class="face" opacity=".35"/>`;}
+function bambooSVG(n){
+  if(n===1) return `<path class="tail" d="M30 58 L19 75 M30 59 L30 77 M30 58 L41 75"/><ellipse cx="30" cy="46" rx="11" ry="15" class="g"/><ellipse cx="33" cy="45" rx="5" ry="9.5" class="bl"/><circle cx="26" cy="24" r="7" class="r"/><path d="M31.5 22 L40 24.5 L31.5 27 Z" class="n"/><circle cx="24.5" cy="23" r="1.6" class="face"/>`;
+  const L={
+    2:[[30,22,26,'g'],[30,58,26,'bl']],
+    3:[[30,22,26,'bl'],[19,58,26,'g'],[41,58,26,'g']],
+    4:[[19,22,26,'g'],[41,22,26,'bl'],[19,58,26,'bl'],[41,58,26,'g']],
+    5:[[15,22,26,'g'],[45,22,26,'bl'],[30,40,26,'r'],[15,58,26,'bl'],[45,58,26,'g']],
+    6:[14,30,46].flatMap(x=>[[x,22,26,'g'],[x,58,26,'bl']]),
+    7:[[30,13,18,'r'],...[14,30,46].flatMap(x=>[[x,40,20,'g'],[x,64,20,'bl']])],
+    8:[11,23.7,36.3,49].flatMap(x=>[[x,22,26,'g'],[x,58,26,'bl']]),
+    9:[14,30,46].flatMap((x,ci)=>[14,40,66].map(y=>[x,y,20,['g','r','bl'][ci]]))
+  };
+  return L[n].map(a=>stick(...a)).join('');
+}
+const TXT=(x,y,s,c,t)=>`<text x="${x}" y="${y}" font-size="${s}" class="${c}" text-anchor="middle">${t}</text>`;
+function tileSVG(k){
+  let b='';
+  if(k<27){ const s=suitOf(k), n=k%9+1;
+    if(s===2) b=TXT(30,35,27,'n',CN[n-1])+TXT(30,72,31,'r','萬');
+    else if(s===1) b=dotsSVG(n); else b=bambooSVG(n);
+    b+=lbl(String(n));
+  } else if(k<=30){ b=TXT(30,57,42,'n',WINDS_ZH[k-27])+lbl('ESWN'[k-27]); }
+  else if(k===31){ b=TXT(30,57,44,'r','中')+lbl('Red'); }
+  else if(k===32){ b=TXT(30,57,44,'g','發')+lbl('Grn'); }
+  else if(k===33){ b=`<rect x="13" y="12" width="34" height="56" rx="3" class="frame"/><rect x="18.5" y="17.5" width="23" height="45" rx="2" class="frame thin"/>`+lbl('Wht'); }
+  else if(k<=41){ const fl=k<=37, i=fl?k-34:k-38, c=fl?'r':'bl';
+    b=TXT(30,54,34,c,(fl?['梅','蘭','菊','竹']:['春','夏','秋','冬'])[i])+`<text x="51" y="15" class="corner ${c}" text-anchor="middle">${i+1}</text>`+
+      `<g class="${c}" opacity=".55"><circle cx="16" cy="68" r="2.4"/><circle cx="22" cy="71" r="2"/><circle cx="38" cy="71" r="2"/><circle cx="44" cy="68" r="2.4"/></g>`;
+  } else { const i=k-42;
+    b= i===3 ? TXT(30,37,25,'a','蜈')+TXT(30,66,25,'a','蚣') : TXT(30,55,38,'a',['貓','鼠','雞'][i]);
+    b+=lbl(['Cat','Rat','Roo','Cen'][i]);
+  }
+  return `<svg viewBox="0 0 60 80" aria-hidden="true">${b}</svg>`;
+}
+const SVG=[]; for(let k=0;k<46;k++) SVG[k]=tileSVG(k);
+const T=(k,cls='',attrs='')=>`<span class="tile ${cls}" title="${nm(k)}" ${attrs}>${SVG[k]}</span>`;
+const TB=(cls='')=>`<span class="tile back ${cls}"></span>`;
+const TS=(ks,cls='t-sm')=>`<span class="tiles">${ks.map(k=>k==='|'?'<i class="gap"></i>':T(k,cls)).join('')}</span>`;
+
+/* ---- ui hooks for the engine ---- */
+var ui={
+  render(){ renderPlay(); },
+  sleep(ms){ return sleep(ms); },
+  speed(){ return +SET.speed||650; },
+  humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
+  humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
+  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld') SFX.meld(); else if(name==='bonus') SFX.bonus(); else if(name==='win') (d.w===0?SFX.win():SFX.lose()); else if(name==='draw') SFX.drawGame(); },
+  handOver(){ S.showResult=true; renderPlay(); },
+  note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); }
+};
+function act(a){ if(!S.resolve) return; const r=S.resolve; S.resolve=null; S.ui={mode:'wait'}; S.sel=null; r(a); }
+
+/* ---- coach ---- */
+function coachDiscard(){
+  const key=S.handNo+'|'+S.players[0].hand.join(',')+'|'+S.discardCount+'|'+S.players[0].melds.length;
+  if(!S.coachCache||S.coachCache.key!==key) S.coachCache={key,val:chooseDiscard(0)};
+  return S.coachCache.val;
+}
+function remainingOf(t){ const v=visibleCounts(), c=counts(S.players[0].hand); return Math.max(0,4-v[t]-c[t]); }
+function waitsLine(waits){
+  return waits.map(t=>`${T(t)}<span class="num">×${remainingOf(t)}</span>`).join(' ');
+}
+function honorNote(k){
+  if(!isHonor(k)) return '';
+  if(isValuable(0,k)) return ` ${nm(k)} can score tai as a pong, so only let it go if it's a lone tile.`;
+  return ` A lone ${nm(k)} isn't your seat or the round wind, so it can never score.`;
+}
+function claimAdvice(o,d,k){
+  const pl=S.players[0], cur=shantenStd(counts(pl.hand),pl.melds.length), out=[];
+  if(o.hu) return `Take it: <b>Hu</b> for ${o.hu.tai} tai. ${o.hu.items.concat(o.hu.lims.map(l=>({label:l.label}))).map(i=>i.label).join(', ')}.`;
+  if((o.pong||o.kong)&&isValuable(0,k)) out.push(`<b>Pong it.</b> A set of ${nm(k)} is worth 1 tai${isWind(k)&&k-27===seatOf(0)&&k-27===S.prevailing?' twice (seat and round wind)':''}.`);
+  else {
+    let bestTxt='';
+    if(o.pong){ const a=claimShanten(0,'pong',k); bestTxt+= a<cur?`Pong moves you from ${cur} to ${a} away from ready. `:`Pong doesn't bring you closer to ready. `; }
+    if(o.chows){ const a=Math.min(...o.chows.map(s=>claimShanten(0,'chow',k,s))); bestTxt+= a<cur?`Chi moves you from ${cur} to ${a} away. `:`Chi doesn't help your shape. `; }
+    out.push(bestTxt);
+    if(!bankedItems(0).length) out.push('You have no tai banked yet; open chows add none, so keep a scoring plan (dragon, your wind, flush, Pong Pong).');
+    else out.push('Passing keeps your hand concealed and flexible.');
+  }
+  return out.join(' ');
+}
+function dangerNotes(){
+  const notes=[];
+  for(const p of [1,2,3]){
+    const pl=S.players[p]; if(pl.melds.length<2) continue;
+    const suits=new Set(pl.melds.filter(m=>isSuit(m.k)).map(m=>suitOf(m.k)));
+    if(suits.size===1&&pl.melds.filter(m=>isSuit(m.k)).length>=2){ const s=[...suits][0]; notes.push(`${pl.name} shows ${pl.melds.length} sets in ${SUIT_NAMES[s]} only: likely a flush. Avoid feeding ${SUIT_NAMES[s].toLowerCase()}.`); }
+    if(pl.melds.filter(m=>isDragon(m.k)).length===2) notes.push(`${pl.name} has two dragon sets. Never discard the third dragon: you'd pay for the whole table.`);
+  }
+  if(S.wall.length-DEAD<24) notes.push('The wall is short. Prefer tiles already showing in the rivers.');
+  return notes;
+}
+function coachHTML(){
+  if(!SET.coach||!S||S.ui.mode==='result') return '';
+  const pl=S.players[0], lines=[];
+  const bank=bankedItems(0);
+  if(S.ui.mode==='turn'){
+    const o=S.ui.opts;
+    if(o.hu) lines.push(`<b>You can win now.</b> Hu for ${o.hu.tai} tai.`);
+    else if(o.huZero) lines.push(`Your hand is complete but scores 0 tai, so it can't be declared. Keep building a scoring set.`);
+    const cd=coachDiscard(), b=cd.best;
+    if(!o.hu){
+      let txt=`Suggested discard: ${T(b.k)} <b>${nm(b.k)}</b>. `;
+      txt+= b.s===0?`You'd be ready (ting), waiting on ${waitsLine(b.waits)}.`:`Leaves you ${b.s} tile${b.s>1?'s':''} from ready, with ${b.u} useful draws left.`;
+      txt+=honorNote(b.k);
+      lines.push(txt);
+      if(S.sel!=null){
+        const k=S.disp[S.sel], ev=cd.all.find(r=>r.k===k);
+        if(ev&&ev.k!==b.k){
+          if(ev.s>b.s) lines.push(`Discarding ${nm(k)} would leave you ${ev.s} away instead of ${b.s}.`);
+          else if(ev.u<b.u) lines.push(`${nm(k)} works too, but ${nm(b.k)} keeps more useful draws (${b.u} vs ${ev.u}).`);
+          else lines.push(`${nm(k)} is just as good.`);
+        } else if(ev) lines.push('Good pick. Tap it again to discard.');
+      }
+    }
+  } else if(S.ui.mode==='claim'){
+    lines.push(S.ui.advice);
+  } else {
+    const c=counts(pl.hand), m=pl.melds.length;
+    if(pl.hand.length%3===1){
+      const w=waitsOf(c,m);
+      if(w.length) lines.push(`You're ready. Waiting on ${waitsLine(w)}.`);
+      else lines.push(`${shantenStd(c,m)} tile${shantenStd(c,m)>1?'s':''} from ready.`);
+    }
+  }
+  lines.push(bank.length?`Tai banked: <b>${bank.reduce((a,x)=>a+x.tai,0)}</b> (${bank.map(x=>x.label).join(', ')}).`:`No tai banked yet. You need at least ${MIN_TAI} to win.`);
+  for(const n of dangerNotes().slice(0,2)) lines.push(n);
+  return `<div class="coachbox" role="status"><span class="ttl">Coach</span>${lines.map(l=>`<p>${l}</p>`).join('')}</div>`;
+}
+
+/* ---- play rendering ---- */
+function meldHTML(md,cls){
+  const ts=meldTiles(md);
+  return `<span class="meld">${ts.map((k,i)=>md.concealed&&(i===0||i===3)?TB(cls):T(k,cls)).join('')}</span>`;
+}
+function setsHTML(pl,cls){ return pl.melds.map(m=>meldHTML(m,cls)).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,cls)).join('')}</span>`:''); }
+function riverHTML(p){
+  const pl=S.players[p], ld=S.lastDiscard;
+  return pl.discards.map((k,i)=>T(k,'t-xs'+(ld&&ld.p===p&&i===pl.discards.length-1&&S.ui.mode!=='result'?' last':''))).join('');
+}
+const POS={1:'Right · plays after you',2:'Across',3:'Left · you chi from them'};
+function oppHTML(p){
+  const pl=S.players[p], seat=seatOf(p);
+  return `<section class="opp ${S.turn===p&&S.ui.mode!=='result'?'active':''}" aria-label="${pl.name}">
+    <div class="who"><span class="wind han" title="${WINDS[seat]} seat">${WINDS_ZH[seat]}</span><b>${pl.name}</b><span class="pos">${POS[p]}</span>${p===S.dealer?'<span class="tag">Dealer</span>':''}<span class="sp"></span><span class="num" title="Chips">${pl.chips}</span></div>
+    <div class="sets"><span class="backs">${pl.hand.length} in hand</span>${setsHTML(pl,'t-xs')}</div>
+    <div class="river">${riverHTML(p)}</div></section>`;
+}
+function statusText(){
+  if(S.ui.mode==='result') return S.result.type==='draw'?'Draw game':`${S.players[S.result.w].name} won`;
+  if(S.ui.mode==='turn') return 'Your turn';
+  if(S.ui.mode==='claim') return `${S.players[S.ui.d].name} discarded`;
+  return S.turn===0?'Your turn':`${S.players[S.turn].name} is thinking…`;
+}
+function handHTML(){
+  const pl=S.players[0]; const arr=pl.hand.slice(); let drawn=null;
+  if(S.ui.mode==='turn'&&S.lastDrawn&&S.lastDrawn.p===0){ const i=arr.lastIndexOf(S.lastDrawn.k); if(i>=0) drawn=arr.splice(i,1)[0]; }
+  arr.sort((a,b)=>a-b); const disp=drawn!=null?[...arr,drawn]:arr; S.disp=disp;
+  let hintK=null;
+  if(SET.coach&&S.ui.mode==='turn'&&!S.ui.opts.hu) hintK=coachDiscard().best.k;
+  let hinted=false;
+  const live=S.ui.mode==='turn';
+  const use=new Set();
+  if(S.ui.mode==='claim'){ const {o,k}=S.ui; let need=[]; if(o.pong||o.kong) need=[k,k,k].slice(0,o.kong?3:2); if(o.chows) for(const s of o.chows) need.push(...[s,s+1,s+2].filter(x=>x!==k)); const left=need.slice(); disp.forEach((x,i)=>{ const j=left.indexOf(x); if(j>=0){ use.add(i); left.splice(j,1); } }); }
+  return `<div class="hand ${live?'':'idle'}" role="group" aria-label="Your hand">${disp.map((k,i)=>{
+    let c='t-hand'; if(S.sel===i) c+=' sel';
+    if(hintK===k&&!hinted){ c+=' hint'; hinted=true; }
+    if(drawn!=null&&i===disp.length-1) c+=' drawn';
+    if(use.has(i)) c+=' use';
+    return `<button type="button" class="tile ${c}" data-i="${i}" aria-label="${nm(k)}" ${live?'':'tabindex="-1"'}>${SVG[k]}</button>`;
+  }).join('')}</div>`;
+}
+function actionsHTML(){
+  const m=S.ui.mode;
+  if(m==='turn'){
+    const o=S.ui.opts, k=S.sel!=null?S.disp[S.sel]:null;
+    let h=`<p class="prompt">${S.justClaimed?'Now discard a tile.':'Tap a tile to pick it, tap it again to discard.'}</p>`;
+    if(o.hu) h+=`<button class="btn hu" data-act="hu" type="button">Hu! <span class="han">${S.discardCount===0&&S.dealer===0?'天胡':'自摸'}</span> · ${o.hu.tai} tai</button>`;
+    for(const kg of o.kongs) h+=`<button class="btn" data-act="kong" data-k="${kg.k}" type="button">Kong <span class="han">杠</span> ${nm(kg.k)}</button>`;
+    h+=`<button class="btn primary" data-act="discard" type="button" ${k==null?'disabled':''}>${k==null?'Discard':'Discard '+nm(k)}</button>`;
+    return h;
+  }
+  if(m==='claim'){
+    const {o,d,k}=S.ui; const can=[o.hu&&'Hu',o.kong&&'Kong',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean);
+    let h=`<p class="claimhead">You can ${can.join(' or ')}!</p><p class="prompt">${S.players[d].name} discarded ${T(k)} <b>${nm(k)}</b>. The tiles you'd use are lifted.</p>`;
+    if(o.hu) h+=`<button class="btn hu" data-act="c-hu" type="button">Hu! <span class="han">胡</span> · ${o.hu.tai} tai</button>`;
+    if(o.kong) h+=`<button class="btn" data-act="c-kong" type="button">Kong <span class="han">杠</span></button>`;
+    if(o.pong) h+=`<button class="btn" data-act="c-pong" type="button">Pong <span class="han">碰</span></button>`;
+    if(o.chows) for(const s of o.chows) h+=`<button class="btn" data-act="c-chow" data-s="${s}" type="button">Chi <span class="han">吃</span> ${s%9+1}-${s%9+2}-${s%9+3}</button>`;
+    h+=`<button class="btn primary" data-act="pass" type="button">Pass</button>`;
+    return h;
+  }
+  if(m==='result') return `<button class="btn" data-act="show" type="button">Show scoring</button><button class="btn primary" data-act="next" type="button">Next hand</button>`;
+  return `<p class="prompt">${statusText()}</p>`;
+}
+function renderPlay(){
+  if(!S) return;
+  const me=S.players[0], seat0=seatOf(0);
+  $('#meta').innerHTML=`<span><b class="han">${WINDS_ZH[S.prevailing]}</b> ${WINDS[S.prevailing]} round · hand ${S.handNo}</span><span>Wall: <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> tiles left</span>`;
+  $('#felt').innerHTML=`<div class="opps">${oppHTML(3)}${oppHTML(2)}${oppHTML(1)}</div>
+    <div class="center">${S.lastDiscard&&S.ui.mode!=='result'?T(S.lastDiscard.k,'t-md'):''}<div><div class="status">${statusText()}</div><div class="sub">${S.lastDiscard&&S.ui.mode!=='result'?`Last discard: ${nm(S.lastDiscard.k)} by ${S.players[S.lastDiscard.p].name}`:'Counter-clockwise: you → right → across → left'}</div></div></div>
+    <div class="mine-river"><div class="label">Your discards</div><div class="river">${riverHTML(0)}</div></div>
+    <details class="log" id="log" ${S.logOpen?'open':''}><summary>Table log</summary><ol>${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol></details>`;
+  $('#dock').classList.toggle('alert',S.ui.mode==='claim'||(S.ui.mode==='turn'&&!!S.ui.opts.hu));
+  $('#dock').innerHTML=`${coachHTML()}
+    <div class="mine"><span class="wind han">${WINDS_ZH[seat0]}</span><b>You</b><span>${WINDS[seat0]} seat · flowers <b>${seat0+1}</b>${S.dealer===0?' · Dealer':''} · <span class="num">${me.chips}</span> chips</span>${setsHTML(me,'t-sm')}</div>
+    ${handHTML()}
+    <div class="actions">${actionsHTML()}</div>`;
+  const lg=$('#log'); if(lg) lg.addEventListener('toggle',()=>{S.logOpen=lg.open;});
+  renderModal();
+}
+function handShow(pl,sc,winTile){
+  let h='', marked=false;
+  const mark=k=>{ if(!marked&&k===winTile){marked=true;return 'win';} return ''; };
+  if(sc&&sc.decomp){
+    const d=sc.decomp;
+    for(const s of d.sets){ const ts=s.t==='chow'?[s.k,s.k+1,s.k+2]:[s.k,s.k,s.k]; h+=`<span class="tiles">${ts.map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`; }
+    h+=`<span class="tiles">${[d.pair,d.pair].map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`;
+  } else h+=`<span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`;
+  h+=pl.melds.map(m=>meldHTML(m,'t-sm')).join('');
+  if(pl.bonus.length) h+=`<span class="tiles">${pl.bonus.map(k=>T(k,'t-sm')).join('')}</span>`;
+  return `<div class="handshow">${h}</div>`;
+}
+function renderModal(){
+  const md=$('#modal');
+  if(!S||!S.showResult||!S.result||$('#v-play').hidden){ md.hidden=true; md.innerHTML=''; return; }
+  const r=S.result; let h='';
+  if(r.type==='draw'){
+    h=`<div><h2>Draw game <span class="han">流局</span></h2><p class="sub">The wall ran down to the 15-tile dead wall with no winner. The dealer keeps the deal.</p></div>`;
+  } else {
+    const pl=S.players[r.w], sc=r.sc;
+    h=`<div><h2>${r.w===0?'You win! <span class="han">胡</span>':`${pl.name} wins`}</h2><p class="sub">${r.selfDrawn?'By self-draw <span class="han">自摸</span>: everyone pays double.':`On ${S.players[r.d].name==='You'?'your':S.players[r.d].name+"'s"} discard. The shooter pays double.`} ${WINDS[r.seat]} seat, ${WINDS[r.prevailing]} round.</p></div>
+    ${handShow(pl,sc,r.winTile)}
+    <table class="scoretbl"><tbody>
+      ${sc.items.map(i=>`<tr><td>${i.label}${i.zh?`<span class="zh">${i.zh}</span>`:''}</td><td>+${i.tai}</td></tr>`).join('')}
+      ${sc.lims.map(i=>`<tr><td>${i.label}<span class="zh">${i.zh}</span></td><td>Limit</td></tr>`).join('')}
+      <tr class="total"><td>Total${sc.lims.length?' (limit hand)':sc.capped?` (capped from ${sc.raw})`:''}</td><td>${sc.tai} tai</td></tr>
+    </tbody></table>
+    <ul class="pays">${r.pays.map(p=>`<li>${S.players[p.p].name} pay${p.p===0?'':'s'} <b class="num">${p.amt}</b>${!r.selfDrawn&&p.p===r.d?' (shooter, double)':''}</li>`).join('')}</ul>`;
+  }
+  const others=S.players.map((pl,i)=>(r.type==='win'&&i===r.w)?'':`<div><b>${pl.name}</b> held: <span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k)).join('')}</span></div>`).join('');
+  h+=`<details><summary>Everyone's hands</summary><div class="others">${others}</div></details>
+    <div class="row"><button class="btn" data-act="close" type="button">View table</button><button class="btn primary" data-act="next" type="button">Next hand</button></div>`;
+  md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="Hand result">${h}</div>`;
+  md.hidden=false;
+}
+
+/* ---- play events ---- */
+function onAct(el){
+  const a=el.dataset.act;
+  if(a==='discard'&&S.sel!=null) act({type:'discard',k:S.disp[S.sel]});
+  else if(a==='hu') act({type:'hu'});
+  else if(a==='kong') act({type:'kong',k:+el.dataset.k});
+  else if(a==='c-hu') act({type:'hu'});
+  else if(a==='c-pong') act({type:'pong'});
+  else if(a==='c-kong') act({type:'kong'});
+  else if(a==='c-chow') act({type:'chow',s:+el.dataset.s});
+  else if(a==='pass') act({type:'pass'});
+  else if(a==='next') nextHand();
+  else if(a==='show'){ S.showResult=true; renderModal(); }
+  else if(a==='close'){ S.showResult=false; renderModal(); }
+}
+$('#dock').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
+  const t=e.target.closest('[data-i]'); if(!t||!S||S.ui.mode!=='turn') return;
+  const i=+t.dataset.i;
+  if(S.sel===i) act({type:'discard',k:S.disp[i]}); else { S.sel=i; SFX.tap(); renderPlay(); }
+});
+$('#modal').addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(b) onAct(b); else if(e.target.id==='modal'){ S.showResult=false; renderModal(); } });
+
+const cbCoach=$('#opt-coach'), cbLabels=$('#opt-labels'), selSpeed=$('#opt-speed');
+cbCoach.checked=SET.coach; cbLabels.checked=SET.labels; selSpeed.value=String(SET.speed);
+document.body.classList.toggle('nolabels',!SET.labels);
+cbCoach.addEventListener('change',()=>{SET.coach=cbCoach.checked;saveSet();renderPlay();});
+cbLabels.addEventListener('change',()=>{SET.labels=cbLabels.checked;document.body.classList.toggle('nolabels',!SET.labels);saveSet();});
+selSpeed.addEventListener('change',()=>{SET.speed=+selSpeed.value;saveSet();});
+const cbSound=$('#opt-sound'), cbMusic=$('#opt-music');
+cbSound.checked=SET.sound; cbMusic.checked=SET.music;
+cbSound.addEventListener('change',()=>{SET.sound=cbSound.checked;saveSet();});
+cbMusic.addEventListener('change',()=>{SET.music=cbMusic.checked;saveSet();audioInit();SET.music?musicOn():musicOff();});
+let newArmed=null;
+$('#btn-new').addEventListener('click',e=>{
+  const b=e.currentTarget;
+  if(newArmed){ clearTimeout(newArmed); newArmed=null; b.textContent='New game'; newMatch(); return; }
+  b.textContent='Tap again to restart'; newArmed=setTimeout(()=>{newArmed=null;b.textContent='New game';},3000);
+});
+
+/* ---- tiles guide ---- */
+const GROUPS=[
+  {t:'Bamboo',zh:'索 suǒ',ks:[0,1,2,3,4,5,6,7,8],d:'Suit tile, 4 copies of each.'},
+  {t:'Dots',zh:'筒 tǒng',ks:[9,10,11,12,13,14,15,16,17],d:'Suit tile, 4 copies of each.'},
+  {t:'Characters',zh:'萬 wàn',ks:[18,19,20,21,22,23,24,25,26],d:'Suit tile, 4 copies of each.'},
+  {t:'Winds',zh:'風 fēng',ks:[27,28,29,30],d:'Honour tile, 4 copies of each.'},
+  {t:'Dragons',zh:'三元',ks:[31,32,33],d:'Honour tile, 4 copies of each.'},
+  {t:'Flowers & Seasons',zh:'花 huā',ks:[34,35,36,37,38,39,40,41],d:'Bonus tile, 1 copy each.'},
+  {t:'Animals',zh:'動物',ks:[42,43,44,45],d:'Bonus tile, 1 copy each. Unique to Singapore sets.'}
+];
+function tileNote(k){
+  const i=tileInfo(k);
+  if(i.cat==='bamboo'&&i.n===1) return 'Drawn as a bird, not a stick, so beginners often miss it. Players call it 幺雞, "little chicken".';
+  if(i.cat==='bamboo') return `Count the sticks: ${i.n}. Combine with neighbouring bamboo into chows like ${Math.max(1,i.n-1)}-${Math.max(2,i.n)}-${Math.max(3,i.n+1)}.`;
+  if(i.cat==='dots') return `Count the circles: ${i.n}. Middle numbers (3–7) join the most chows, so they are the most useful.`;
+  if(i.cat==='chars') return `Read the top numeral (${CN[i.n-1]} = ${i.n}); the red 萬 below means ten thousand. Learn 一 to 九 and this suit is easy.`;
+  if(i.cat==='wind') return `A pong of ${i.en.split(' ')[0]} scores 1 tai if it is your seat wind or the round wind, 2 if both. Otherwise it scores nothing.`;
+  if(k===33) return 'The White Dragon is the blank-looking tile with a blue frame, 白板 "white board". Any dragon pong is worth 1 tai.';
+  if(i.cat==='dragon') return 'Any dragon pong is worth 1 tai, no matter your seat.';
+  if(i.cat==='flower'||i.cat==='season') return `Bonus tile: lay it face up and draw a replacement. Number ${i.n} belongs to ${WINDS[i.n-1]} (seat ${i.n}); in that seat it's worth 1 tai. Colours vary between sets, so go by the number.`;
+  const bite={42:'The Cat bites the Rat',43:'The Rat is bitten by the Cat',44:'The Rooster eats the Centipede',45:'The Centipede is eaten by the Rooster'}[k];
+  return `Bonus tile worth 1 tai for anyone. ${bite}: hold both for an instant payment (a "bite").`;
+}
+let tileSel=13;
+function renderTiles(){
+  const i=tileInfo(tileSel);
+  $('#tile-detail').innerHTML=`${T(tileSel,'t-lg')}<div class="txt"><h3>${i.en}</h3><span class="zh">${i.zh} <span style="font-family:var(--f-body);font-weight:400;font-size:15px;color:var(--muted)">${i.py}</span></span><p>${tileNote(tileSel)}</p></div>`;
+  $('#tile-groups').innerHTML=GROUPS.map(g=>`<div class="tgroup"><h3>${g.t} <small><span class="han">${g.zh.split(' ')[0]}</span> ${g.zh.split(' ').slice(1).join(' ')} · ${g.d}</small></h3><div class="tgrid">${g.ks.map(k=>`<button type="button" class="tile ${k===tileSel?'on':''}" data-tk="${k}" aria-label="${nm(k)}">${SVG[k]}</button>`).join('')}</div></div>`).join('');
+}
+$('#tile-groups').addEventListener('click',e=>{ const b=e.target.closest('[data-tk]'); if(!b) return; tileSel=+b.dataset.tk; renderTiles(); });
+
+/* ---- quiz ---- */
+const Q={mode:'name',data:null,answered:null,score:{name:[0,0],tai:[0,0],wait:[0,0]}};
+try{Object.assign(Q.score,JSON.parse(localStorage.getItem('sgmj-quiz')||'{}'));}catch(e){}
+function saveQ(){try{localStorage.setItem('sgmj-quiz',JSON.stringify(Q.score));}catch(e){}}
+function newQ(){
+  Q.answered=null;
+  if(Q.mode==='name'){
+    const k=rand(46), cat=tileInfo(k).cat;
+    const same=shuffle([...Array(46).keys()].filter(x=>x!==k&&tileInfo(x).cat===cat));
+    const other=shuffle([...Array(46).keys()].filter(x=>x!==k&&tileInfo(x).cat!==cat));
+    const opts=shuffle([k,...same.slice(0,2),...other].slice(0,4));
+    Q.data={k,opts};
+  } else if(Q.mode==='tai'){
+    let ctx,sc;
+    do{ const pat=['mixed','mixed','pinghu','pongpong','half','full','dragons'][rand(7)]; ctx=genHand(pat,false); sc=ctx&&scoreHand(ctx); } while(!ctx||sc.tai<1);
+    Q.data={ctx,sc};
+  } else {
+    let h13,w,ctx;
+    do{ ctx=genHand(Math.random()<.3?'half':'mixed',true); const h=ctx.concealed.slice(); h.splice(rand(h.length),1); h13=h; w=waitsOf(counts(h13),0); } while(!w.length);
+    const right=w[rand(w.length)], c=counts(h13);
+    const near=new Set(); for(const k of h13){ if(isSuit(k)) for(const dlt of [-2,-1,1,2]){ const x=k+dlt; if(x>=0&&x<27&&suitOf(x)===suitOf(k)) near.add(x);} else near.add(k); }
+    let pool=shuffle([...near].filter(x=>!w.includes(x)&&c[x]<4));
+    if(pool.length<3) pool=pool.concat(shuffle([...Array(34).keys()].filter(x=>!w.includes(x)&&!pool.includes(x)&&c[x]<4)));
+    Q.data={h13,waits:w,right,opts:shuffle([right,...pool.slice(0,3)])};
+  }
+  renderQuiz();
+}
+function quizHandHTML(ctx){
+  let h=`<div class="qhand"><div class="grp"><span class="lab">Concealed hand</span>${TS(ctx.concealed,'')}</div>`;
+  if(ctx.melds.length) h+=`<div class="grp"><span class="lab">Exposed sets</span>${ctx.melds.map(m=>meldHTML(m,'')).join('')}</div>`;
+  if(ctx.bonus.length) h+=`<div class="grp"><span class="lab">Flowers & animals</span>${TS(ctx.bonus,'')}</div>`;
+  return h+'</div>';
+}
+function renderQuiz(){
+  document.querySelectorAll('#qmodes [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===Q.mode?'true':'false'));
+  const sc=Q.score[Q.mode], d=Q.data, A=Q.answered; let h='';
+  if(Q.mode==='name'){
+    h=`<p class="q">What is this tile?</p><div>${T(d.k,'t-xl')}</div>
+      <div class="choices">${d.opts.map(k=>`<button type="button" class="choice ${A!=null?(k===d.k?'right':(k===A?'wrong':'')):''}" data-ans="${k}" ${A!=null?'disabled':''}>${nm(k)}</button>`).join('')}</div>`;
+    if(A!=null){ const i=tileInfo(d.k); h+=`<div class="feedback"><span class="verdict ${A===d.k?'ok':'no'}">${A===d.k?'Correct':'Not quite'}</span><p><b>${i.en}</b> · <span class="han">${i.zh}</span> ${i.py}. ${tileNote(d.k)}</p></div>`; }
+  } else if(Q.mode==='tai'){
+    const x=d.ctx;
+    h=`<p class="q">How many tai is this winning hand worth?</p>
+      <div class="ctx"><span class="chip">Seat: ${WINDS[x.seat]} (${x.seat+1})</span><span class="chip">Round: ${WINDS[x.prevailing]}</span><span class="chip">${x.selfDrawn?'Won by self-draw':'Won on a discard'}</span><span class="chip">Winning tile: ${nm(x.winTile)}</span></div>
+      ${quizHandHTML(x)}
+      <div class="choices five">${[1,2,3,4,5].map(n=>`<button type="button" class="choice ${A!=null?(n===d.sc.tai?'right':(n===A?'wrong':'')):''}" data-ans="${n}" ${A!=null?'disabled':''}>${n===5?'5 (limit)':n}</button>`).join('')}</div>`;
+    if(A!=null){ const s=d.sc;
+      h+=`<div class="feedback"><span class="verdict ${A===s.tai?'ok':'no'}">${A===s.tai?'Correct':'Not quite'}: ${s.tai} tai</span>
+      <table class="scoretbl"><tbody>${s.items.map(i=>`<tr><td>${i.label}${i.zh?`<span class="zh">${i.zh}</span>`:''}</td><td>+${i.tai}</td></tr>`).join('')}${s.lims.map(i=>`<tr><td>${i.label}<span class="zh">${i.zh}</span></td><td>Limit</td></tr>`).join('')}
+      <tr class="total"><td>Total${s.capped?` (capped from ${s.raw})`:''}</td><td>${s.tai}</td></tr></tbody></table>
+      ${s.decomp?`<p>Read as: ${TS([...s.decomp.sets.flatMap(st=>[...(st.t==='chow'?[st.k,st.k+1,st.k+2]:[st.k,st.k,st.k]),'|']),s.decomp.pair,s.decomp.pair],'t-sm')}</p>`:''}</div>`; }
+  } else {
+    h=`<p class="q">This hand is one tile from winning. Which of these tiles completes it?</p>
+      <div class="qhand"><div class="grp">${TS(d.h13.slice().sort((a,b)=>a-b),'')}</div></div>
+      <div class="choices tilech">${d.opts.map(k=>`<button type="button" class="choice tilebtn ${A!=null?(k===d.right?'right':(k===A?'wrong':'')):''}" data-ans="${k}" aria-label="${nm(k)}" ${A!=null?'disabled':''}>${T(k,'t-lg')}</button>`).join('')}</div>`;
+    if(A!=null){
+      const full=[...d.h13,d.right], dc=decomps(counts(full))[0];
+      h+=`<div class="feedback"><span class="verdict ${A===d.right?'ok':'no'}">${A===d.right?'Correct':'Not quite'}</span>
+        <p>The answer is <b>${nm(d.right)}</b>. This hand waits on ${d.waits.map(k=>nm(k)).join(', ')}.</p>
+        ${dc?`<p>With ${nm(d.right)}: ${TS([...dc.sets.flatMap(st=>[...(st.t==='chow'?[st.k,st.k+1,st.k+2]:[st.k,st.k,st.k]),'|']),dc.pair,dc.pair],'t-sm')}</p>`:''}</div>`;
+    }
+  }
+  h+=`<div class="row" style="justify-content:space-between;align-items:center"><span class="qscore num">Score ${sc[0]} / ${sc[1]}</span><button type="button" class="btn primary" data-q="next">${A!=null?'Next question':'Skip'}</button></div>`;
+  $('#qcard').innerHTML=h;
+}
+$('#qcard').addEventListener('click',e=>{
+  const n=e.target.closest('[data-q="next"]'); if(n){ newQ(); return; }
+  const b=e.target.closest('[data-ans]'); if(!b||Q.answered!=null) return;
+  const v=+b.dataset.ans; Q.answered=v;
+  const right=Q.mode==='name'?Q.data.k:Q.mode==='tai'?Q.data.sc.tai:Q.data.right;
+  Q.score[Q.mode][1]++; if(v===right) Q.score[Q.mode][0]++; saveQ(); renderQuiz();
+});
+$('#qmodes').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(!b) return; Q.mode=b.dataset.mode; newQ(); });
+
+/* ---- static examples ---- */
+document.querySelectorAll('.ex[data-tiles]').forEach(el=>{ el.innerHTML=TS(el.dataset.tiles.split(',').map(x=>x==='|'?'|':+x),'t-sm'); });
+
+/* ---- router ---- */
+const VIEWS=['play','tiles','rules','tai','strategy','quiz'];
+function route(){
+  let v=(location.hash||'').slice(1); if(!VIEWS.includes(v)) v='play';
+  for(const x of VIEWS) $('#v-'+x).hidden=x!==v;
+  document.querySelectorAll('.tabs a').forEach(a=>{ if(a.getAttribute('href')==='#'+v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  if(v==='tiles') renderTiles();
+  if(v==='quiz'&&!Q.data) newQ();
+  if(v!=='play'&&S&&S.showResult){ /* keep result for when they return */ $('#modal').hidden=true; }
+  if(v==='play') renderModal();
+}
+window.addEventListener('hashchange',()=>{ route(); window.scrollTo(0,0); });
+newMatch();
+route();
+</script>
+
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}</script>
+</body>
+</html>
