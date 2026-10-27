@@ -15,7 +15,7 @@
 <title>Singapore Mahjong Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Noto+Serif+TC:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
 <style>
 /* Layout: a calm, top-down mahjong table. Opponents sit on three sides with their discards in front of them,
    a compass in the middle shows the turn; your rack is docked at the bottom edge. */
@@ -27,7 +27,7 @@
   --go:#2f7a63; --go-ink:#ffffff;
   --coach:#94600f; --coach-bg:#fbf4e6; --ok:#2c7a53; --bad:#bd4034; --warn-bg:#fbe9e5;
   --shadow:0 1px 2px rgba(20,40,34,.06), 0 10px 30px rgba(20,40,34,.09);
-  --tile-face:#fcf9f1; --tile-edge:#ddd5c3; --tile-back:#3f8a72; --tile-back-2:#2f735e;
+  --tile-face:#fcf9f1; --tile-edge:#ddd5c3; --tile-back:#2f5fb3; --tile-back-2:#1e4489;
   --t-red:#c0322a; --t-green:#1b774a; --t-blue:#1f4f9c; --t-navy:#1a2340; --t-brown:#8c4f1d;
   --f-ui:'Lexend','Avenir Next','Segoe UI',system-ui,sans-serif;
   --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -102,65 +102,7 @@ body.nolabels .tile .lbl{display:none}
 @keyframes drop{from{transform:translateY(-35%) scale(1.15); opacity:0} to{transform:none; opacity:1}}
 .tile.fresh{animation:drop .34s ease-out}
 
-/* play: top bar */
-.topbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-block:2px 10px}
-.tb-info{display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; font-size:14px; color:var(--muted); min-width:0}
-.tb-info b{color:var(--ink)}
-.pill{display:inline-flex; align-items:center; gap:6px; font:500 14px var(--f-ui); color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:3px 10px 3px 4px}
-.pill .han{display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--accent-soft); color:var(--accent); font-size:13px}
-.tb-btns{display:flex; gap:4px; flex:none}
-.ib{width:38px; height:38px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer}
-.ib svg{width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
-.ib[aria-pressed="true"]{color:var(--coach); background:var(--coach-bg); border-color:transparent}
-
-/* play: the table */
-.felt{background:radial-gradient(130% 100% at 50% 40%, var(--felt), var(--felt-2)); color:var(--felt-ink); border-radius:22px; padding:10px; box-shadow:inset 0 0 0 1px var(--felt-line)}
-.table{--pw:20px; --mw:13px; --slot:calc(var(--pw) + 2px); --row:calc(var(--pw)*1.413 + 2px);
-  display:grid; gap:6px; justify-content:center;
-  grid-template-columns:calc(4*var(--slot)) calc(6*var(--slot)) calc(4*var(--slot));
-  grid-template-rows:minmax(calc(4*var(--row)),auto) minmax(calc(6*var(--row)),auto) minmax(calc(4*var(--row)),auto);
-  grid-template-areas:"ct t cr" "l c r" "cl b cb"}
-/* each player's card sits in the corner at their right hand; their discards are the pond beside it */
-.seat{border-radius:12px; background:var(--seat-bg); padding:6px; color:var(--felt-ink); cursor:pointer; min-width:0; overflow:hidden;
-  display:flex; flex-direction:column; align-items:flex-start; gap:5px; transition:box-shadow .25s}
-.seat:hover{box-shadow:0 0 0 1px var(--felt-line)}
-.seat.active{box-shadow:0 0 0 2px var(--accent); animation:seatglow 2.6s ease-in-out infinite}
-@keyframes seatglow{50%{box-shadow:0 0 0 2px var(--accent), 0 0 0 6px rgba(204,90,76,.12)}}
-.seat{width:fit-content; max-width:100%; align-self:start}
-.seat-t{grid-area:ct; justify-self:end} .seat-r{grid-area:cr; justify-self:start; align-self:end} .seat-l{grid-area:cl; justify-self:end} .seat-b{grid-area:cb; justify-self:start}
-.who{display:flex; align-items:center; gap:6px; min-width:0; width:100%}
-.av{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--tile-face); color:var(--t-navy); font-size:14px; flex:none; box-shadow:inset 0 0 0 1px var(--tile-edge)}
-.nm{display:flex; flex-direction:column; line-height:1.2; min-width:0; flex:1}
-.nm b{font:600 12.5px var(--f-ui); overflow-wrap:anywhere}
-.nm small{font-size:11px; color:var(--felt-muted)}
-.dealer{display:inline-grid; place-items:center; width:17px; height:17px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font:700 10px var(--f-ui); flex:none; align-self:flex-start}
-.sets{display:flex; flex-wrap:wrap; gap:3px; align-items:flex-end}
-.bonus{display:inline-flex; flex-wrap:wrap; gap:1px; padding-left:3px; border-left:1px dashed var(--felt-line)}
-.think{display:inline-flex; gap:3px; margin-top:3px}
-.think i{width:4px; height:4px; border-radius:50%; background:var(--accent); animation:blink 1.2s infinite ease-in-out}
-.think i:nth-child(2){animation-delay:.15s} .think i:nth-child(3){animation-delay:.3s}
-@keyframes blink{0%,80%,100%{opacity:.25} 40%{opacity:1}}
-.pond{display:grid; gap:2px; grid-auto-rows:min-content; border-radius:10px; cursor:pointer; padding:3px; margin:-3px; transition:background .25s}
-.pond:hover{background:var(--felt-deep)}
-.pond.active{background:rgba(204,90,76,.09)}
-.pond-t{grid-area:t; grid-template-columns:repeat(6,var(--pw)); align-content:end; justify-content:center}
-.pond-b{grid-area:b; grid-template-columns:repeat(6,var(--pw)); align-content:start; justify-content:center}
-.pond-l{grid-area:l; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:end}
-.pond-r{grid-area:r; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:start}
-.compass{grid-area:c; position:relative; border-radius:16px; background:var(--felt-deep); box-shadow:inset 0 0 0 1px var(--felt-line); min-height:100px}
-.cw{position:absolute; display:grid; place-items:center; width:22px; height:22px; border-radius:7px; font-size:13px; color:var(--felt-muted); transition:background .25s, color .25s}
-.cw.on{background:var(--accent); color:var(--accent-ink)}
-.cw-b{bottom:5px; left:50%; transform:translateX(-50%)} .cw-t{top:5px; left:50%; transform:translateX(-50%)}
-.cw-l{left:5px; top:50%; transform:translateY(-50%)} .cw-r{right:5px; top:50%; transform:translateY(-50%)}
-.cc{position:absolute; inset:30px 28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; text-align:center; min-width:0}
-.cc .cap{font-size:11.5px; color:var(--felt-muted); line-height:1.3; max-width:100%; overflow:hidden; text-overflow:ellipsis}
-.cc .cap.one{white-space:nowrap}
-.cc .cap b{color:var(--felt-ink)}
-
-/* play: dock */
-.dock{position:sticky; bottom:0; z-index:5; margin-top:12px; background:var(--surface); border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0;
-  padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px)); box-shadow:0 -10px 30px rgba(20,40,34,.08); display:flex; flex-direction:column; gap:8px; transition:box-shadow .25s}
-.dock.alert{box-shadow:0 -10px 30px rgba(20,40,34,.08), 0 0 0 2px var(--accent)}
+/* shared controls */
 .coach{display:flex; flex-direction:column; gap:6px; background:var(--coach-bg); border-radius:14px; padding:8px 10px; font-size:14px; line-height:1.45}
 .coach-main{display:flex; gap:8px; align-items:flex-start}
 .coach-main svg{width:18px; height:18px; flex:none; margin-top:2px; fill:none; stroke:var(--coach); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
@@ -171,27 +113,141 @@ body.nolabels .tile .lbl{display:none}
 .chip-s{font-size:12px; padding:2px 9px; border-radius:999px; background:var(--surface); color:var(--muted); border:1px solid var(--line)}
 .chip-s.good{color:var(--ok)}
 .chip-s.warn{background:var(--warn-bg); border-color:transparent; color:var(--bad)}
-.mine{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-size:13px; color:var(--muted)}
-.mine b{color:var(--ink); font-family:var(--f-ui); font-weight:600}
-.mine .av{width:24px; height:24px; font-size:13px}
-.mine-sets{display:inline-flex; flex-wrap:wrap; gap:6px; align-items:flex-end}
-.mine-sets .bonus{border-color:var(--line)}
-.hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:12px; min-height:calc(var(--hw)*1.45 + 12px)}
-.hand .tile{cursor:pointer; transition:transform .14s ease}
-.hand .tile.sel{transform:translateY(-24%)}
-.hand .tile.hint{outline:2px solid var(--coach); outline-offset:1px}
-.hand .tile.use{outline:2px solid var(--accent); outline-offset:1px; transform:translateY(-14%)}
-.hand .tile.drawn{margin-left:calc(var(--hw)*.35)}
-.hand.idle .tile{cursor:default}
-.actions{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center}
-.prompt{width:100%; margin:0; text-align:center; font-size:14px; color:var(--muted)}
-.prompt .tile{--w:22px}
-.claimhead{width:100%; margin:0; text-align:center; font:600 18px var(--f-ui); color:var(--accent)}
 .btn{font:500 15px/1.2 var(--f-ui); padding:10px 18px; min-height:44px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
 .btn:disabled{opacity:.45; cursor:default}
 .btn.primary{background:var(--go); color:var(--go-ink); border-color:transparent}
-.btn.hu{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:600; font-size:17px}
 .btn.small{min-height:34px; padding:6px 12px; font-size:13.5px}
+
+/* ===== play screen: one committed look (lacquer red room, green felt, blue-backed tiles), same in light and dark ===== */
+body.playing{background:#6e1a15 radial-gradient(circle at 50% 0%, #8c241c 0%, #6e1a15 55%, #571310 100%) fixed; color:#fbf3df}
+body.playing .wrap{max-width:none}
+body.playing .masthead{display:none}
+#v-play{--gold:#f4cd6a; --gold-dim:#d6a94a; --cream:#fbf3df; --felt-a:#2f8d4f; --felt-b:#1e6a38; --rim:#4b2414; --rim-2:#6e3b1d;
+  --back:#2f5fb3; --back-2:#1e4489; --banner:#fffaf0; --banner-ink:#c41f1c;
+  display:flex; flex-direction:column; gap:6px; height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); min-height:0; padding-bottom:6px}
+.gbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:6px}
+.gl{display:flex; align-items:center; gap:10px; min-width:0}
+.ginfo{font:500 12.5px var(--f-ui); color:rgba(251,243,223,.8); white-space:nowrap}
+.ginfo b{color:var(--gold)}
+.gr{display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end}
+.gb{font:400 15px/1 'Lilita One', var(--f-ui); letter-spacing:.04em; text-transform:uppercase; color:var(--gold); background:transparent; border:0; padding:8px 9px; border-radius:10px; cursor:pointer; text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.gb:hover{background:rgba(0,0,0,.15)}
+.gb[aria-pressed="false"]{color:rgba(244,205,106,.5)}
+.stage{flex:1; min-height:0; position:relative; perspective:1150px; perspective-origin:50% 0%; display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
+.plane{--pw:20px; --mw:12px; --tilt:28deg; --rackw:calc(var(--pw)*1.1); --rackh:calc(var(--pw)*1.25); --sidew:calc(var(--mw)*3.4 + 26px); --rw:calc(var(--pw)*.5);
+  width:max-content; transform-origin:50% 100%; transform:rotateX(var(--tilt));
+  display:grid; gap:calc(var(--pw)*.3); padding:calc(var(--pw)*.5) calc(var(--pw)*.5) calc(var(--pw)*.35);
+  grid-template-columns:var(--rackw) var(--sidew) auto var(--sidew) var(--rackw);
+  grid-template-rows:var(--rackh) auto auto;
+  grid-template-areas:". rT rT rT ." "rL . iT . rR" "rL iL ring iR rR";
+  background:radial-gradient(90% 80% at 50% 45%, var(--felt-a), var(--felt-b)); color:#f1f7ef;
+  border:calc(var(--pw)*.45) solid var(--rim); border-radius:calc(var(--pw)*.9);
+  box-shadow:0 0 0 2px var(--rim-2), inset 0 0 calc(var(--pw)*2) rgba(0,0,0,.28), 0 30px 50px rgba(0,0,0,.35)}
+.rack{display:flex; gap:1px; cursor:pointer}
+.rack-t{grid-area:rT; justify-content:center; height:var(--rackh)}
+.rack-l{grid-area:rL; flex-direction:column; justify-content:center; align-self:center}
+.rack-r{grid-area:rR; flex-direction:column; justify-content:center; align-self:center}
+.bk{display:block; background:linear-gradient(180deg,var(--back),var(--back-2)); border-radius:3px; box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 2px 0 rgba(0,0,0,.25)}
+.rack-t .bk{width:calc(var(--pw)*.9); height:100%; border-bottom:3px solid #f2ecdc}
+.rack-l .bk{width:var(--rackw); height:calc(var(--pw)*.62); border-right:3px solid #f2ecdc}
+.rack-r .bk{width:var(--rackw); height:calc(var(--pw)*.62); border-left:3px solid #f2ecdc}
+.rack.on .bk{box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px var(--gold)}
+.info{display:flex; gap:6px; align-items:center; cursor:pointer; min-width:0; border-radius:10px; padding:3px}
+.info-t{grid-area:iT; justify-content:center; flex-wrap:wrap}
+.info-l,.info-r{flex-direction:column; align-self:center}
+.info-l{grid-area:iL} .info-r{grid-area:iR}
+.info .tag{display:inline-flex; align-items:center; gap:6px; font:500 12.5px var(--f-ui); color:#f1f7ef; white-space:nowrap; padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.18)}
+.info-l .tag,.info-r .tag{flex-direction:column; padding:6px 3px; gap:5px}
+.info-l .tag b,.info-l .tag .num{writing-mode:vertical-rl; transform:rotate(180deg)}
+.info-r .tag b,.info-r .tag .num{writing-mode:vertical-rl}
+.info .tag .han{color:var(--gold)}
+.info .tag .num{opacity:.75}
+.info.on .tag{background:var(--gold); color:#3b2408; box-shadow:0 0 0 3px rgba(244,205,106,.3)}
+.info.on .tag .han{color:#8c241c}
+.dealer{display:inline-grid; place-items:center; width:16px; height:16px; border-radius:50%; background:#c41f1c; color:#fff; font:700 9.5px var(--f-ui); writing-mode:horizontal-tb}
+.info .sets{display:flex; flex-wrap:wrap; gap:3px; align-items:flex-end; justify-content:center}
+.info-l .sets,.info-r .sets{flex-direction:column; align-items:center}
+.info .bonus{display:inline-flex; flex-wrap:wrap; gap:1px; justify-content:center}
+.think{display:inline-flex; gap:3px}
+.think i{width:4px; height:4px; border-radius:50%; background:currentColor; animation:blink 1.2s infinite ease-in-out}
+.think i:nth-child(2){animation-delay:.15s} .think i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25} 40%{opacity:1}}
+.ring{grid-area:ring; display:grid; gap:calc(var(--pw)*.35); grid-template-columns:var(--rw) auto var(--rw); grid-template-rows:var(--rw) auto var(--rw);
+  grid-template-areas:"wt wt wt" "wl pz wr" "wb wb wb"}
+.ws{display:flex; gap:1px}
+.ws-t{grid-area:wt} .ws-b{grid-area:wb} .ws-l{grid-area:wl; flex-direction:column} .ws-r{grid-area:wr; flex-direction:column}
+.ws .bk{flex:1; border-radius:2px}
+.ws .bk.gone{visibility:hidden}
+.pz{grid-area:pz; --slot:calc(var(--pw) + 2px); --row:calc(var(--pw)*1.413 + 2px); display:grid; gap:calc(var(--pw)*.25); justify-content:center;
+  grid-template-columns:calc(4*var(--slot)) calc(6*var(--slot)) calc(4*var(--slot));
+  grid-template-rows:minmax(calc(4*var(--row)),auto) minmax(calc(6*var(--row)),auto) minmax(calc(4*var(--row)),auto);
+  grid-template-areas:". t ." "l c r" ". b ."}
+.pond{display:grid; gap:2px; grid-auto-rows:min-content; border-radius:8px; cursor:pointer; padding:2px; margin:-2px}
+.pond:hover{background:rgba(0,0,0,.08)}
+.pond-t{grid-area:t; grid-template-columns:repeat(6,var(--pw)); align-content:end; justify-content:center}
+.pond-b{grid-area:b; grid-template-columns:repeat(6,var(--pw)); align-content:start; justify-content:center}
+.pond-l{grid-area:l; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:end}
+.pond-r{grid-area:r; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:start}
+.compass{grid-area:c; position:relative; min-height:80px}
+.compass::before{content:""; position:absolute; inset:8%; border-radius:50%; border:1px solid rgba(255,255,255,.12); box-shadow:inset 0 0 0 calc(var(--pw)*.35) rgba(255,255,255,.04)}
+.cw{position:absolute; font:400 calc(var(--pw)*.62) 'Lilita One', var(--f-ui); letter-spacing:.03em; color:rgba(244,205,106,.55); white-space:nowrap; transition:color .25s, text-shadow .25s}
+.cw .han{font-family:var(--f-han); font-weight:700}
+.cw.on{color:var(--gold); text-shadow:0 0 10px rgba(244,205,106,.6)}
+.cw-t{top:2%; left:50%; transform:translateX(-50%)} .cw-b{bottom:2%; left:50%; transform:translateX(-50%)}
+.cw-l{left:0; top:50%; transform:translate(-30%,-50%) rotate(-90deg)} .cw-r{right:0; top:50%; transform:translate(30%,-50%) rotate(90deg)}
+.cc{position:absolute; inset:22% 18%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center}
+.cc .cap{font:500 calc(var(--pw)*.48) var(--f-ui); color:rgba(241,247,239,.8); white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis}
+.cc .cap b{color:var(--gold)}
+.tile.last{outline:2px solid var(--gold); outline-offset:1px}
+
+/* floating coach + claim banners */
+.coachfloat{position:absolute; top:4px; left:4px; max-width:min(360px, 58%); z-index:3}
+.coachfloat .coach{background:rgba(20,12,8,.72); color:#fbf3df; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(244,205,106,.28); border-radius:14px; padding:8px 10px; font-size:13px; line-height:1.4; box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.coachfloat .coach-main svg{stroke:var(--gold)}
+.coachfloat .coach-sub{color:rgba(251,243,223,.72)}
+.coachfloat .chip-s{background:rgba(255,255,255,.1); border-color:transparent; color:rgba(251,243,223,.85)}
+.coachfloat .chip-s.good{color:#9be3b6}
+.coachfloat .chip-s.warn{background:rgba(196,31,28,.35); color:#ffd7cf}
+.banners{position:absolute; right:4px; top:50%; transform:translateY(-50%); z-index:4; display:flex; flex-direction:column; gap:8px; align-items:flex-end; max-height:100%; overflow:auto; padding:2px}
+.ban{display:flex; align-items:center; gap:10px; background:var(--banner); border:0; border-radius:12px; padding:6px 10px 6px 14px; cursor:pointer; box-shadow:0 0 0 3px #3b1d0e, 0 0 0 5px var(--gold-dim), 0 8px 18px rgba(0,0,0,.35); animation:slidein .25s ease-out}
+@keyframes slidein{from{transform:translateX(30px); opacity:0} to{transform:none; opacity:1}}
+.ban .bl{font:400 22px/1 'Lilita One', var(--f-ui); color:var(--banner-ink); letter-spacing:.03em; text-shadow:0 1px 0 rgba(0,0,0,.08)}
+.ban .bx{font:600 12px var(--f-ui); color:#7a4a12}
+.ban .bt{display:inline-flex; gap:1px; background:#e9b860; border-radius:8px; padding:4px 5px 2px}
+.ban.hu{background:#c41f1c} .ban.hu .bl{color:#fff4cf} .ban.hu .bx{color:#ffe1a6}
+.ban.pass{background:#e8e2d4} .ban.pass .bl{color:#55493a}
+.ban.go{background:var(--gold)} .ban.go .bl{color:#5a1410}
+.t-ban{--w:26px}
+
+/* your hand */
+.myarea{display:flex; flex-direction:column; gap:4px; align-items:center}
+.myrow{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; width:100%; max-width:calc(var(--hw)*15.4); min-height:20px}
+.mysets{display:flex; flex-wrap:wrap; gap:5px; align-items:flex-end}
+.mysets .bonus{display:inline-flex; gap:1px}
+.myprompt{font:400 16px 'Lilita One', var(--f-ui); color:var(--gold); letter-spacing:.03em; text-align:right; text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.myprompt.claim{color:#fff4cf; background:#c41f1c; padding:4px 10px; border-radius:999px}
+.t-my{--w:calc(var(--hw)*.62)}
+.hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:10px}
+.tile.t-hand{height:calc(var(--w)*1.5); border-top:calc(var(--w)*.17) solid var(--back); border-radius:calc(var(--w)*.14);
+  box-shadow:inset 0 0 0 1px var(--tile-edge), 0 3px 0 #d3c9b1, 0 8px 14px rgba(0,0,0,.35); cursor:pointer; transition:transform .14s ease; margin-bottom:3px}
+.hand .tile.sel{transform:translateY(-22%)}
+.hand .tile.hint{outline:3px solid var(--gold); outline-offset:1px}
+.hand .tile.use{outline:3px solid #ff6a55; outline-offset:1px; transform:translateY(-12%)}
+.hand .tile.drawn{margin-left:calc(var(--hw)*.4)}
+.hand.idle .tile{cursor:default}
+.gstatus{display:flex; flex-wrap:wrap; justify-content:center; gap:4px 18px; font:500 12.5px var(--f-ui); color:rgba(251,243,223,.82); background:rgba(0,0,0,.22); border-radius:10px; padding:5px 10px}
+.gstatus b{color:var(--gold); font-weight:600}
+.rot-tip{display:none}
+@media (orientation:portrait) and (max-width:620px){ .rot-tip{display:inline} }
+@media (max-width:440px){ .gb{font-size:13px; padding:6px 6px} .ginfo{display:none} }
+@media (max-height:520px){ .coachfloat{max-width:min(290px,38%)} .coachfloat .coach{font-size:12px; padding:6px 8px} .coachfloat .coach-sub{display:none} .gb{font-size:13px; padding:6px 7px} .gbar{padding-top:2px} .gstatus{display:none} .myprompt{font-size:13px} .hand{padding-top:6px} #v-play{gap:3px} .ban .bl{font-size:18px} .t-ban{--w:20px} }
+
+/* menu sheet */
+.menu-list{display:flex; flex-direction:column}
+.menu-link{display:flex; flex-direction:column; gap:2px; padding:12px 2px; border-bottom:1px solid var(--line); text-decoration:none; color:var(--ink)}
+.menu-link b{font:600 16px var(--f-ui)}
+.menu-link span{font-size:13.5px; color:var(--muted)}
+button.menu-link{background:none; border-left:0; border-right:0; border-top:0; text-align:left; cursor:pointer; font:inherit}
 
 /* sheets */
 .modal{position:fixed; inset:0; z-index:40; background:rgba(10,22,18,.42); display:flex; align-items:flex-end; justify-content:center;
@@ -322,17 +378,22 @@ dl.gloss dd{margin:0; color:var(--muted)}
   <main>
     <!-- PLAY -->
     <section id="v-play" class="view" aria-label="Practice table">
-      <div class="topbar">
-        <div id="tb-info" class="tb-info"></div>
-        <div class="tb-btns">
-          <button class="ib" id="ib-coach" type="button" aria-label="Coach hints" aria-pressed="true"></button>
-          <button class="ib" id="ib-sound" type="button" aria-label="Sound"></button>
-          <button class="ib" id="ib-log" type="button" aria-label="Table log"></button>
-          <button class="ib" id="ib-set" type="button" aria-label="Settings"></button>
+      <div class="gbar">
+        <div class="gl"><button class="gb" id="gb-menu" type="button">Menu</button><span class="ginfo" id="ginfo"></span></div>
+        <div class="gr">
+          <button class="gb" id="gb-coach" type="button" aria-pressed="true">Coach</button>
+          <button class="gb" id="gb-sound" type="button" aria-pressed="true">Sound</button>
+          <button class="gb" id="gb-speed" type="button">Speed 1×</button>
+          <button class="gb" id="gb-opt" type="button">Options</button>
         </div>
       </div>
-      <div class="felt"><div id="table" class="table"></div></div>
-      <div id="dock" class="dock"></div>
+      <div class="stage" id="stage">
+        <div class="plane" id="plane"></div>
+        <div class="coachfloat" id="coachfloat"></div>
+        <div class="banners" id="banners"></div>
+      </div>
+      <div class="myarea" id="myarea"></div>
+      <div class="gstatus" id="gstatus"></div>
     </section>
 
     <!-- TILES -->
@@ -1130,10 +1191,9 @@ const TXT=(x,y,s,c,t)=>`<text x="${x}" y="${y}" font-size="${s}" class="${c}" te
 function tileSVG(k){
   let b='';
   if(k<27){ const s=suitOf(k), n=k%9+1;
-    if(s===2) b=TXT(25,37,28,'n',CN[n-1])+TXT(30,73,31,'r','萬');
+    if(s===2) b=TXT(25,37,28,'n',CN[n-1])+TXT(30,73,31,'r','萬')+lbl(String(n));
     else if(s===1) b=dotsSVG(n); else b=bambooSVG(n);
-    b+=lbl(String(n));
-  } else if(k<=30){ b=TXT(28,59,40,'n',WINDS_ZH[k-27])+lbl('ESWN'[k-27]); }
+  } else if(k<=30){ b=TXT(30,58,42,'n',WINDS_ZH[k-27]); }
   else if(k===31){ b=TXT(30,57,44,'r','中'); }
   else if(k===32){ b=TXT(30,57,44,'g','發'); }
   else if(k===33){ b=`<rect x="13" y="12" width="34" height="56" rx="3" class="frame"/><rect x="18.5" y="17.5" width="23" height="45" rx="2" class="frame thin"/>`; }
@@ -1238,36 +1298,43 @@ function coachHTML(){
   return `<div class="coach" role="status"><div class="coach-main">${ICON.bulb}<div><p>${main}</p>${sub?`<p class="coach-sub">${sub}</p>`:''}</div></div><div class="coach-chips">${chips.join('')}</div></div>`;
 }
 
-/* ---- table ---- */
+/* ---- table (Mahjong Leh-style perspective view) ---- */
 const POSN={0:'b',1:'r',2:'t',3:'l'};
+const live=()=>S.ui.mode!=='result';
 function meldHTML(md,cls){ const ts=meldTiles(md); return `<span class="meld">${ts.map((k,i)=>md.concealed&&(i===0||i===3)?TB(cls):T(k,cls)).join('')}</span>`; }
-function seatHTML(p){
-  const pl=S.players[p], seat=seatOf(p), live=S.ui.mode!=='result', active=live&&S.turn===p;
-  const think=active&&S.ui.mode==='wait'&&p!==0?'<span class="think" aria-hidden="true"><i></i><i></i><i></i></span>':'';
+function backs(n){ let h=''; for(let i=0;i<n;i++) h+='<i class="bk"></i>'; return h; }
+function rackHTML(p){ return `<div class="rack rack-${POSN[p]}${live()&&S.turn===p?' on':''}" data-inspect="${p}" aria-hidden="true">${backs(S.players[p].hand.length)}</div>`; }
+function infoHTML(p){
+  const pl=S.players[p], seat=seatOf(p), on=live()&&S.turn===p;
+  const think=on&&S.ui.mode==='wait'?'<span class="think" aria-hidden="true"><i></i><i></i><i></i></span>':'';
   const sets=pl.melds.map(m=>meldHTML(m,'t-m')).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,'t-m')).join('')}</span>`:'');
-  const sub=p===0?`flowers ${seat+1} · <span class="num">${pl.chips}</span>`:`<span class="num">${pl.hand.length}</span> tiles · <span class="num">${pl.chips}</span>`;
-  return `<div class="seat seat-${POSN[p]}${active?' active':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${pl.name}, ${WINDS[seat]} seat. Show details">
-    <div class="who"><span class="av han">${WINDS_ZH[seat]}</span><span class="nm"><b>${pl.name}</b><small>${sub}</small>${think}</span>${p===S.dealer?'<span class="dealer" title="Dealer">D</span>':''}</div>
-    ${sets?`<div class="sets">${sets}</div>`:''}</div>`;
+  return `<div class="info info-${POSN[p]}${on?' on':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${pl.name}, ${WINDS[seat]} seat, ${pl.chips} points. Show details">
+    <span class="tag"><span class="han">${WINDS_ZH[seat]}</span><b>${pl.name}</b><span class="num">${pl.chips}</span>${p===S.dealer?'<span class="dealer" title="Dealer">D</span>':''}${think}</span>
+    ${sets?`<span class="sets">${sets}</span>`:''}</div>`;
+}
+function wallHTML(){
+  const stacks=Math.ceil(S.wall.length/2); let idx=0;
+  return [19,18,19,18].map(n=>{ let h=''; for(let i=0;i<n;i++){ h+=`<i class="bk${idx<stacks?'':' gone'}"></i>`; idx++; } return h; });
 }
 function pondHTML(p){
-  const pl=S.players[p], ld=S.lastDiscard, live=S.ui.mode!=='result', fresh=S.discardCount!==S.animKey;
-  const ts=pl.discards.map((k,i)=>{ const last=live&&ld&&ld.p===p&&i===pl.discards.length-1; return T(k,'t-p'+(last?' last'+(fresh?' fresh':''):'')); }).join('');
-  return `<div class="pond pond-${POSN[p]}${live&&S.turn===p?' active':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${p===0?'Your':pl.name+"'s"} discards">${ts}</div>`;
+  const pl=S.players[p], ld=S.lastDiscard, fresh=S.discardCount!==S.animKey;
+  const ts=pl.discards.map((k,i)=>{ const last=live()&&ld&&ld.p===p&&i===pl.discards.length-1; return T(k,'t-p'+(last?' last'+(fresh?' fresh':''):'')); }).join('');
+  return `<div class="pond pond-${POSN[p]}" role="button" tabindex="0" data-inspect="${p}" aria-label="${p===0?'Your':pl.name+"'s"} discards">${ts}</div>`;
 }
 function compassHTML(){
-  const live=S.ui.mode!=='result', ld=S.lastDiscard;
-  const winds=[0,1,2,3].map(p=>`<span class="cw cw-${POSN[p]}${live&&S.turn===p?' on':''} han" title="${S.players[p].name}">${WINDS_ZH[seatOf(p)]}</span>`).join('');
+  const ld=S.lastDiscard;
+  const winds=[0,1,2,3].map(p=>{ const s=seatOf(p); return `<span class="cw cw-${POSN[p]}${live()&&S.turn===p?' on':''}">${WINDS[s]} <span class="han">${WINDS_ZH[s]}</span></span>`; }).join('');
   let mid;
-  if(!live) mid=`<span class="cap"><b>${S.result.type==='draw'?'Draw game':(S.result.w===0?'You win!':S.players[S.result.w].name+' wins')}</b></span>`;
-  else if(ld) mid=`${T(ld.k,'t-c')}<span class="cap one">${ld.p===0?'You':S.players[ld.p].name}</span>`;
-  else mid=`<span class="cap"><b>${WINDS[S.prevailing]} round</b><br>${S.dealer===0?'You deal':S.players[S.dealer].name+' deals'}</span>`;
+  if(!live()) mid=`<span class="cap"><b>${S.result.type==='draw'?'Draw game':(S.result.w===0?'You win!':S.players[S.result.w].name+' wins')}</b></span>`;
+  else if(ld) mid=`${T(ld.k,'t-c')}<span class="cap">${ld.p===0?'You':S.players[ld.p].name}</span>`;
+  else mid=`<span class="cap"><b>${WINDS[S.prevailing]} round</b></span><span class="cap">${S.dealer===0?'You deal':S.players[S.dealer].name+' deals'}</span>`;
   return `<div class="compass">${winds}<div class="cc">${mid}</div></div>`;
 }
-function mineHTML(){
-  const me=S.players[0], seat=seatOf(0);
-  const sets=me.melds.map(m=>meldHTML(m,'t-sm')).join('')+(me.bonus.length?`<span class="bonus">${me.bonus.map(k=>T(k,'t-sm')).join('')}</span>`:'');
-  return `<span class="av han">${WINDS_ZH[seat]}</span><span><b>You</b> · ${WINDS[seat]} seat · flowers ${seat+1}${S.dealer===0?' · dealer':''} · <span class="num">${me.chips}</span> chips</span>${sets?`<span class="mine-sets">${sets}</span>`:''}`;
+function planeHTML(){
+  const w=wallHTML();
+  return `${rackHTML(2)}${rackHTML(3)}${rackHTML(1)}${infoHTML(2)}${infoHTML(3)}${infoHTML(1)}
+    <div class="ring"><div class="ws ws-t">${w[0]}</div><div class="ws ws-r">${w[1]}</div><div class="ws ws-b">${w[2]}</div><div class="ws ws-l">${w[3]}</div>
+    <div class="pz">${pondHTML(2)}${pondHTML(3)}${compassHTML()}${pondHTML(1)}${pondHTML(0)}</div></div>`;
 }
 function handHTML(){
   const pl=S.players[0]; const arr=pl.hand.slice(); let drawn=null;
@@ -1281,65 +1348,87 @@ function handHTML(){
     if(o.chows) for(const s of o.chows) need.push(...[s,s+1,s+2].filter(x=>x!==k));
     disp.forEach((x,i)=>{ const j=need.indexOf(x); if(j>=0){ use.add(i); need.splice(j,1); } });
   }
-  let hinted=false; const live=S.ui.mode==='turn';
-  return `<div class="hand ${live?'':'idle'}" role="group" aria-label="Your hand">${disp.map((k,i)=>{
+  let hinted=false; const lv=S.ui.mode==='turn';
+  return `<div class="hand ${lv?'':'idle'}" role="group" aria-label="Your hand">${disp.map((k,i)=>{
     let c='t-hand'; if(S.sel===i) c+=' sel';
     if(hintK===k&&!hinted){ c+=' hint'; hinted=true; }
     if(drawn!=null&&i===disp.length-1) c+=' drawn';
     if(use.has(i)) c+=' use';
-    return `<button type="button" class="tile ${c}" data-i="${i}" aria-label="${nm(k)}" ${live?'':'tabindex="-1"'}>${SVG[k]}</button>`;
+    return `<button type="button" class="tile ${c}" data-i="${i}" aria-label="${nm(k)}" ${lv?'':'tabindex="-1"'}>${SVG[k]}</button>`;
   }).join('')}</div>`;
 }
-function actionsHTML(){
+function promptHTML(){
   const m=S.ui.mode;
-  if(m==='turn'){
-    const o=S.ui.opts, k=S.sel!=null?S.disp[S.sel]:null;
-    let h=`<p class="prompt">${S.justClaimed?'Now discard one tile.':'Tap a tile to pick it, tap again to discard.'}</p>`;
-    if(o.hu) h+=`<button class="btn hu" data-act="hu" type="button">Hu! <span class="han">${S.discardCount===0&&S.dealer===0?'天胡':'自摸'}</span> · ${o.hu.tai} tai</button>`;
-    for(const kg of o.kongs) h+=`<button class="btn" data-act="kong" data-k="${kg.k}" type="button">Kong <span class="han">杠</span> ${nm(kg.k)}</button>`;
-    h+=`<button class="btn primary" data-act="discard" type="button" ${k==null?'disabled':''}>${k==null?'Discard':'Discard '+nm(k)}</button>`;
-    return h;
-  }
-  if(m==='claim'){
-    const {o,d,k}=S.ui, can=[o.hu&&'Hu',o.kong&&'Kong',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean);
-    let h=`<p class="claimhead">You can ${can.join(' or ')}</p><p class="prompt">${S.players[d].name} discarded ${T(k)} <b>${nm(k)}</b>. The tiles you'd use are lifted.</p>`;
-    if(o.hu) h+=`<button class="btn hu" data-act="c-hu" type="button">Hu! <span class="han">胡</span> · ${o.hu.tai} tai</button>`;
-    if(o.kong) h+=`<button class="btn" data-act="c-kong" type="button">Kong <span class="han">杠</span></button>`;
-    if(o.pong) h+=`<button class="btn" data-act="c-pong" type="button">Pong <span class="han">碰</span></button>`;
-    if(o.chows) for(const s of o.chows) h+=`<button class="btn" data-act="c-chow" data-s="${s}" type="button">Chi <span class="han">吃</span> ${s%9+1}-${s%9+2}-${s%9+3}</button>`;
-    h+=`<button class="btn primary" data-act="pass" type="button">Pass</button>`;
-    return h;
-  }
-  if(m==='result') return `<button class="btn" data-act="show" type="button">Show scoring</button><button class="btn primary" data-act="next" type="button">Next hand</button>`;
-  return `<p class="prompt">${S.turn===0?'Your turn':S.players[S.turn].name+' is playing…'}</p>`;
+  if(m==='turn') return `<span class="myprompt">${S.ui.opts.hu?'You can win!':S.justClaimed?'Discard a tile':'Your turn · tap a tile twice to discard'}</span>`;
+  if(m==='claim'){ const o=S.ui.o, can=[o.hu&&'Hu',o.kong&&'Gang',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean); return `<span class="myprompt claim">You can ${can.join(' or ')}!</span>`; }
+  if(m==='result') return `<span class="myprompt">${S.result.type==='draw'?'Draw game':S.result.w===0?'You win!':S.players[S.result.w].name+' wins'}</span>`;
+  return `<span class="myprompt" style="opacity:.75">${S.players[S.turn].name} is playing…</span>`;
 }
+function myareaHTML(){
+  const me=S.players[0];
+  const sets=me.melds.map(m=>meldHTML(m,'t-my')).join('')+(me.bonus.length?`<span class="bonus">${me.bonus.map(k=>T(k,'t-my')).join('')}</span>`:'');
+  return `<div class="myrow"><div class="mysets" role="button" tabindex="0" data-inspect="0" aria-label="Your sets and flowers">${sets}</div>${promptHTML()}</div>${handHTML()}`;
+}
+function bannersHTML(){
+  const m=S.ui.mode;
+  const B=(act,label,tiles,cls='',extra='',sub='')=>`<button type="button" class="ban ${cls}" data-act="${act}" ${extra}><span class="bl">${label}</span>${sub?`<span class="bx">${sub}</span>`:''}${tiles?`<span class="bt">${tiles.map(k=>T(k,'t-ban')).join('')}</span>`:''}</button>`;
+  let h='';
+  if(m==='turn'){
+    const o=S.ui.opts;
+    if(o.hu) h+=B('hu','HU!',null,'hu','',`${o.hu.tai} tai · ${S.discardCount===0&&S.dealer===0?'天胡':'自摸'}`);
+    for(const kg of o.kongs) h+=B('kong','GANG',[kg.k,kg.k,kg.k,kg.k],'',`data-k="${kg.k}"`);
+    if(S.sel!=null) h+=B('discard','DISCARD',[S.disp[S.sel]]);
+  } else if(m==='claim'){
+    const {o,k}=S.ui;
+    if(o.hu) h+=B('c-hu','HU!',[k],'hu','',`${o.hu.tai} tai`);
+    if(o.kong) h+=B('c-kong','GANG',[k,k,k,k]);
+    if(o.pong) h+=B('c-pong','PONG',[k,k,k]);
+    if(o.chows) for(const s of o.chows) h+=B('c-chow','CHI',[s,s+1,s+2],'',`data-s="${s}"`);
+    h+=B('pass','PASS',null,'pass');
+  } else if(m==='result'){
+    h+=B('show','SCORING',null,'pass')+B('next','NEXT HAND',null,'go');
+  }
+  return h;
+}
+const SPEEDS=[[900,'1×'],[450,'2×'],[180,'4×']];
+const speedLabel=()=>SET.speed>=700?'1×':SET.speed>=300?'2×':'4×';
 function syncIcons(){
-  const c=$('#ib-coach'), s=$('#ib-sound'); if(!c) return;
+  const c=$('#gb-coach'), s=$('#gb-sound'), sp=$('#gb-speed'); if(!c) return;
   c.setAttribute('aria-pressed',String(!!SET.coach));
-  const on=SET.sound||SET.music; s.innerHTML=on?ICON.sound:ICON.mute; s.setAttribute('aria-label',on?'Mute sound and music':'Turn on sound and music');
+  const on=SET.sound||SET.music; s.setAttribute('aria-pressed',String(on)); s.textContent=on?'Sound':'Muted';
+  sp.textContent='Speed '+speedLabel();
 }
 function renderPlay(){
   if(!S) return;
-  $('#tb-info').innerHTML=`<span class="pill"><span class="han">${WINDS_ZH[S.prevailing]}</span>${WINDS[S.prevailing]} round</span><span class="hide-sm">Hand ${S.handNo}</span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span>`;
   syncIcons();
-  const dock=$('#dock');
-  dock.classList.toggle('alert',S.ui.mode==='claim'||(S.ui.mode==='turn'&&!!S.ui.opts.hu));
-  dock.innerHTML=`${coachHTML()}${handHTML()}<div class="actions">${actionsHTML()}</div>`;
-  $('#table').innerHTML=`${seatHTML(2)}${seatHTML(1)}${seatHTML(3)}${seatHTML(0)}${pondHTML(2)}${pondHTML(3)}${compassHTML()}${pondHTML(1)}${pondHTML(0)}`;
+  $('#coachfloat').innerHTML=coachHTML();
+  $('#banners').innerHTML=bannersHTML();
+  $('#myarea').innerHTML=myareaHTML();
+  $('#plane').innerHTML=planeHTML();
+  const me=S.players[0];
+  $('#gstatus').innerHTML=`<span>Dealer: <b>${S.dealer===0?'You':S.players[S.dealer].name}</b></span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span><span><b class="num">${me.chips}</b> pts</span><span>${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span> · hand ${S.handNo}</span><span class="rot-tip">Turn sideways for a bigger table</span>`;
+  $('#ginfo').innerHTML=`Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> · ${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span>`;
   S.animKey=S.discardCount;
   fitTable();
   renderModal(false);
 }
 function fitTable(){
-  const t=$('#table'); if(!t||$('#v-play').hidden) return;
-  const W=t.clientWidth; if(!W) return;
-  const pwW=(W-16)/14-2;
-  const avail=window.innerHeight-($('#dock').offsetHeight||200)-($('.topbar').offsetHeight||50)-34;
-  const pwH=avail/(14*1.43)-1;
-  const floor=W>700?28:18;
-  let pw=Math.min(pwW,Math.max(pwH,floor)); pw=Math.max(14,Math.min(48,pw));
-  t.style.setProperty('--pw',pw.toFixed(1)+'px');
-  t.style.setProperty('--mw',Math.max(11,Math.min(22,pw*.6)).toFixed(1)+'px');
+  const v=$('#v-play'), st=$('#stage'), pl=$('#plane'); if(!st||!pl||v.hidden) return;
+  const W=v.clientWidth||window.innerWidth, H=window.innerHeight;
+  const hw=Math.max(20,Math.min(64,(W-30)/14.9,H<520?H*.1:H*.12));
+  v.style.setProperty('--hw',hw.toFixed(1)+'px');
+  const sw=st.clientWidth, sh=st.clientHeight; if(!sw||!sh) return;
+  const tilt=sw>sh*1.2?30:20;
+  pl.style.setProperty('--tilt',tilt+'deg');
+  let pw=parseFloat(pl.style.getPropertyValue('--pw'))||20;
+  const cos=Math.cos(tilt*Math.PI/180);
+  for(let i=0;i<3;i++){
+    const w=pl.offsetWidth, h=pl.offsetHeight*cos*1.04;
+    if(!w||!h) break;
+    pw=Math.max(10,Math.min(44,pw*Math.min((sw-6)/w,(sh-6)/h)));
+    pl.style.setProperty('--pw',pw.toFixed(2)+'px');
+    pl.style.setProperty('--mw',Math.max(9,Math.min(22,pw*.62)).toFixed(2)+'px');
+  }
 }
 
 /* ---- sheets ---- */
@@ -1387,14 +1476,19 @@ function settingsHTML(){
   return `<div class="sheet-head"><div><h2>Settings</h2></div>${closeBtn()}</div>
     <div class="setlist">
       ${sw('s-coach','Coach hints','Suggested discards, waits and claim advice',SET.coach)}
-      ${sw('s-labels','English numbers on tiles','1–9 and E S W N in the top-right corner',SET.labels)}
+      ${sw('s-labels','English numbers on 萬 tiles','1–9 in the top-right corner of the character tiles',SET.labels)}
       ${sw('s-sound','Sound effects','Tile clacks, plus chimes for your turn and claims',SET.sound)}
       ${sw('s-music','Music','Soft background music',SET.music)}
-      <div class="setrow"><span><b>Bot speed</b></span><div class="seg" role="radiogroup" aria-label="Bot speed">${[['1100','Relaxed'],['650','Normal'],['250','Fast']].map(([v,l])=>`<button type="button" role="radio" aria-checked="${String(SET.speed)===v}" data-speed="${v}">${l}</button>`).join('')}</div></div>
+      <div class="setrow"><span><b>Bot speed</b></span><div class="seg" role="radiogroup" aria-label="Bot speed">${SPEEDS.map(([v,l])=>`<button type="button" role="radio" aria-checked="${speedLabel()===l}" data-speed="${v}">${l}</button>`).join('')}</div></div>
     </div>
-    <div class="row"><button class="btn" data-act="newgame" type="button">${newArmed?'Tap again to restart':'Start a new game'}</button></div>`;
+    <div class="row"><button class="btn" data-act="log" type="button">Table log</button><button class="btn" data-act="newgame" type="button">${newArmed?'Tap again to restart':'Start a new game'}</button></div>`;
 }
 function logHTML(){ return `<div class="sheet-head"><div><h2>Table log</h2><p class="sub">Newest first</p></div>${closeBtn()}</div><ol class="loglist">${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol>`; }
+function menuHTML(){
+  const L=[['tiles','Tiles','Every tile with its name and what it does'],['rules','Rules','Turns, claiming, kongs, paying out'],['tai','Tai','The scoring table with examples'],['strategy','Strategy','Ten tips the coach uses'],['quiz','Quiz','Name the tile, count the tai, find the wait']];
+  return `<div class="sheet-head"><div><h2>Menu</h2><p class="sub">Learn more, then come back to the table. Your game keeps its place.</p></div>${closeBtn()}</div>
+    <nav class="menu-list">${L.map(([h,t,d])=>`<a class="menu-link" href="#${h}"><b>${t}</b><span>${d}</span></a>`).join('')}<button type="button" class="menu-link" data-act="log"><b>Table log</b><span>Everything that has happened this hand</span></button></nav>`;
+}
 function renderModal(force){
   const md=$('#modal');
   if(!S||$('#v-play').hidden){ md.hidden=true; md.dataset.kind=''; return; }
@@ -1403,7 +1497,7 @@ function renderModal(force){
   else if(S.showResult&&S.result) kind='result'+S.handNo;
   if(!kind){ md.hidden=true; md.dataset.kind=''; return; }
   if(force||md.dataset.kind!==kind){
-    body= kind.startsWith('result')?resultHTML(): kind==='settings'?settingsHTML(): kind==='log'?logHTML(): inspectHTML(SHEET.p);
+    body= kind.startsWith('result')?resultHTML(): kind==='settings'?settingsHTML(): kind==='log'?logHTML(): kind==='menu'?menuHTML(): inspectHTML(SHEET.p);
     md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true">${body}</div>`;
     md.dataset.kind=kind;
   }
@@ -1424,27 +1518,28 @@ function onAct(el){
   else if(a==='next'){ SHEET=null; nextHand(); }
   else if(a==='show'){ SHEET=null; S.showResult=true; renderModal(true); }
   else if(a==='close'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
+  else if(a==='log') openSheet('log');
   else if(a==='newgame'){
     if(newArmed){ clearTimeout(newArmed); newArmed=null; SHEET=null; newMatch(); renderModal(true); }
     else { newArmed=setTimeout(()=>{ newArmed=null; if(SHEET==='settings') renderModal(true); },3000); renderModal(true); }
   }
 }
-$('#dock').addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
-  const t=e.target.closest('[data-i]'); if(!t||!S||S.ui.mode!=='turn') return;
+function inspectFrom(e){ const s=e.target.closest('[data-inspect]'); if(s){ openSheet({p:+s.dataset.inspect}); return true; } return false; }
+$('#myarea').addEventListener('click',e=>{
+  const t=e.target.closest('[data-i]');
+  if(!t){ inspectFrom(e); return; }
+  if(!S||S.ui.mode!=='turn') return;
   const i=+t.dataset.i;
   if(S.sel===i) act({type:'discard',k:S.disp[i]}); else { S.sel=i; SFX.tap(); renderPlay(); }
 });
-$('#table').addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
-  const s=e.target.closest('[data-inspect]'); if(s) openSheet({p:+s.dataset.inspect});
-});
-$('#table').addEventListener('keydown',e=>{
+$('#banners').addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(b) onAct(b); });
+$('#plane').addEventListener('click',e=>inspectFrom(e));
+['#plane','#myarea'].forEach(sel=>$(sel).addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ') return;
   const s=e.target.closest('[data-inspect]'); if(s){ e.preventDefault(); openSheet({p:+s.dataset.inspect}); }
-});
+}));
 $('#modal').addEventListener('click',e=>{
-  const sp=e.target.closest('[data-speed]'); if(sp){ SET.speed=+sp.dataset.speed; saveSet(); renderModal(true); return; }
+  const sp=e.target.closest('[data-speed]'); if(sp){ SET.speed=+sp.dataset.speed; saveSet(); syncIcons(); renderModal(true); return; }
   const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
   if(e.target.id==='modal'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
 });
@@ -1456,14 +1551,13 @@ $('#modal').addEventListener('change',e=>{
   else if(id==='s-music'){ SET.music=on; audioInit(); on?musicOn():musicOff(); }
   saveSet(); syncIcons();
 });
-$('#ib-coach').addEventListener('click',()=>{ SET.coach=!SET.coach; saveSet(); renderPlay(); });
-$('#ib-sound').addEventListener('click',()=>{
-  const on=!(SET.sound||SET.music); SET.sound=on; SET.music=on; saveSet(); audioInit(); on?musicOn():musicOff(); syncIcons();
-});
-$('#ib-log').addEventListener('click',()=>openSheet('log'));
-$('#ib-set').addEventListener('click',()=>openSheet('settings'));
-$('#ib-coach').innerHTML=ICON.bulb; $('#ib-log').innerHTML=ICON.log; $('#ib-set').innerHTML=ICON.set;
+$('#gb-menu').addEventListener('click',()=>openSheet('menu'));
+$('#gb-coach').addEventListener('click',()=>{ SET.coach=!SET.coach; saveSet(); renderPlay(); });
+$('#gb-sound').addEventListener('click',()=>{ const on=!(SET.sound||SET.music); SET.sound=on; SET.music=on; saveSet(); audioInit(); on?musicOn():musicOff(); syncIcons(); });
+$('#gb-speed').addEventListener('click',()=>{ const i=SPEEDS.findIndex(s=>s[1]===speedLabel()); SET.speed=SPEEDS[(i+1)%SPEEDS.length][0]; saveSet(); syncIcons(); });
+$('#gb-opt').addEventListener('click',()=>openSheet('settings'));
 window.addEventListener('resize',()=>fitTable());
+window.addEventListener('orientationchange',()=>setTimeout(fitTable,300));
 
 /* ---- tiles guide ---- */
 const GROUPS=[
@@ -1581,7 +1675,8 @@ function route(){
   document.querySelectorAll('.tabs a').forEach(a=>{ if(a.getAttribute('href')==='#'+v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   if(v==='tiles') renderTiles();
   if(v==='quiz'&&!Q.data) newQ();
-  if(v==='play'){ renderPlay(); renderModal(true); } else $('#modal').hidden=true;
+  document.body.classList.toggle('playing',v==='play');
+  if(v==='play'){ renderPlay(); renderModal(true); requestAnimationFrame(fitTable); } else { SHEET=null; $('#modal').hidden=true; }
 }
 window.addEventListener('hashchange',()=>{ route(); window.scrollTo(0,0); });
 document.body.classList.toggle('nolabels',!SET.labels);
