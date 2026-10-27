@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Singapore Mahjong Coach</title>
-<meta name="app-version" content="v13">
+<meta name="app-version" content="v14">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
@@ -317,6 +317,11 @@ body.playing .masthead{display:none}
 .review h3{color:var(--coach) !important; font-size:13px !important; letter-spacing:.06em; text-transform:uppercase; margin-bottom:4px}
 .review ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:4px; font-size:14.5px}
 
+/* shown until iOS lets the page play sound (it needs one tap after launch, and again after switching apps) */
+.sndhint{position:absolute; top:calc(env(safe-area-inset-top,0px) + 44px); left:50%; translate:-50% 0; z-index:12; pointer-events:none;
+  font:500 13.5px var(--f-ui); color:#3b2408; background:var(--gold); padding:6px 14px; border-radius:999px; box-shadow:0 6px 16px rgba(0,0,0,.35); animation:callpop .3s ease-out; white-space:nowrap}
+#v-play{position:relative}
+
 /* your hand */
 .myarea{display:flex; flex-direction:column; gap:4px; align-items:center}
 .myrow{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; width:100%; max-width:calc(var(--hw)*15.4); min-height:20px}
@@ -486,6 +491,7 @@ dl.gloss dd{margin:0; color:var(--muted)}
           <button class="gb" id="gb-opt" type="button">Options</button>
         </div>
       </div>
+      <div id="sndhint" class="sndhint" hidden>Tap anywhere to turn on sound</div>
       <div class="stage" id="stage">
         <div class="plane" id="plane"></div>
         <div class="coachfloat" id="coachfloat"></div>
@@ -1300,7 +1306,7 @@ function bankedItems(p){
 
 <script>
 /* ======== UI ======== */
-const APP_VERSION='v13';
+const APP_VERSION='v14';
 const $=s=>document.querySelector(s);
 const SET={coach:true,labels:true,speed:450,sound:true,music:true,voice:'en',coachStyle:'strategic',level:'normal',sayTiles:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
@@ -1319,6 +1325,7 @@ function audioInit(){
   /* play like media, so the iPhone's silent switch doesn't mute the game (the in-app switches still do) */
   try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
   try{ AU.ctx=new AC(); }catch(e){ return; }
+  AU.ctx.onstatechange=updSndHint;
   /* classic iOS unlock: start a one-sample silent buffer inside the tap */
   try{ const sb=AU.ctx.createBufferSource(); sb.buffer=AU.ctx.createBuffer(1,1,22050); sb.connect(AU.ctx.destination); sb.start(0); }catch(e){}
   const c=AU.ctx, master=c.createGain(); master.gain.value=.9; master.connect(c.destination);
@@ -1335,9 +1342,15 @@ function audioInit(){
   if(SET.music) musicOn();
 }
 /* touchend and click count as a real tap on iOS; pointerdown does not */
-['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ audioInit(); voiceUnlock(); },{capture:true,passive:true}));
-document.addEventListener('visibilitychange',()=>{ if(!AU.ctx) return; if(document.hidden) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}); });
+['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ audioInit(); voiceUnlock(); setTimeout(updSndHint,150); },{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(AU.ctx){ if(document.hidden) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}).finally(updSndHint); } setTimeout(updSndHint,300); });
 window.addEventListener('pageshow',()=>{ if(AU.ctx&&!document.hidden) AU.ctx.resume().catch(()=>{}); });
+function updSndHint(){
+  const el=document.getElementById('sndhint'); if(!el) return;
+  const want=SET.sound||SET.music, running=AU.ctx&&AU.ctx.state==='running';
+  el.hidden=!(want&&!running&&!document.hidden);
+}
+setTimeout(updSndHint,600);
 function ok(name,gap=.06){ if(!AU.ctx||!SET.sound) return false; if(AU.ctx.state!=='running'){ AU.ctx.resume().catch(()=>{}); return false; } const t=AU.ctx.currentTime; if(AU.last[name]&&t-AU.last[name]<gap) return false; AU.last[name]=t; return true; }
 function env(g,t,peak,dur){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+dur); }
 function clack(when=0,vol=1,pitch=1){
@@ -1978,7 +1991,7 @@ $('#modal').addEventListener('change',e=>{
   else if(id==='s-sound'){ SET.sound=on; }
   else if(id==='s-saytiles'){ SET.sayTiles=on; }
   else if(id==='s-music'){ SET.music=on; audioInit(); on?musicOn():musicOff(); }
-  saveSet(); syncIcons();
+  saveSet(); syncIcons(); updSndHint();
 });
 $('#gb-menu').addEventListener('click',()=>openSheet('menu'));
 $('#gb-coach').addEventListener('click',()=>{ SET.coach=!SET.coach; saveSet(); renderPlay(); });
