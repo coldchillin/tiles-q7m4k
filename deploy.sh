@@ -149,7 +149,7 @@ HDRS="$(curl -fsS -D - -o "$TMP" \
           -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
           "${SITE_URL}?cb=${SHA:0:7}")" \
   || die "could not fetch $SITE_URL"
-printf '%s\n' "$HDRS" | grep -iE '^(HTTP/|last-modified|age|x-cache):' | sed 's/^/    /'
+printf '%s\n' "$HDRS" | grep -iE '^(HTTP/|last-modified:|age:|x-cache:)' | sed 's/^/    /'
 
 grep -qF "$GATE" "$TMP" || die "live page does not contain <meta $GATE>.
        The deploy reported success, so this is most likely CDN caching —
