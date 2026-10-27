@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Singapore Mahjong Coach</title>
-<meta name="app-version" content="v9">
+<meta name="app-version" content="v10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
@@ -240,6 +240,28 @@ body.playing .masthead{display:none}
 #v-play.portrait .coachfloat{position:static; max-width:none; width:100%; flex:none}
 #v-play.portrait .coachfloat:empty{display:none}
 
+/* landscape: buttons float over the table's top corners, your flowers sit beside your hand, ponds go wide and short */
+#v-play.wide{position:relative}
+#v-play.wide .gbar{position:absolute; top:0; left:0; right:0; pointer-events:none}
+#v-play.wide .gbar .gb,#v-play.wide .gbar .ginfo{pointer-events:auto}
+#v-play.wide .gstatus{display:none}
+#v-play.wide .stage{padding-top:2px}
+#v-play.wide .myarea{flex-direction:row; align-items:flex-end; justify-content:center; gap:12px}
+#v-play.wide .myrow{flex-direction:column-reverse; align-items:flex-start; justify-content:flex-end; width:auto; max-width:170px; gap:4px; min-height:0}
+#v-play.wide .myprompt{text-align:left; font-size:13px; line-height:1.25}
+#v-play.wide .pz{grid-template-columns:calc(4*var(--slot)) calc(8*var(--slot)) calc(4*var(--slot));
+  grid-template-rows:minmax(calc(3*var(--row)),auto) minmax(calc(4*var(--row)),auto) minmax(calc(3*var(--row)),auto)}
+#v-play.wide .pond-t,#v-play.wide .pond-b{grid-template-columns:repeat(8,var(--pw))}
+
+/* call bubbles: PONG! CHI! GANG! HU! on the caller's side */
+.callout{position:absolute; z-index:6; font:400 clamp(24px,5vw,40px)/1 'Lilita One', var(--f-ui); letter-spacing:.03em; color:#c41f1c; background:#fffaf0; padding:8px 18px 10px; border-radius:16px;
+  box-shadow:0 0 0 3px #3b1d0e, 0 0 0 6px #d6a94a, 0 12px 26px rgba(0,0,0,.4); pointer-events:none; animation:callpop .32s ease-out; white-space:nowrap}
+.callout small{display:block; font:600 12px var(--f-ui); color:#7a4a12; letter-spacing:0; margin-top:3px; text-align:center}
+.callout.hu{background:#c41f1c; color:#fff4cf} .callout.hu small{color:#ffe1a6}
+.c-t{top:12%; left:50%; translate:-50% 0} .c-b{bottom:16%; left:50%; translate:-50% 0}
+.c-l{left:10%; top:42%} .c-r{right:10%; top:42%}
+@keyframes callpop{0%{opacity:0; scale:.5} 70%{opacity:1; scale:1.1} 100%{scale:1}}
+
 /* your hand */
 .myarea{display:flex; flex-direction:column; gap:4px; align-items:center}
 .myrow{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; width:100%; max-width:calc(var(--hw)*15.4); min-height:20px}
@@ -413,6 +435,7 @@ dl.gloss dd{margin:0; color:var(--muted)}
         <div class="plane" id="plane"></div>
         <div class="coachfloat" id="coachfloat"></div>
         <div class="banners" id="banners"></div>
+        <div id="callouts" aria-live="polite"></div>
       </div>
       <div class="myarea" id="myarea"></div>
       <div class="gstatus" id="gstatus"></div>
@@ -1097,9 +1120,9 @@ function bankedItems(p){
 
 <script>
 /* ======== UI ======== */
-const APP_VERSION='v9';
+const APP_VERSION='v10';
 const $=s=>document.querySelector(s);
-const SET={coach:true,labels:true,speed:450,sound:true,music:true};
+const SET={coach:true,labels:true,speed:450,sound:true,music:true,voice:'en'};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
 function saveSet(){try{localStorage.setItem('sgmj-set',JSON.stringify(SET));}catch(e){}}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1130,7 +1153,7 @@ function audioInit(){
   if(SET.music) musicOn();
 }
 /* touchend and click count as a real tap on iOS; pointerdown does not */
-['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,audioInit,{capture:true,passive:true}));
+['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ audioInit(); voiceUnlock(); },{capture:true,passive:true}));
 document.addEventListener('visibilitychange',()=>{ if(!AU.ctx) return; if(document.hidden) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}); });
 window.addEventListener('pageshow',()=>{ if(AU.ctx&&!document.hidden) AU.ctx.resume().catch(()=>{}); });
 function ok(name,gap=.06){ if(!AU.ctx||!SET.sound) return false; if(AU.ctx.state!=='running'){ AU.ctx.resume().catch(()=>{}); return false; } const t=AU.ctx.currentTime; if(AU.last[name]&&t-AU.last[name]<gap) return false; AU.last[name]=t; return true; }
@@ -1187,6 +1210,43 @@ function musicOff(){
   AU.mus.gain.cancelScheduledValues(AU.ctx.currentTime);
   AU.mus.gain.setTargetAtTime(0,AU.ctx.currentTime,.25);
   if(AU.timer){ clearInterval(AU.timer); AU.timer=null; }
+}
+
+/* ---- spoken calls: each player has their own voice ---- */
+const VO={ok:false,voices:[]};
+const hasTTS=()=>{ try{ return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance==='function'; }catch(e){ return false; } };
+function loadVoices(){ try{ VO.voices=speechSynthesis.getVoices()||[]; }catch(e){} }
+if(hasTTS()){ loadVoices(); try{ speechSynthesis.addEventListener('voiceschanged',loadVoices); }catch(e){} }
+/* iOS only lets speech start inside a tap; one silent utterance unlocks it for the rest of the session */
+function voiceUnlock(){ if(VO.ok||!hasTTS()) return; VO.ok=true; try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} }
+const CALL={en:{pong:'Pong!',chow:'Chee!',kong:'Gang!',hu:'Hoo!',zimo:'Zee moh!'},zh:{pong:'碰！',chow:'吃！',kong:'杠！',hu:'胡了！',zimo:'自摸！'}};
+const CALL_LABEL={pong:['PONG!','碰'],chow:['CHI!','吃'],kong:['GANG!','杠'],hu:['HU!','胡'],zimo:['ZI MO!','自摸']};
+function pickVoice(lang){
+  const pref=lang==='zh'?['zh-cn','zh-sg','zh-tw','zh-hk','zh']:['en-sg','en-gb','en-au','en-us','en'];
+  for(const L of pref){ const f=VO.voices.find(x=>(x.lang||'').replace('_','-').toLowerCase().startsWith(L)); if(f) return f; }
+  return null;
+}
+function sayCall(kind,p){
+  if(!SET.sound||SET.voice==='off'||!hasTTS()) return;
+  try{
+    const L=SET.voice==='zh'?'zh':'en', u=new SpeechSynthesisUtterance(CALL[L][kind]);
+    u.lang=L==='zh'?'zh-CN':'en-GB'; const vv=pickVoice(L); if(vv) u.voice=vv;
+    u.pitch=[1,1.3,.75,1.12][p]||1; u.rate=1.05; u.volume=1;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+function callout(kind,p){
+  const id=(S.callout?S.callout.id:0)+1;
+  S.callout={p,kind,id};
+  sayCall(kind,p); renderCallouts();
+  setTimeout(()=>{ if(S&&S.callout&&S.callout.id===id){ S.callout=null; renderCallouts(); } },1500);
+}
+function renderCallouts(){
+  const el=document.getElementById('callouts'); if(!el) return;
+  const c=S&&S.callout;
+  if(!c){ el.innerHTML=''; return; }
+  const [en,zh]=CALL_LABEL[c.kind], who=c.p===0?'You':S.players[c.p].name;
+  el.innerHTML=`<div class="callout c-${POSN[c.p]}${c.kind==='hu'||c.kind==='zimo'?' hu':''}" role="status">${en} <span class="han">${zh}</span><small>${who}</small></div>`;
 }
 
 /* ---- tile faces ---- */
@@ -1261,7 +1321,7 @@ var ui={
   humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
   handOver(){ S.showResult=true; SHEET=null; renderPlay(); },
   note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); },
-  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld') SFX.meld(); else if(name==='bonus') SFX.bonus(); else if(name==='win') (d.w===0?SFX.win():SFX.lose()); else if(name==='draw') SFX.drawGame(); }
+  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld'){ SFX.meld(); callout(d.type,d.p); } else if(name==='bonus') SFX.bonus(); else if(name==='win'){ callout(d.selfDrawn?'zimo':'hu',d.w); setTimeout(()=>d.w===0?SFX.win():SFX.lose(),500); } else if(name==='draw') SFX.drawGame(); }
 };
 function act(a){ if(!S.resolve) return; const r=S.resolve; S.resolve=null; S.ui={mode:'wait'}; S.sel=null; r(a); }
 
@@ -1465,13 +1525,13 @@ function fitTable(force){
   const key=[window.innerWidth,window.innerHeight,st.clientWidth,st.clientHeight,$('#coachfloat').offsetHeight,...S.players.map(p=>p.discards.length+'.'+p.melds.length+'.'+p.bonus.length+'.'+p.hand.length)].join('|');
   if(!force&&key===FITKEY) return; FITKEY=key;
   const W=v.clientWidth||window.innerWidth, H=window.innerHeight;
-  const hw=Math.max(20,Math.min(64,(W-30)/14.9,H<520?H*.1:H*.12));
+  const portrait=W<H*0.95, wide=W>H*1.25;
+  v.classList.toggle('portrait',portrait); v.classList.toggle('wide',wide);
+  const hw=Math.max(20,Math.min(64,(W-30-(wide?160:0))/14.9,H<520?H*.105:H*.12));
   v.style.setProperty('--hw',hw.toFixed(1)+'px');
-  const portrait=W<H*0.95;
-  v.classList.toggle('portrait',portrait);
   const cf=$('#coachfloat');
   const sw=st.clientWidth, sh=st.clientHeight-(portrait&&cf?cf.offsetHeight+6:0); if(!sw||sh<=0) return;
-  const tilt=portrait?14:(sw>sh*1.2?30:20);
+  const tilt=portrait?14:wide?40:24;
   pl.style.setProperty('--tilt',tilt+'deg');
   let pw=parseFloat(pl.style.getPropertyValue('--pw'))||20;
   const cos=Math.cos(tilt*Math.PI/180);
@@ -1539,6 +1599,7 @@ function settingsHTML(){
       ${sw('s-labels','English numbers on 萬 tiles','1–9 in the top-right corner of the character tiles',SET.labels)}
       ${sw('s-sound','Sound effects','Tile clacks, plus chimes for your turn and claims',SET.sound)}
       ${sw('s-music','Music','Soft background music',SET.music)}
+      <div class="setrow"><span><b>Player calls</b><span class="sub">Players say Pong, Chi, Gang and Hu out loud</span></span><div class="seg" role="radiogroup" aria-label="Player calls">${[['en','English'],['zh','中文'],['off','Off']].map(([v,l])=>`<button type="button" role="radio" aria-checked="${SET.voice===v}" data-voice="${v}">${l}</button>`).join('')}</div></div>
       <div class="setrow"><span><b>Bot speed</b></span><div class="seg" role="radiogroup" aria-label="Bot speed">${SPEEDS.map(([v,l])=>`<button type="button" role="radio" aria-checked="${speedLabel()===l}" data-speed="${v}">${l}</button>`).join('')}</div></div>
     </div>
     <div class="setrow"><span><b>Test sound</b><span class="sub" id="snd-state">Plays a chime and shows whether this device allows sound</span></span><button class="btn small" data-act="testsound" type="button">Play</button></div>
@@ -1593,7 +1654,8 @@ function onAct(el){
     audioInit();
     const el=$('#snd-state'), c=AU.ctx;
     if(!c){ if(el) el.textContent='This browser has no web audio, so the game can\'t play sound here.'; return; }
-    const play=()=>{ AU.last={}; const was=SET.sound; SET.sound=true; SFX.win(); SET.sound=was; };
+    voiceUnlock();
+    const play=()=>{ AU.last={}; const was=SET.sound; SET.sound=true; SFX.win(); setTimeout(()=>sayCall('pong',0),700); SET.sound=was; };
     c.resume().then(()=>{ play(); if(el) el.textContent=`Audio is ${c.state}. ${c.state==='running'?'You should hear a chime. If not, check the volume buttons'+(navigator.audioSession?'':' and the silent switch')+'.':'The device is blocking sound; try tapping Play again.'}`; })
       .catch(()=>{ if(el) el.textContent=`Audio is ${c.state}: the device refused to start sound.`; });
   }
@@ -1618,6 +1680,7 @@ $('#plane').addEventListener('click',e=>inspectFrom(e));
 }));
 $('#modal').addEventListener('click',e=>{
   const sp=e.target.closest('[data-speed]'); if(sp){ SET.speed=+sp.dataset.speed; saveSet(); syncIcons(); renderModal(true); return; }
+  const vc=e.target.closest('[data-voice]'); if(vc){ SET.voice=vc.dataset.voice; saveSet(); renderModal(true); if(SET.voice!=='off'){ voiceUnlock(); sayCall('pong',0); } return; }
   const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
   if(e.target.id==='modal'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
 });
