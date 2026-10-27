@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Singapore Mahjong Coach</title>
-<meta name="app-version" content="v10">
+<meta name="app-version" content="v11">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
@@ -182,7 +182,11 @@ body.playing .masthead{display:none}
   grid-template-areas:"wt wt wt" "wl pz wr" "wb wb wb"}
 .ws{display:flex; gap:1px}
 .ws-t{grid-area:wt} .ws-b{grid-area:wb} .ws-l{grid-area:wl; flex-direction:column} .ws-r{grid-area:wr; flex-direction:column}
-.ws .bk{flex:1; border-radius:2px}
+.ws .bk{flex:1; border-radius:2px; box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 2px 3px rgba(0,0,0,.35)}
+.ws-t .bk{border-bottom:2px solid #f2ecdc} .ws-b .bk{border-top:2px solid #f2ecdc}
+.ws-l .bk{border-right:2px solid #f2ecdc} .ws-r .bk{border-left:2px solid #f2ecdc}
+/* tiles lying on the felt show their blue back as a thick lower edge */
+.plane .tile:not(.back){box-shadow:inset 0 0 0 1px var(--tile-edge), 0 calc(var(--w)*.1) 0 var(--tile-back), 0 calc(var(--w)*.15) calc(var(--w)*.12) rgba(0,0,0,.32)}
 .ws .bk.gone{visibility:hidden}
 .pz{grid-area:pz; --slot:calc(var(--pw) + 2px); --row:calc(var(--pw)*1.413 + 2px); display:grid; gap:calc(var(--pw)*.25); justify-content:center;
   grid-template-columns:calc(4*var(--slot)) calc(6*var(--slot)) calc(4*var(--slot));
@@ -207,7 +211,7 @@ body.playing .masthead{display:none}
 .tile.last{outline:2px solid var(--gold); outline-offset:1px}
 
 /* floating coach + claim banners */
-.coachfloat{position:absolute; bottom:4px; left:4px; max-width:min(330px, 32%); z-index:3}
+.coachfloat{position:absolute; bottom:4px; left:4px; max-width:min(320px, 27%); z-index:3}
 .coachfloat .coach{background:rgba(20,12,8,.72); color:#fbf3df; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(244,205,106,.28); border-radius:14px; padding:8px 10px; font-size:13px; line-height:1.4; box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .coachfloat .coach-main svg{stroke:var(--gold)}
 .coachfloat .coach-sub{color:rgba(251,243,223,.72)}
@@ -234,8 +238,9 @@ body.playing .masthead{display:none}
   grid-template-columns:var(--sidew) auto var(--sidew); grid-template-rows:var(--rackh) auto auto auto;
   grid-template-areas:". rT ." ". iT ." "iL ring iR" ". iB ."}
 #v-play.portrait .rack-l,#v-play.portrait .rack-r{display:none}
-#v-play.portrait .pz{grid-template-columns:calc(3*var(--slot)) calc(6*var(--slot)) calc(3*var(--slot));
-  grid-template-rows:minmax(calc(4*var(--row)),auto) minmax(calc(8*var(--row)),auto) minmax(calc(4*var(--row)),auto)}
+#v-play.portrait .pz{grid-template-columns:calc(3*var(--slot)) calc(8*var(--slot)) calc(3*var(--slot));
+  grid-template-rows:minmax(calc(3*var(--row)),auto) minmax(calc(6*var(--row)),auto) minmax(calc(3*var(--row)),auto)}
+#v-play.portrait .pond-t,#v-play.portrait .pond-b{grid-template-columns:repeat(8,var(--pw))}
 #v-play.portrait .pond-l,#v-play.portrait .pond-r{grid-template-columns:repeat(3,var(--pw))}
 #v-play.portrait .coachfloat{position:static; max-width:none; width:100%; flex:none}
 #v-play.portrait .coachfloat:empty{display:none}
@@ -249,9 +254,22 @@ body.playing .masthead{display:none}
 #v-play.wide .myarea{flex-direction:row; align-items:flex-end; justify-content:center; gap:12px}
 #v-play.wide .myrow{flex-direction:column-reverse; align-items:flex-start; justify-content:flex-end; width:auto; max-width:170px; gap:4px; min-height:0}
 #v-play.wide .myprompt{text-align:left; font-size:13px; line-height:1.25}
-#v-play.wide .pz{grid-template-columns:calc(4*var(--slot)) calc(8*var(--slot)) calc(4*var(--slot));
-  grid-template-rows:minmax(calc(3*var(--row)),auto) minmax(calc(4*var(--row)),auto) minmax(calc(3*var(--row)),auto)}
-#v-play.wide .pond-t,#v-play.wide .pond-b{grid-template-columns:repeat(8,var(--pw))}
+#v-play.wide .plane{--rackw:calc(var(--pw)*.7); --sidew:calc(var(--mw)*3.3 + 22px)}
+#v-play.wide .pz{grid-template-columns:calc(5*var(--slot)) calc(12*var(--slot)) calc(5*var(--slot));
+  grid-template-rows:minmax(calc(2*var(--row)),auto) minmax(calc(4*var(--row)),auto) minmax(calc(2*var(--row)),auto)}
+#v-play.wide .pond-t,#v-play.wide .pond-b{grid-template-columns:repeat(12,var(--pw))}
+#v-play.wide .pond-l,#v-play.wide .pond-r{grid-template-columns:repeat(5,var(--pw))}
+#v-play.wide .rack-l .bk,#v-play.wide .rack-r .bk{height:calc(var(--pw)*.55)}
+/* landscape: the top player's name sits on the same line as their rack, their sets and flowers to the right */
+#v-play.wide .plane{grid-template-rows:var(--rackh) auto; grid-template-areas:"rT rT rT rT rT" "rL iL ring iR rR"}
+#v-play.wide .info-t{display:contents}
+#v-play.wide .info-t .tag{grid-area:rT; justify-self:start; align-self:center; margin-left:calc(var(--rackw) + var(--sidew))}
+#v-play.wide .info-t .sets{grid-area:rT; justify-self:end; align-self:center; margin-right:calc(var(--rackw) + var(--sidew))}
+#v-play.wide .rack-t{justify-self:center}
+#v-play.wide .info-b{display:none}
+.cw .me{display:none}
+#v-play.wide .cw .me{display:inline}
+.cw .me b{font-weight:400}
 
 /* call bubbles: PONG! CHI! GANG! HU! on the caller's side */
 .callout{position:absolute; z-index:6; font:400 clamp(24px,5vw,40px)/1 'Lilita One', var(--f-ui); letter-spacing:.03em; color:#c41f1c; background:#fffaf0; padding:8px 18px 10px; border-radius:16px;
@@ -262,6 +280,22 @@ body.playing .masthead{display:none}
 .c-l{left:10%; top:42%} .c-r{right:10%; top:42%}
 @keyframes callpop{0%{opacity:0; scale:.5} 70%{opacity:1; scale:1.1} 100%{scale:1}}
 
+/* the discard showcase: the tile just thrown appears big and flat in the middle, sliding in from the discarder's side */
+#showcase{position:absolute; left:50%; top:46%; z-index:5; pointer-events:none; translate:-50% -50%}
+.sc{display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 14px 8px; border-radius:16px; background:rgba(20,12,8,.55);
+  box-shadow:0 10px 30px rgba(0,0,0,.35); transition:scale .4s ease, opacity .4s ease}
+.sc .tile{--w:clamp(44px, 10vh, 76px)}
+.sc-cap{font:500 13px/1.2 var(--f-ui); color:#fbf3df; text-align:center; white-space:nowrap}
+.sc-cap b{color:var(--gold); font-weight:600}
+.sc.settled{scale:.72; opacity:.55}
+.sc-t{animation:sc-t .42s cubic-bezier(.2,.9,.3,1.2)} .sc-b{animation:sc-b .42s cubic-bezier(.2,.9,.3,1.2)}
+.sc-l{animation:sc-l .42s cubic-bezier(.2,.9,.3,1.2)} .sc-r{animation:sc-r .42s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes sc-t{from{transform:translateY(-140%) scale(.5); opacity:0}}
+@keyframes sc-b{from{transform:translateY(140%) scale(.5); opacity:0}}
+@keyframes sc-l{from{transform:translateX(-180%) scale(.5); opacity:0}}
+@keyframes sc-r{from{transform:translateX(180%) scale(.5); opacity:0}}
+.sc.claimable{background:rgba(196,31,28,.75)}
+
 /* your hand */
 .myarea{display:flex; flex-direction:column; gap:4px; align-items:center}
 .myrow{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; width:100%; max-width:calc(var(--hw)*15.4); min-height:20px}
@@ -269,7 +303,7 @@ body.playing .masthead{display:none}
 .mysets .bonus{display:inline-flex; gap:1px}
 .myprompt{font:400 16px 'Lilita One', var(--f-ui); color:var(--gold); letter-spacing:.03em; text-align:right; text-shadow:0 2px 0 rgba(0,0,0,.3)}
 .myprompt.claim{color:#fff4cf; background:#c41f1c; padding:4px 10px; border-radius:999px}
-.t-my{--w:max(20px, calc(var(--hw)*.62))}
+.t-my{--w:max(26px, calc(var(--hw)*.7))}
 .hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:10px}
 .tile.t-hand{height:calc(var(--w)*1.5); border-top:calc(var(--w)*.17) solid var(--back); border-radius:calc(var(--w)*.14);
   box-shadow:inset 0 0 0 1px var(--tile-edge), 0 3px 0 #d3c9b1, 0 8px 14px rgba(0,0,0,.35); cursor:pointer; transition:transform .14s ease; margin-bottom:3px}
@@ -435,7 +469,8 @@ dl.gloss dd{margin:0; color:var(--muted)}
         <div class="plane" id="plane"></div>
         <div class="coachfloat" id="coachfloat"></div>
         <div class="banners" id="banners"></div>
-        <div id="callouts" aria-live="polite"></div>
+        <div id="showcase" aria-live="polite"></div>
+        <div id="callouts"></div>
       </div>
       <div class="myarea" id="myarea"></div>
       <div class="gstatus" id="gstatus"></div>
@@ -882,6 +917,7 @@ function startHand(){
   S.players[S.dealer].hand.push(S.wall.shift());
   log(`Hand ${S.handNo} · ${WINDS[S.prevailing]} round · ${S.players[S.dealer].name} deals as East.`);
   for(let i=0;i<4;i++) replaceBonus((S.dealer+i)%4);
+  if(typeof clearDiscard==='function') clearDiscard();
   ui.render();
   loop(my);
 }
@@ -1120,7 +1156,7 @@ function bankedItems(p){
 
 <script>
 /* ======== UI ======== */
-const APP_VERSION='v10';
+const APP_VERSION='v11';
 const $=s=>document.querySelector(s);
 const SET={coach:true,labels:true,speed:450,sound:true,music:true,voice:'en'};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
@@ -1241,6 +1277,15 @@ function callout(kind,p){
   sayCall(kind,p); renderCallouts();
   setTimeout(()=>{ if(S&&S.callout&&S.callout.id===id){ S.callout=null; renderCallouts(); } },1500);
 }
+let SC_TIMER=null;
+function showDiscard(p,k){
+  const el=document.getElementById('showcase'); if(!el) return;
+  const who=p===0?'You':S.players[p].name;
+  el.innerHTML=`<div class="sc sc-${POSN[p]}" role="status"><span class="tile">${SVG[k]}</span><span class="sc-cap"><b>${who}</b> ${p===0?'discard':'discards'} ${nm(k)}</span></div>`;
+  clearTimeout(SC_TIMER);
+  SC_TIMER=setTimeout(()=>{ const c=el.querySelector('.sc'); if(c) c.classList.add('settled'); },1300);
+}
+function clearDiscard(){ clearTimeout(SC_TIMER); const el=document.getElementById('showcase'); if(el) el.innerHTML=''; }
 function renderCallouts(){
   const el=document.getElementById('callouts'); if(!el) return;
   const c=S&&S.callout;
@@ -1318,10 +1363,10 @@ var ui={
   sleep(ms){ return sleep(ms); },
   speed(){ return +SET.speed||450; },
   humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
-  humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
+  humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; { const c=document.querySelector('#showcase .sc'); if(c){ clearTimeout(SC_TIMER); c.classList.remove('settled'); c.classList.add('claimable'); } } setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
   handOver(){ S.showResult=true; SHEET=null; renderPlay(); },
   note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); },
-  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld'){ SFX.meld(); callout(d.type,d.p); } else if(name==='bonus') SFX.bonus(); else if(name==='win'){ callout(d.selfDrawn?'zimo':'hu',d.w); setTimeout(()=>d.w===0?SFX.win():SFX.lose(),500); } else if(name==='draw') SFX.drawGame(); }
+  event(name,d){ if(name==='discard'){ SFX.discard(); showDiscard(d.p,d.k); } else if(name==='meld'){ SFX.meld(); clearDiscard(); callout(d.type,d.p); } else if(name==='bonus') SFX.bonus(); else if(name==='win'){ clearDiscard(); callout(d.selfDrawn?'zimo':'hu',d.w); setTimeout(()=>d.w===0?SFX.win():SFX.lose(),500); } else if(name==='draw'){ clearDiscard(); SFX.drawGame(); } }
 };
 function act(a){ if(!S.resolve) return; const r=S.resolve; S.resolve=null; S.ui={mode:'wait'}; S.sel=null; r(a); }
 
@@ -1428,7 +1473,7 @@ function pondHTML(p){
 }
 function compassHTML(){
   const ld=S.lastDiscard;
-  const winds=[0,1,2,3].map(p=>{ const s=seatOf(p); return `<span class="cw cw-${POSN[p]}${live()&&S.turn===p?' on':''}">${WINDS[s]} <span class="han">${WINDS_ZH[s]}</span></span>`; }).join('');
+  const winds=[0,1,2,3].map(p=>{ const s=seatOf(p); return `<span class="cw cw-${POSN[p]}${live()&&S.turn===p?' on':''}">${WINDS[s]} <span class="han">${WINDS_ZH[s]}</span>${p===0?`<span class="me"> · You <b class="num">${S.players[0].chips}</b>${S.dealer===0?' · D':''}</span>`:''}</span>`; }).join('');
   let mid;
   if(!live()) mid=`<span class="cap"><b>${S.result.type==='draw'?'Draw game':(S.result.w===0?'You win!':S.players[S.result.w].name+' wins')}</b></span>`;
   else if(ld) mid=`${T(ld.k,'t-c')}<span class="cap">${ld.p===0?'You':S.players[ld.p].name}</span>`;
@@ -1464,7 +1509,7 @@ function handHTML(){
 }
 function promptHTML(){
   const m=S.ui.mode;
-  if(m==='turn') return `<span class="myprompt">${S.ui.opts.hu?'You can win!':S.justClaimed?'Discard a tile':'Your turn · tap twice to discard'}</span>`;
+  if(m==='turn') return `<span class="myprompt">${S.ui.opts.hu?'You can win!':S.justClaimed?'Tap a tile to discard':'Your turn · tap a tile to discard'}</span>`;
   if(m==='claim'){ const o=S.ui.o, can=[o.hu&&'Hu',o.kong&&'Gang',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean); return `<span class="myprompt claim">You can ${can.join(' or ')}!</span>`; }
   if(m==='result') return `<span class="myprompt">${S.result.type==='draw'?'Draw game':S.result.w===0?'You win!':S.players[S.result.w].name+' wins'}</span>`;
   return `<span class="myprompt" style="opacity:.75">${S.players[S.turn].name} is playing…</span>`;
@@ -1513,7 +1558,7 @@ function renderPlay(){
   $('#myarea').innerHTML=myareaHTML();
   $('#plane').innerHTML=planeHTML();
   const me=S.players[0];
-  $('#gstatus').innerHTML=`<span>Dealer: <b>${S.dealer===0?'You':S.players[S.dealer].name}</b></span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span><span><b class="num">${me.chips}</b> pts</span><span>${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span> · hand ${S.handNo}</span><span class="rot-tip">Turn sideways for a bigger table</span>`;
+  $('#gstatus').innerHTML=`<span>Dealer: <b>${S.dealer===0?'You':S.players[S.dealer].name}</b></span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span><span><b class="num">${me.chips}</b> pts</span><span>${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span> · hand ${S.handNo}</span>`;
   $('#ginfo').innerHTML=`You <b class="num">${S.players[0].chips}</b> pts · Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> · ${WINDS[S.prevailing]} <span class="han">${WINDS_ZH[S.prevailing]}</span>`;
   S.animKey=S.discardCount;
   fitTable();
@@ -1531,7 +1576,7 @@ function fitTable(force){
   v.style.setProperty('--hw',hw.toFixed(1)+'px');
   const cf=$('#coachfloat');
   const sw=st.clientWidth, sh=st.clientHeight-(portrait&&cf?cf.offsetHeight+6:0); if(!sw||sh<=0) return;
-  const tilt=portrait?14:wide?40:24;
+  const tilt=portrait?12:wide?38:24;
   pl.style.setProperty('--tilt',tilt+'deg');
   let pw=parseFloat(pl.style.getPropertyValue('--pw'))||20;
   const cos=Math.cos(tilt*Math.PI/180);
@@ -1540,7 +1585,7 @@ function fitTable(force){
     if(!w||!h) break;
     pw=Math.max(10,Math.min(44,pw*Math.min((sw-6)/w,(sh-6)/h)));
     pl.style.setProperty('--pw',pw.toFixed(2)+'px');
-    pl.style.setProperty('--mw',Math.max(9,Math.min(22,pw*.62)).toFixed(2)+'px');
+    pl.style.setProperty('--mw',Math.max(12,Math.min(26,pw*.76)).toFixed(2)+'px');
   }
   /* final exact fit: measure the real projected size (perspective included) and scale down if it still overflows */
   pl.style.setProperty('--fit','1');
@@ -1670,7 +1715,7 @@ $('#myarea').addEventListener('click',e=>{
   if(!t){ inspectFrom(e); return; }
   if(!S||S.ui.mode!=='turn') return;
   const i=+t.dataset.i;
-  if(S.sel===i) act({type:'discard',k:S.disp[i]}); else { S.sel=i; SFX.tap(); renderPlay(); }
+  act({type:'discard',k:S.disp[i]});
 });
 $('#banners').addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(b) onAct(b); });
 $('#plane').addEventListener('click',e=>inspectFrom(e));
