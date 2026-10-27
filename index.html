@@ -15,30 +15,42 @@
 <title>Singapore Mahjong Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Serif+TC:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Noto+Serif+TC:wght@700&display=swap">
 <style>
-/* Layout: a jade felt table stacked top to bottom (opponents, rivers), with your rack docked to the bottom edge; reference tabs ride above. */
+/* Layout: a calm, top-down mahjong table. Opponents sit on three sides with their discards in front of them,
+   a compass in the middle shows the turn; your rack is docked at the bottom edge. */
 :root{
-  --bg:#e9f0ed; --surface:#ffffff; --surface-2:#f2f7f5; --ink:#10302a; --muted:#536b65; --line:#cad9d3;
-  --felt:#1c5a4b; --felt-2:#164b3e; --felt-ink:#e7f3ed; --felt-muted:#a6c9bc; --felt-line:#2c6e5d;
-  --accent:#c3362c; --accent-ink:#ffffff; --coach:#9a5f0c; --coach-bg:#fbf0d9; --ok:#1b7546; --bad:#b0332a;
-  --tile-face:#fbf8ef; --tile-edge:#d9d0bc; --tile-back:#2c7862; --tile-back-2:#22604f;
+  --bg:#f0f4f2; --surface:#ffffff; --surface-2:#f4f7f5; --ink:#1d2b27; --muted:#61726c; --line:#dce5e0;
+  --felt:#c6dccf; --felt-2:#b4cfc1; --felt-ink:#1b382f; --felt-muted:#4d6d61; --felt-line:rgba(27,56,47,.14); --felt-deep:rgba(27,56,47,.07);
+  --seat-bg:rgba(255,255,255,.58);
+  --accent:#cc5a4c; --accent-ink:#ffffff; --accent-soft:#f7e0dc;
+  --go:#2f7a63; --go-ink:#ffffff;
+  --coach:#94600f; --coach-bg:#fbf4e6; --ok:#2c7a53; --bad:#bd4034; --warn-bg:#fbe9e5;
+  --shadow:0 1px 2px rgba(20,40,34,.06), 0 10px 30px rgba(20,40,34,.09);
+  --tile-face:#fcf9f1; --tile-edge:#ddd5c3; --tile-back:#3f8a72; --tile-back-2:#2f735e;
   --t-red:#c0322a; --t-green:#1b774a; --t-blue:#1f4f9c; --t-navy:#1a2340; --t-brown:#8c4f1d;
-  --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --f-ui:'Lexend','Avenir Next','Segoe UI',system-ui,sans-serif;
   --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
   --f-han:'Noto Serif TC','Songti TC','PingFang TC','Hiragino Mincho ProN','Microsoft JhengHei',serif;
-  --hw:clamp(20px, calc((100vw - 32px - 44px) / 14.6), 54px);
-  --rv:clamp(17px, calc((100vw - 32px) / 19), 26px);
+  --hw:clamp(22px, calc((min(100vw, 1000px) - 32px - 44px) / 14.6), 58px);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0b1513; --surface:#13201d; --surface-2:#192925; --ink:#e1eee9; --muted:#93aba4; --line:#283c37;
-  --felt:#113a30; --felt-2:#0d3028; --felt-ink:#e1f0e9; --felt-muted:#8db5a7; --felt-line:#1f5546;
-  --accent:#e2574c; --accent-ink:#ffffff; --coach:#e6a84d; --coach-bg:#2a2213; --ok:#53c48a; --bad:#f07d73;
+  --bg:#0f1513; --surface:#161f1c; --surface-2:#1c2723; --ink:#e4ece8; --muted:#95a8a1; --line:#28352f;
+  --felt:#1f3a31; --felt-2:#192f28; --felt-ink:#e2efe9; --felt-muted:#93b5a8; --felt-line:rgba(226,239,233,.12); --felt-deep:rgba(0,0,0,.2);
+  --seat-bg:rgba(255,255,255,.06);
+  --accent:#ec7a6c; --accent-ink:#2a0f0b; --accent-soft:#3a221e;
+  --go:#5db596; --go-ink:#0b1d16;
+  --coach:#e8b260; --coach-bg:#26201a; --ok:#62c793; --bad:#f08a7f; --warn-bg:#35211d;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
   color-scheme:dark } }
 :root[data-theme="dark"]{
-  --bg:#0b1513; --surface:#13201d; --surface-2:#192925; --ink:#e1eee9; --muted:#93aba4; --line:#283c37;
-  --felt:#113a30; --felt-2:#0d3028; --felt-ink:#e1f0e9; --felt-muted:#8db5a7; --felt-line:#1f5546;
-  --accent:#e2574c; --accent-ink:#ffffff; --coach:#e6a84d; --coach-bg:#2a2213; --ok:#53c48a; --bad:#f07d73;
+  --bg:#0f1513; --surface:#161f1c; --surface-2:#1c2723; --ink:#e4ece8; --muted:#95a8a1; --line:#28352f;
+  --felt:#1f3a31; --felt-2:#192f28; --felt-ink:#e2efe9; --felt-muted:#93b5a8; --felt-line:rgba(226,239,233,.12); --felt-deep:rgba(0,0,0,.2);
+  --seat-bg:rgba(255,255,255,.06);
+  --accent:#ec7a6c; --accent-ink:#2a0f0b; --accent-soft:#3a221e;
+  --go:#5db596; --go-ink:#0b1d16;
+  --coach:#e8b260; --coach-bg:#26201a; --ok:#62c793; --bad:#f08a7f; --warn-bg:#35211d;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
   color-scheme:dark }
 
 *{box-sizing:border-box}
@@ -49,166 +61,217 @@ body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-body);
 .wrap{max-width:1000px; margin:0 auto}
 .han{font-family:var(--f-han); font-weight:700}
 .num{font-variant-numeric:tabular-nums}
-h1,h2,h3{font-family:var(--f-display); text-wrap:balance; line-height:1.15; margin:0}
+h1,h2,h3{font-family:var(--f-ui); font-weight:600; text-wrap:balance; line-height:1.2; margin:0; letter-spacing:-.01em}
 a{color:inherit}
 button{font:inherit; color:inherit}
-:focus-visible{outline:2px solid var(--coach); outline-offset:2px}
+:focus-visible{outline:2px solid var(--go); outline-offset:2px}
 
-/* masthead */
-.masthead{display:flex; flex-direction:column; gap:10px; padding-block:14px 8px}
-.brand{display:flex; align-items:center; gap:12px}
-.mark{width:42px; height:56px; flex:none; display:grid; place-items:center; font-size:30px; color:var(--t-red);
-  background:var(--tile-face); border-radius:6px; box-shadow:inset 0 0 0 1px var(--tile-edge), 0 4px 0 var(--tile-back), 0 6px 10px rgba(0,0,0,.18)}
-.brand h1{font-size:clamp(22px,5.4vw,32px); font-weight:800; letter-spacing:-.01em}
-.brand p{margin:2px 0 0; color:var(--muted); font-size:14px}
-.tabs{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; margin-inline:-4px; padding:2px 4px}
+/* header */
+.masthead{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px; padding-block:12px 10px}
+.brand{display:flex; align-items:center; gap:10px}
+.mark{width:28px; height:37px; flex:none; display:grid; place-items:center; font-size:19px; color:var(--t-red);
+  background:var(--tile-face); border-radius:5px; box-shadow:inset 0 0 0 1px var(--tile-edge), 0 3px 0 var(--tile-back)}
+.brand h1{font-size:19px}
+.brand p{margin:0; color:var(--muted); font-size:13px}
+.tabs{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:3px; max-width:100%}
 .tabs::-webkit-scrollbar{display:none}
-.tabs a{flex:none; text-decoration:none; padding:8px 14px; border-radius:999px; font-weight:700; font-size:15px; color:var(--muted); border:1px solid transparent}
-.tabs a[aria-current="page"]{background:var(--ink); color:var(--bg)}
-.tabs a:not([aria-current]):hover{border-color:var(--line)}
+.tabs a{flex:none; text-decoration:none; padding:6px 13px; border-radius:999px; font:500 14px var(--f-ui); color:var(--muted)}
+.tabs a[aria-current="page"]{background:var(--go); color:var(--go-ink)}
 
 /* tiles */
 .tile{--w:40px; width:var(--w); height:calc(var(--w)*1.333); flex:none; display:inline-block; position:relative; vertical-align:bottom;
   background:var(--tile-face); border:0; padding:0; border-radius:calc(var(--w)*.13);
-  box-shadow:inset 0 0 0 1px var(--tile-edge), 0 calc(var(--w)*.075) 0 var(--tile-back), 0 calc(var(--w)*.1) calc(var(--w)*.14) rgba(0,0,0,.22);
+  box-shadow:inset 0 0 0 1px var(--tile-edge), 0 calc(var(--w)*.07) 0 var(--tile-back), 0 calc(var(--w)*.1) calc(var(--w)*.16) rgba(20,40,34,.18);
   margin-bottom:calc(var(--w)*.08)}
 .tile svg{width:100%; height:100%; display:block}
-.tile.back{background:linear-gradient(160deg,var(--tile-back),var(--tile-back-2)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.15), 0 calc(var(--w)*.075) 0 var(--tile-face), 0 calc(var(--w)*.1) calc(var(--w)*.14) rgba(0,0,0,.22)}
+.tile.back{background:linear-gradient(160deg,var(--tile-back),var(--tile-back-2)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), 0 calc(var(--w)*.07) 0 var(--tile-face)}
 .tile svg text{font-family:var(--f-han); font-weight:700}
 .tile svg .r{fill:var(--t-red)} .tile svg .g{fill:var(--t-green)} .tile svg .bl{fill:var(--t-blue)}
 .tile svg .n{fill:var(--t-navy)} .tile svg .a{fill:var(--t-brown)} .tile svg .face{fill:var(--tile-face)}
 .tile svg .frame{fill:none; stroke:var(--t-blue); stroke-width:3.2} .tile svg .frame.thin{stroke-width:1.4}
 .tile svg .tail{fill:none; stroke:var(--t-green); stroke-width:3; stroke-linecap:round}
-.tile svg .lbl rect{fill:var(--tile-face); stroke:var(--tile-edge); stroke-width:1}
-.tile svg .lbl text{fill:var(--t-navy); font-family:var(--f-body); font-size:10.5px; font-weight:700}
-.tile svg .corner{font-family:var(--f-body); font-size:12px; font-weight:700}
+.tile svg text.cn{font-family:var(--f-ui); font-weight:700; font-size:19px; fill:var(--t-navy); paint-order:stroke; stroke:var(--tile-face); stroke-width:5px; stroke-linejoin:round}
+.tile svg text.cn.r{fill:var(--t-red)} .tile svg text.cn.bl{fill:var(--t-blue)}
 body.nolabels .tile .lbl{display:none}
-.t-xs{--w:var(--rv)} .t-sm{--w:28px} .t-md{--w:36px} .t-lg{--w:64px} .t-xl{--w:92px} .t-hand{--w:var(--hw)}
+.t-sm{--w:28px} .t-md{--w:38px} .t-lg{--w:64px} .t-xl{--w:92px} .t-hand{--w:var(--hw)}
+.t-p{--w:var(--pw)} .t-m{--w:var(--mw)} .t-c{--w:calc(var(--pw)*1.6)}
 .tiles{display:inline-flex; gap:2px; flex-wrap:wrap; align-items:flex-end; vertical-align:middle}
 .tiles .gap{width:8px}
-
-/* play */
-.playbar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between; padding-block:8px}
-.meta{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; color:var(--muted)}
-.meta b{color:var(--ink)}
-.controls{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; font-size:14px}
-.toggle{display:inline-flex; gap:6px; align-items:center; cursor:pointer}
-.toggle input{width:18px; height:18px; accent-color:var(--felt)}
-.controls select{font:16px var(--f-body); padding:4px 6px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
-.felt{background:radial-gradient(120% 90% at 50% 10%, var(--felt), var(--felt-2)); color:var(--felt-ink); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px}
-.opps{display:grid; grid-template-columns:1fr; gap:8px}
-@media (min-width:760px){ .opps{grid-template-columns:repeat(3,minmax(0,1fr))} }
-.opp{border:1px solid var(--felt-line); border-radius:12px; padding:8px 10px; min-width:0; display:flex; flex-direction:column; gap:6px; transition:border-color .2s, background .2s}
-.opp.active{border-color:var(--felt-ink); background:rgba(255,255,255,.05)}
-.who{display:flex; align-items:center; gap:8px; font-size:14px; min-width:0}
-.who b{font-family:var(--f-display); font-weight:700; font-size:15px; white-space:nowrap}
-.who .pos{color:var(--felt-muted); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.who .sp{flex:1}
-.wind{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:6px; background:var(--tile-face); color:var(--t-navy); font-size:15px; flex:none}
-.tag{font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:1px 6px; border-radius:4px; background:var(--accent); color:var(--accent-ink)}
-.sets{display:flex; flex-wrap:wrap; gap:6px; align-items:flex-end; min-height:22px}
-.backs{font-size:12.5px; color:var(--felt-muted); align-self:center}
 .meld,.bonus{display:inline-flex; gap:1px; align-items:flex-end}
-.bonus{padding-left:4px; border-left:1px dashed var(--felt-line)}
-.river{display:flex; flex-wrap:wrap; gap:2px; min-height:calc(var(--rv)*1.4)}
-.river:empty::before{content:"No discards yet"; font-size:12.5px; color:var(--felt-muted)}
-.tile.last{outline:2px solid var(--coach); outline-offset:1px}
-.center{display:flex; align-items:center; gap:12px; padding:6px 2px; min-height:56px}
-.center .status{font-family:var(--f-display); font-weight:600; font-size:17px}
-.center .sub{font-size:13px; color:var(--felt-muted)}
-.mine-river{border-top:1px solid var(--felt-line); padding-top:8px}
-.label{font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--felt-muted); font-weight:700}
-.log{margin-top:2px; font-size:13.5px}
-.log summary{cursor:pointer; color:var(--felt-muted); font-weight:700}
-.log ol{list-style:none; margin:6px 0 0; padding:0; max-height:220px; overflow:auto; display:flex; flex-direction:column; gap:3px}
-.log li{color:var(--felt-ink)} .log li.pay{color:#f2cf8a} .log li.win{color:#ffd9d4; font-weight:700} .log li.coach{color:var(--felt-muted); font-style:italic}
+.tile.last{outline:2px solid var(--accent); outline-offset:1px}
+@keyframes drop{from{transform:translateY(-35%) scale(1.15); opacity:0} to{transform:none; opacity:1}}
+.tile.fresh{animation:drop .34s ease-out}
 
-.dock{position:sticky; bottom:0; z-index:5; margin-top:10px; background:var(--surface); border:1px solid var(--line); border-bottom:0; border-radius:16px 16px 0 0;
-  padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 24px rgba(0,0,0,.12); display:flex; flex-direction:column; gap:8px}
-.coachbox{background:var(--coach-bg); color:var(--ink); border-radius:10px; padding:8px 10px; font-size:14px; line-height:1.45; display:flex; flex-direction:column; gap:4px}
-.coachbox .ttl{font-weight:700; color:var(--coach); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase}
-.coachbox p{margin:0}
-.coachbox .tile{--w:20px; margin-bottom:2px}
-.mine{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end; font-size:13.5px; color:var(--muted)}
-.mine b{color:var(--ink); font-family:var(--f-display)}
-.mine .wind{box-shadow:inset 0 0 0 1px var(--tile-edge)}
+/* play: top bar */
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-block:2px 10px}
+.tb-info{display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; font-size:14px; color:var(--muted); min-width:0}
+.tb-info b{color:var(--ink)}
+.pill{display:inline-flex; align-items:center; gap:6px; font:500 14px var(--f-ui); color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:3px 10px 3px 4px}
+.pill .han{display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--accent-soft); color:var(--accent); font-size:13px}
+.tb-btns{display:flex; gap:4px; flex:none}
+.ib{width:38px; height:38px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer}
+.ib svg{width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.ib[aria-pressed="true"]{color:var(--coach); background:var(--coach-bg); border-color:transparent}
+
+/* play: the table */
+.felt{background:radial-gradient(130% 100% at 50% 40%, var(--felt), var(--felt-2)); color:var(--felt-ink); border-radius:22px; padding:10px; box-shadow:inset 0 0 0 1px var(--felt-line)}
+.table{--pw:20px; --mw:13px; --slot:calc(var(--pw) + 2px); --row:calc(var(--pw)*1.413 + 2px);
+  display:grid; gap:6px; justify-content:center;
+  grid-template-columns:calc(4*var(--slot)) calc(6*var(--slot)) calc(4*var(--slot));
+  grid-template-rows:minmax(calc(4*var(--row)),auto) minmax(calc(6*var(--row)),auto) minmax(calc(4*var(--row)),auto);
+  grid-template-areas:"ct t cr" "l c r" "cl b cb"}
+/* each player's card sits in the corner at their right hand; their discards are the pond beside it */
+.seat{border-radius:12px; background:var(--seat-bg); padding:6px; color:var(--felt-ink); cursor:pointer; min-width:0; overflow:hidden;
+  display:flex; flex-direction:column; align-items:flex-start; gap:5px; transition:box-shadow .25s}
+.seat:hover{box-shadow:0 0 0 1px var(--felt-line)}
+.seat.active{box-shadow:0 0 0 2px var(--accent); animation:seatglow 2.6s ease-in-out infinite}
+@keyframes seatglow{50%{box-shadow:0 0 0 2px var(--accent), 0 0 0 6px rgba(204,90,76,.12)}}
+.seat{width:fit-content; max-width:100%; align-self:start}
+.seat-t{grid-area:ct; justify-self:end} .seat-r{grid-area:cr; justify-self:start; align-self:end} .seat-l{grid-area:cl; justify-self:end} .seat-b{grid-area:cb; justify-self:start}
+.who{display:flex; align-items:center; gap:6px; min-width:0; width:100%}
+.av{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--tile-face); color:var(--t-navy); font-size:14px; flex:none; box-shadow:inset 0 0 0 1px var(--tile-edge)}
+.nm{display:flex; flex-direction:column; line-height:1.2; min-width:0; flex:1}
+.nm b{font:600 12.5px var(--f-ui); overflow-wrap:anywhere}
+.nm small{font-size:11px; color:var(--felt-muted)}
+.dealer{display:inline-grid; place-items:center; width:17px; height:17px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font:700 10px var(--f-ui); flex:none; align-self:flex-start}
+.sets{display:flex; flex-wrap:wrap; gap:3px; align-items:flex-end}
+.bonus{display:inline-flex; flex-wrap:wrap; gap:1px; padding-left:3px; border-left:1px dashed var(--felt-line)}
+.think{display:inline-flex; gap:3px; margin-top:3px}
+.think i{width:4px; height:4px; border-radius:50%; background:var(--accent); animation:blink 1.2s infinite ease-in-out}
+.think i:nth-child(2){animation-delay:.15s} .think i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25} 40%{opacity:1}}
+.pond{display:grid; gap:2px; grid-auto-rows:min-content; border-radius:10px; cursor:pointer; padding:3px; margin:-3px; transition:background .25s}
+.pond:hover{background:var(--felt-deep)}
+.pond.active{background:rgba(204,90,76,.09)}
+.pond-t{grid-area:t; grid-template-columns:repeat(6,var(--pw)); align-content:end; justify-content:center}
+.pond-b{grid-area:b; grid-template-columns:repeat(6,var(--pw)); align-content:start; justify-content:center}
+.pond-l{grid-area:l; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:end}
+.pond-r{grid-area:r; grid-template-columns:repeat(4,var(--pw)); align-content:center; justify-content:start}
+.compass{grid-area:c; position:relative; border-radius:16px; background:var(--felt-deep); box-shadow:inset 0 0 0 1px var(--felt-line); min-height:100px}
+.cw{position:absolute; display:grid; place-items:center; width:22px; height:22px; border-radius:7px; font-size:13px; color:var(--felt-muted); transition:background .25s, color .25s}
+.cw.on{background:var(--accent); color:var(--accent-ink)}
+.cw-b{bottom:5px; left:50%; transform:translateX(-50%)} .cw-t{top:5px; left:50%; transform:translateX(-50%)}
+.cw-l{left:5px; top:50%; transform:translateY(-50%)} .cw-r{right:5px; top:50%; transform:translateY(-50%)}
+.cc{position:absolute; inset:30px 28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; text-align:center; min-width:0}
+.cc .cap{font-size:11.5px; color:var(--felt-muted); line-height:1.3; max-width:100%; overflow:hidden; text-overflow:ellipsis}
+.cc .cap.one{white-space:nowrap}
+.cc .cap b{color:var(--felt-ink)}
+
+/* play: dock */
+.dock{position:sticky; bottom:0; z-index:5; margin-top:12px; background:var(--surface); border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px)); box-shadow:0 -10px 30px rgba(20,40,34,.08); display:flex; flex-direction:column; gap:8px; transition:box-shadow .25s}
+.dock.alert{box-shadow:0 -10px 30px rgba(20,40,34,.08), 0 0 0 2px var(--accent)}
+.coach{display:flex; flex-direction:column; gap:6px; background:var(--coach-bg); border-radius:14px; padding:8px 10px; font-size:14px; line-height:1.45}
+.coach-main{display:flex; gap:8px; align-items:flex-start}
+.coach-main svg{width:18px; height:18px; flex:none; margin-top:2px; fill:none; stroke:var(--coach); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.coach p{margin:0}
+.coach .tile{--w:19px; margin-bottom:1px}
+.coach-sub{color:var(--muted); font-size:13px; margin-top:2px !important}
+.coach-chips{display:flex; flex-wrap:wrap; gap:4px; padding-left:26px}
+.chip-s{font-size:12px; padding:2px 9px; border-radius:999px; background:var(--surface); color:var(--muted); border:1px solid var(--line)}
+.chip-s.good{color:var(--ok)}
+.chip-s.warn{background:var(--warn-bg); border-color:transparent; color:var(--bad)}
+.mine{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-size:13px; color:var(--muted)}
+.mine b{color:var(--ink); font-family:var(--f-ui); font-weight:600}
+.mine .av{width:24px; height:24px; font-size:13px}
+.mine-sets{display:inline-flex; flex-wrap:wrap; gap:6px; align-items:flex-end}
+.mine-sets .bonus{border-color:var(--line)}
 .hand{display:flex; gap:2px; align-items:flex-end; justify-content:center; padding-top:12px; min-height:calc(var(--hw)*1.45 + 12px)}
-.hand .tile{cursor:pointer; transition:transform .12s ease}
+.hand .tile{cursor:pointer; transition:transform .14s ease}
 .hand .tile.sel{transform:translateY(-24%)}
 .hand .tile.hint{outline:2px solid var(--coach); outline-offset:1px}
+.hand .tile.use{outline:2px solid var(--accent); outline-offset:1px; transform:translateY(-14%)}
 .hand .tile.drawn{margin-left:calc(var(--hw)*.35)}
 .hand.idle .tile{cursor:default}
-.hand .tile.use{outline:2px solid var(--accent); outline-offset:1px; transform:translateY(-12%)}
-.dock.alert{border-color:var(--accent); box-shadow:0 -8px 24px rgba(0,0,0,.12), 0 0 0 2px var(--accent)}
-.claimhead{width:100%; text-align:center; font-family:var(--f-display); font-weight:800; font-size:18px; color:var(--accent)}
 .actions{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center}
-.prompt{width:100%; text-align:center; font-size:14px; color:var(--muted)}
+.prompt{width:100%; margin:0; text-align:center; font-size:14px; color:var(--muted)}
 .prompt .tile{--w:22px}
-.btn{font:700 15px/1.2 var(--f-body); padding:10px 16px; min-height:44px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+.claimhead{width:100%; margin:0; text-align:center; font:600 18px var(--f-ui); color:var(--accent)}
+.btn{font:500 15px/1.2 var(--f-ui); padding:10px 18px; min-height:44px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
 .btn:disabled{opacity:.45; cursor:default}
-.btn.primary{background:var(--felt); color:var(--felt-ink); border-color:transparent}
-.btn.hu{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-family:var(--f-display); font-size:17px}
-.btn.small{min-height:36px; padding:6px 12px; font-size:14px}
-.btn .han{font-weight:700}
+.btn.primary{background:var(--go); color:var(--go-ink); border-color:transparent}
+.btn.hu{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:600; font-size:17px}
+.btn.small{min-height:34px; padding:6px 12px; font-size:13.5px}
 
-/* modal */
-.modal{position:fixed; inset:0; z-index:40; background:rgba(4,14,11,.6); display:flex; align-items:flex-end; justify-content:center;
+/* sheets */
+.modal{position:fixed; inset:0; z-index:40; background:rgba(10,22,18,.42); display:flex; align-items:flex-end; justify-content:center;
   padding:max(12px, env(safe-area-inset-top,0px)) max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px))}
 @media (min-width:640px){ .modal{align-items:center; padding-bottom:24px} }
-.sheet{background:var(--surface); color:var(--ink); width:100%; max-width:660px; max-height:90vh; overflow:auto; border-radius:18px 18px 0 0;
-  padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:14px}
-@media (min-width:640px){ .sheet{border-radius:18px} }
-.sheet h2{font-size:26px; font-weight:800}
-.sheet .sub{color:var(--muted); margin-top:4px}
+.sheet{background:var(--surface); color:var(--ink); width:100%; max-width:640px; max-height:88vh; overflow:auto; border-radius:22px 22px 0 0;
+  padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow)}
+@media (min-width:640px){ .sheet{border-radius:22px} }
+.sheet-head{display:flex; align-items:center; gap:12px}
+.sheet-head > div{flex:1; min-width:0}
+.sheet-head .av{width:40px; height:40px; font-size:20px}
+.sheet h2{font-size:22px}
+.sheet h3{font-size:15px; color:var(--muted); font-weight:500}
+.sheet .sub{color:var(--muted); margin:2px 0 0; font-size:14px}
 .handshow{display:flex; flex-wrap:wrap; gap:8px 10px; align-items:flex-end}
 .handshow .tile.win{outline:2px solid var(--accent); outline-offset:1px}
+.bigpond{display:flex; flex-wrap:wrap; gap:3px}
 .scoretbl{width:100%; border-collapse:collapse; font-size:15px}
 .scoretbl td{padding:7px 4px; border-bottom:1px solid var(--line); vertical-align:top}
 .scoretbl td:last-child{text-align:right; font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap}
 .scoretbl .zh{color:var(--muted); font-family:var(--f-han); font-weight:700; margin-left:6px}
-.scoretbl tr.total td{border-bottom:0; font-size:18px; font-family:var(--f-display)}
+.scoretbl tr.total td{border-bottom:0; font:600 18px var(--f-ui)}
 .pays{margin:0; padding-left:18px; font-size:14.5px}
-.others{display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--muted)}
+.others{display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--muted); margin-top:8px}
 .others .tile{--w:20px}
 .row{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+.loglist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; font-size:14px}
+.loglist li{padding-bottom:6px; border-bottom:1px solid var(--line)}
+.loglist li.pay{color:var(--coach)} .loglist li.win{color:var(--accent); font-weight:700} .loglist li.coach{color:var(--muted); font-style:italic}
+.note{font-size:14px; color:var(--muted); border-left:3px solid var(--line); padding-left:12px; margin:0}
+.note.warn{border-color:var(--accent); color:var(--ink)}
+.setlist{display:flex; flex-direction:column}
+.setrow{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer}
+.setrow > span{display:flex; flex-direction:column}
+.setrow b{font:500 15.5px var(--f-ui)}
+.setrow .sub{font-size:13px}
+input.switch{appearance:none; -webkit-appearance:none; width:48px; height:30px; border-radius:999px; background:var(--line); position:relative; flex:none; cursor:pointer; transition:background .2s; margin:0}
+input.switch::before{content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s}
+input.switch:checked{background:var(--go)}
+input.switch:checked::before{transform:translateX(18px)}
+.seg{display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:3px; gap:2px}
+.seg button{border:0; background:transparent; padding:7px 11px; border-radius:9px; font:500 14px var(--f-ui); color:var(--muted); cursor:pointer}
+.seg button[aria-checked="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.12)}
 
 /* reading pages */
 .page{max-width:760px; padding-block:12px 64px; display:flex; flex-direction:column; gap:28px}
 .page section{display:flex; flex-direction:column; gap:10px}
-.page h2{font-size:clamp(24px,5vw,30px); font-weight:800}
-.page h3{font-size:19px; font-weight:700}
+.page h2{font-size:clamp(24px,5vw,30px)}
+.page h3{font-size:19px}
 .page p,.page li{max-width:66ch}
 .page p{margin:0}
 .lede{font-size:17px; color:var(--muted)}
 .page ul,.page ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px}
 .kv{display:grid; grid-template-columns:minmax(0,1fr); gap:10px}
-.ex-row{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.ex-row{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:14px}
 .ex-row .cap{font-size:14px; min-width:0; flex:1 1 180px}
-.ex-row .cap b{font-family:var(--f-display)}
+.ex-row .cap b{font-family:var(--f-ui); font-weight:600}
 .zhc{font-family:var(--f-han); font-weight:700; color:var(--muted)}
-.tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+.tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface)}
 table.ref{width:100%; border-collapse:collapse; font-size:14.5px; min-width:520px}
-table.ref th{text-align:left; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:10px 10px 6px; border-bottom:1px solid var(--line)}
+table.ref th{text-align:left; font:500 12px var(--f-ui); letter-spacing:.05em; text-transform:uppercase; color:var(--muted); padding:10px 10px 6px; border-bottom:1px solid var(--line)}
 table.ref td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
 table.ref tr:last-child td{border-bottom:0}
-table.ref td.t{font-family:var(--f-display); font-weight:800; font-size:17px; white-space:nowrap; font-variant-numeric:tabular-nums}
-table.ref tr.grp td{background:var(--surface-2); font-weight:700; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
-.note{font-size:14px; color:var(--muted); border-left:3px solid var(--line); padding-left:12px}
-.tips{counter-reset:tip; list-style:none; padding:0 !important}
-.tips li{display:flex; flex-direction:column; gap:6px; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:12px}
-.tips li b{font-family:var(--f-display); font-size:17px}
+table.ref td.t{font:600 17px var(--f-ui); white-space:nowrap; font-variant-numeric:tabular-nums}
+table.ref tr.grp td{background:var(--surface-2); font:500 12px var(--f-ui); letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+.tips{list-style:none; padding:0 !important}
+.tips li{display:flex; flex-direction:column; gap:6px; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:14px}
+.tips li b{font:600 17px var(--f-ui)}
 dl.gloss{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; margin:0}
 dl.gloss dt{font-weight:700}
 dl.gloss dd{margin:0; color:var(--muted)}
 
 /* tiles guide */
 .tgroups{display:flex; flex-direction:column; gap:18px}
-.tgroup h3{display:flex; gap:8px; align-items:baseline}
+.tgroup h3{display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline}
 .tgroup h3 small{font-family:var(--f-body); font-weight:400; color:var(--muted); font-size:14px}
 .tgrid{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
-.tgrid .tile{cursor:pointer; --w:clamp(36px, 9vw, 52px)}
-.tgrid .tile.on{outline:2px solid var(--coach); outline-offset:2px}
-.detail{position:sticky; top:env(safe-area-inset-top,0px); z-index:3; display:flex; gap:16px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.tgrid .tile{cursor:pointer; --w:clamp(38px, 9vw, 54px)}
+.tgrid .tile.on{outline:2px solid var(--go); outline-offset:2px}
+.detail{position:sticky; top:env(safe-area-inset-top,0px); z-index:3; display:flex; gap:16px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:12px 14px; box-shadow:var(--shadow)}
 .detail .txt{min-width:0; display:flex; flex-direction:column; gap:3px}
 .detail h3{font-size:20px}
 .detail .zh{font-family:var(--f-han); font-weight:700; font-size:18px}
@@ -216,29 +279,30 @@ dl.gloss dd{margin:0; color:var(--muted)}
 
 /* quiz */
 .qmodes{display:flex; flex-wrap:wrap; gap:8px}
-.qmodes .btn[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:transparent}
-.qcard{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:14px}
-.qcard .q{font-family:var(--f-display); font-size:20px; font-weight:700}
+.qmodes .btn[aria-pressed="true"]{background:var(--go); color:var(--go-ink); border-color:transparent}
+.qcard{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:14px}
+.qcard .q{font:600 19px var(--f-ui)}
 .ctx{display:flex; flex-wrap:wrap; gap:6px}
 .chip{font-size:13px; padding:3px 9px; border-radius:999px; background:var(--surface-2); border:1px solid var(--line)}
 .choices{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
 .choices.five{grid-template-columns:repeat(5,minmax(0,1fr))}
 .choices.tilech{grid-template-columns:repeat(4,minmax(0,1fr)); justify-items:center}
-.choice{font:700 15px var(--f-body); padding:12px 10px; min-height:48px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+.choice{font:500 15px var(--f-ui); padding:12px 10px; min-height:48px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
 .choice.tilebtn{padding:8px; background:transparent; border-color:transparent}
 .choice.right{background:var(--ok); color:#fff; border-color:transparent}
 .choice.wrong{background:var(--bad); color:#fff; border-color:transparent}
 .choice.tilebtn.right{background:transparent; outline:3px solid var(--ok)}
 .choice.tilebtn.wrong{background:transparent; outline:3px solid var(--bad)}
 .feedback{border-top:1px solid var(--line); padding-top:12px; display:flex; flex-direction:column; gap:8px; font-size:15px}
-.feedback .verdict{font-family:var(--f-display); font-weight:800; font-size:20px}
+.feedback .verdict{font:600 20px var(--f-ui)}
 .feedback .verdict.ok{color:var(--ok)} .feedback .verdict.no{color:var(--bad)}
 .qscore{font-size:14px; color:var(--muted)}
 .qhand{display:flex; flex-direction:column; gap:10px}
 .qhand .grp{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end}
-.qhand .lab{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; width:100%}
+.qhand .lab{font:500 12px var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); width:100%}
 .qhand .tile{--w:clamp(24px, 6.4vw, 40px)}
 
+@media (max-width:440px){ .hide-sm{display:none} }
 @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
 </style>
 
@@ -248,7 +312,7 @@ dl.gloss dd{margin:0; color:var(--muted)}
   <header class="masthead">
     <div class="brand">
       <div class="mark han" aria-hidden="true">中</div>
-      <div><h1>Singapore Mahjong Coach</h1><p><span class="han">新加坡麻將</span> · learn the tiles, the tai and the table by playing</p></div>
+      <div><h1>Singapore Mahjong Coach</h1><p><span class="han">新加坡麻將</span> · learn by playing</p></div>
     </div>
     <nav class="tabs" aria-label="Sections">
       <a href="#play">Play</a><a href="#tiles">Tiles</a><a href="#rules">Rules</a><a href="#tai">Tai</a><a href="#strategy">Strategy</a><a href="#quiz">Quiz</a>
@@ -258,18 +322,16 @@ dl.gloss dd{margin:0; color:var(--muted)}
   <main>
     <!-- PLAY -->
     <section id="v-play" class="view" aria-label="Practice table">
-      <div class="playbar">
-        <div id="meta" class="meta"></div>
-        <div class="controls">
-          <label class="toggle"><input type="checkbox" id="opt-coach"> Coach</label>
-          <label class="toggle"><input type="checkbox" id="opt-labels"> Tile labels</label>
-          <label class="toggle"><input type="checkbox" id="opt-sound"> Sounds</label>
-          <label class="toggle"><input type="checkbox" id="opt-music"> Music</label>
-          <label>Speed <select id="opt-speed"><option value="1100">Relaxed</option><option value="650">Normal</option><option value="250">Fast</option></select></label>
-          <button class="btn small" id="btn-new" type="button">New game</button>
+      <div class="topbar">
+        <div id="tb-info" class="tb-info"></div>
+        <div class="tb-btns">
+          <button class="ib" id="ib-coach" type="button" aria-label="Coach hints" aria-pressed="true"></button>
+          <button class="ib" id="ib-sound" type="button" aria-label="Sound"></button>
+          <button class="ib" id="ib-log" type="button" aria-label="Table log"></button>
+          <button class="ib" id="ib-set" type="button" aria-label="Settings"></button>
         </div>
       </div>
-      <div id="felt" class="felt"></div>
+      <div class="felt"><div id="table" class="table"></div></div>
       <div id="dock" class="dock"></div>
     </section>
 
@@ -1033,7 +1095,7 @@ function musicOff(){
 }
 
 /* ---- tile faces ---- */
-function lbl(t){const w=t.length>1?22:13;return `<g class="lbl"><rect x="1.5" y="1.5" width="${w}" height="13" rx="3"/><text x="${1.5+w/2}" y="11.6" text-anchor="middle">${t}</text></g>`;}
+function lbl(t){return `<text x="52" y="18" class="cn lbl" text-anchor="middle">${t}</text>`;}
 function dot(x,y,r,c){return `<circle cx="${x}" cy="${y}" r="${r}" class="${c}"/><circle cx="${x}" cy="${y}" r="${(r*.62).toFixed(2)}" class="face"/><circle cx="${x}" cy="${y}" r="${(r*.3).toFixed(2)}" class="${c}"/>`;}
 function dotsSVG(n){
   if(n===1) return `<circle cx="30" cy="40" r="21" class="g"/><circle cx="30" cy="40" r="17" class="face"/><circle cx="30" cy="40" r="13.5" class="bl"/><circle cx="30" cy="40" r="9.5" class="face"/><circle cx="30" cy="40" r="6" class="r"/>`;
@@ -1068,19 +1130,18 @@ const TXT=(x,y,s,c,t)=>`<text x="${x}" y="${y}" font-size="${s}" class="${c}" te
 function tileSVG(k){
   let b='';
   if(k<27){ const s=suitOf(k), n=k%9+1;
-    if(s===2) b=TXT(30,35,27,'n',CN[n-1])+TXT(30,72,31,'r','萬');
+    if(s===2) b=TXT(25,37,28,'n',CN[n-1])+TXT(30,73,31,'r','萬');
     else if(s===1) b=dotsSVG(n); else b=bambooSVG(n);
     b+=lbl(String(n));
-  } else if(k<=30){ b=TXT(30,57,42,'n',WINDS_ZH[k-27])+lbl('ESWN'[k-27]); }
-  else if(k===31){ b=TXT(30,57,44,'r','中')+lbl('Red'); }
-  else if(k===32){ b=TXT(30,57,44,'g','發')+lbl('Grn'); }
-  else if(k===33){ b=`<rect x="13" y="12" width="34" height="56" rx="3" class="frame"/><rect x="18.5" y="17.5" width="23" height="45" rx="2" class="frame thin"/>`+lbl('Wht'); }
+  } else if(k<=30){ b=TXT(28,59,40,'n',WINDS_ZH[k-27])+lbl('ESWN'[k-27]); }
+  else if(k===31){ b=TXT(30,57,44,'r','中'); }
+  else if(k===32){ b=TXT(30,57,44,'g','發'); }
+  else if(k===33){ b=`<rect x="13" y="12" width="34" height="56" rx="3" class="frame"/><rect x="18.5" y="17.5" width="23" height="45" rx="2" class="frame thin"/>`; }
   else if(k<=41){ const fl=k<=37, i=fl?k-34:k-38, c=fl?'r':'bl';
-    b=TXT(30,54,34,c,(fl?['梅','蘭','菊','竹']:['春','夏','秋','冬'])[i])+`<text x="51" y="15" class="corner ${c}" text-anchor="middle">${i+1}</text>`+
+    b=TXT(30,54,34,c,(fl?['梅','蘭','菊','竹']:['春','夏','秋','冬'])[i])+`<text x="52" y="18" class="cn ${c}" text-anchor="middle">${i+1}</text>`+
       `<g class="${c}" opacity=".55"><circle cx="16" cy="68" r="2.4"/><circle cx="22" cy="71" r="2"/><circle cx="38" cy="71" r="2"/><circle cx="44" cy="68" r="2.4"/></g>`;
   } else { const i=k-42;
     b= i===3 ? TXT(30,37,25,'a','蜈')+TXT(30,66,25,'a','蚣') : TXT(30,55,38,'a',['貓','鼠','雞'][i]);
-    b+=lbl(['Cat','Rat','Roo','Cen'][i]);
   }
   return `<svg viewBox="0 0 60 80" aria-hidden="true">${b}</svg>`;
 }
@@ -1089,16 +1150,28 @@ const T=(k,cls='',attrs='')=>`<span class="tile ${cls}" title="${nm(k)}" ${attrs
 const TB=(cls='')=>`<span class="tile back ${cls}"></span>`;
 const TS=(ks,cls='t-sm')=>`<span class="tiles">${ks.map(k=>k==='|'?'<i class="gap"></i>':T(k,cls)).join('')}</span>`;
 
+/* ---- icons ---- */
+const I=d=>`<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+const ICON={
+  bulb:I('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>'),
+  sound:I('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'),
+  mute:I('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9.5l5 5M22 9.5l-5 5"/>'),
+  log:I('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'),
+  set:I('<path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/>'),
+  x:I('<path d="M6 6l12 12M18 6L6 18"/>')
+};
+
 /* ---- ui hooks for the engine ---- */
+let SHEET=null, newArmed=null;
 var ui={
   render(){ renderPlay(); },
   sleep(ms){ return sleep(ms); },
   speed(){ return +SET.speed||650; },
   humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
   humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k,advice:claimAdvice(o,d,k)}; S.resolve=res; setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
-  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld') SFX.meld(); else if(name==='bonus') SFX.bonus(); else if(name==='win') (d.w===0?SFX.win():SFX.lose()); else if(name==='draw') SFX.drawGame(); },
-  handOver(){ S.showResult=true; renderPlay(); },
-  note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); }
+  handOver(){ S.showResult=true; SHEET=null; renderPlay(); },
+  note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); },
+  event(name,d){ if(name==='discard') SFX.discard(); else if(name==='meld') SFX.meld(); else if(name==='bonus') SFX.bonus(); else if(name==='win') (d.w===0?SFX.win():SFX.lose()); else if(name==='draw') SFX.drawGame(); }
 };
 function act(a){ if(!S.resolve) return; const r=S.resolve; S.resolve=null; S.ui={mode:'wait'}; S.sel=null; r(a); }
 
@@ -1109,111 +1182,106 @@ function coachDiscard(){
   return S.coachCache.val;
 }
 function remainingOf(t){ const v=visibleCounts(), c=counts(S.players[0].hand); return Math.max(0,4-v[t]-c[t]); }
-function waitsLine(waits){
-  return waits.map(t=>`${T(t)}<span class="num">×${remainingOf(t)}</span>`).join(' ');
-}
+function waitsLine(waits){ return waits.map(t=>`${T(t)}<span class="num">×${remainingOf(t)}</span>`).join(' '); }
 function honorNote(k){
-  if(!isHonor(k)) return '';
-  if(isValuable(0,k)) return ` ${nm(k)} can score tai as a pong, so only let it go if it's a lone tile.`;
-  return ` A lone ${nm(k)} isn't your seat or the round wind, so it can never score.`;
+  if(!isHonor(k)) return isTerminal(k)?`End tiles (1s and 9s) fit fewer chows than middle tiles.`:'';
+  if(isValuable(0,k)) return `${nm(k)} can score as a pong, so let it go only while it's a single.`;
+  return `A lone ${nm(k)} is neither your seat nor the round wind, so it can never score.`;
 }
 function claimAdvice(o,d,k){
   const pl=S.players[0], cur=shantenStd(counts(pl.hand),pl.melds.length), out=[];
-  if(o.hu) return `Take it: <b>Hu</b> for ${o.hu.tai} tai. ${o.hu.items.concat(o.hu.lims.map(l=>({label:l.label}))).map(i=>i.label).join(', ')}.`;
-  if((o.pong||o.kong)&&isValuable(0,k)) out.push(`<b>Pong it.</b> A set of ${nm(k)} is worth 1 tai${isWind(k)&&k-27===seatOf(0)&&k-27===S.prevailing?' twice (seat and round wind)':''}.`);
-  else {
-    let bestTxt='';
-    if(o.pong){ const a=claimShanten(0,'pong',k); bestTxt+= a<cur?`Pong moves you from ${cur} to ${a} away from ready. `:`Pong doesn't bring you closer to ready. `; }
-    if(o.chows){ const a=Math.min(...o.chows.map(s=>claimShanten(0,'chow',k,s))); bestTxt+= a<cur?`Chi moves you from ${cur} to ${a} away. `:`Chi doesn't help your shape. `; }
-    out.push(bestTxt);
-    if(!bankedItems(0).length) out.push('You have no tai banked yet; open chows add none, so keep a scoring plan (dragon, your wind, flush, Pong Pong).');
-    else out.push('Passing keeps your hand concealed and flexible.');
-  }
+  if(o.hu) return `Take it: <b>Hu</b> for ${o.hu.tai} tai (${o.hu.items.concat(o.hu.lims).map(i=>i.label).join(', ')}).`;
+  if((o.pong||o.kong)&&isValuable(0,k)) return `<b>Pong it.</b> A set of ${nm(k)} is worth ${isWind(k)&&k-27===seatOf(0)&&k-27===S.prevailing?'2 tai (seat and round wind)':'1 tai'}.`;
+  let best=null;
+  if(o.pong){ const a=claimShanten(0,'pong',k); best={a,what:'Pong'}; }
+  if(o.chows){ const a=Math.min(...o.chows.map(s=>claimShanten(0,'chow',k,s))); if(!best||a<best.a) best={a,what:'Chi'}; }
+  if(best&&best.a<cur) out.push(`<b>${best.what}</b> takes you from ${cur} to ${best.a} away from ready.`);
+  else out.push(`<b>Pass.</b> Claiming doesn't bring you closer to ready, and keeping your hand concealed keeps it flexible.`);
+  if(best&&best.a<cur&&!bankedItems(0).length) out.push('You have no tai yet, and open chows add none, so keep a scoring plan in mind.');
   return out.join(' ');
 }
-function dangerNotes(){
-  const notes=[];
-  for(const p of [1,2,3]){
-    const pl=S.players[p]; if(pl.melds.length<2) continue;
-    const suits=new Set(pl.melds.filter(m=>isSuit(m.k)).map(m=>suitOf(m.k)));
-    if(suits.size===1&&pl.melds.filter(m=>isSuit(m.k)).length>=2){ const s=[...suits][0]; notes.push(`${pl.name} shows ${pl.melds.length} sets in ${SUIT_NAMES[s]} only: likely a flush. Avoid feeding ${SUIT_NAMES[s].toLowerCase()}.`); }
-    if(pl.melds.filter(m=>isDragon(m.k)).length===2) notes.push(`${pl.name} has two dragon sets. Never discard the third dragon: you'd pay for the whole table.`);
-  }
-  if(S.wall.length-DEAD<24) notes.push('The wall is short. Prefer tiles already showing in the rivers.');
-  return notes;
+function dangerFor(p,short){
+  const pl=S.players[p], out=[]; if(p===0) return out;
+  const sm=pl.melds.filter(m=>isSuit(m.k)), suits=new Set(sm.map(m=>suitOf(m.k)));
+  if(pl.melds.length>=2&&sm.length>=2&&suits.size===1){ const s=SUIT_NAMES[[...suits][0]].toLowerCase(); out.push(short?`${pl.name}: ${s} flush?`:`Shows ${sm.length} sets of ${s} only, which points to a flush. Avoid feeding ${s}.`); }
+  if(pl.melds.filter(m=>isDragon(m.k)).length===2) out.push(short?`${pl.name}: don't feed the 3rd dragon`:`Has two dragon sets. Never discard the third dragon: you'd pay for the whole table.`);
+  return out;
 }
 function coachHTML(){
   if(!SET.coach||!S||S.ui.mode==='result') return '';
-  const pl=S.players[0], lines=[];
-  const bank=bankedItems(0);
+  const pl=S.players[0]; let main='', sub='';
   if(S.ui.mode==='turn'){
     const o=S.ui.opts;
-    if(o.hu) lines.push(`<b>You can win now.</b> Hu for ${o.hu.tai} tai.`);
-    else if(o.huZero) lines.push(`Your hand is complete but scores 0 tai, so it can't be declared. Keep building a scoring set.`);
-    const cd=coachDiscard(), b=cd.best;
-    if(!o.hu){
-      let txt=`Suggested discard: ${T(b.k)} <b>${nm(b.k)}</b>. `;
-      txt+= b.s===0?`You'd be ready (ting), waiting on ${waitsLine(b.waits)}.`:`Leaves you ${b.s} tile${b.s>1?'s':''} from ready, with ${b.u} useful draws left.`;
-      txt+=honorNote(b.k);
-      lines.push(txt);
-      if(S.sel!=null){
+    if(o.hu) main=`<b>You can win now.</b> Tap Hu for ${o.hu.tai} tai.`;
+    else {
+      const cd=coachDiscard(), b=cd.best;
+      main=`Try discarding ${T(b.k)} <b>${nm(b.k)}</b>. `+(b.s===0?`You'll be ready, waiting on ${waitsLine(b.waits)}.`:`You'll be ${b.s} from ready with ${b.u} useful draws.`);
+      if(o.huZero) sub=`Your hand is complete but worth 0 tai, so it can't be declared yet.`;
+      else if(S.sel!=null){
         const k=S.disp[S.sel], ev=cd.all.find(r=>r.k===k);
-        if(ev&&ev.k!==b.k){
-          if(ev.s>b.s) lines.push(`Discarding ${nm(k)} would leave you ${ev.s} away instead of ${b.s}.`);
-          else if(ev.u<b.u) lines.push(`${nm(k)} works too, but ${nm(b.k)} keeps more useful draws (${b.u} vs ${ev.u}).`);
-          else lines.push(`${nm(k)} is just as good.`);
-        } else if(ev) lines.push('Good pick. Tap it again to discard.');
-      }
+        if(ev&&ev.k===b.k) sub='Good pick. Tap it again to discard.';
+        else if(ev&&ev.s>b.s) sub=`${nm(k)} would leave you ${ev.s} away instead of ${b.s}.`;
+        else if(ev&&ev.u<b.u) sub=`${nm(k)} works, but ${nm(b.k)} keeps more useful draws (${b.u} vs ${ev.u}).`;
+        else if(ev) sub=`${nm(k)} is just as good.`;
+      } else sub=honorNote(b.k);
     }
-  } else if(S.ui.mode==='claim'){
-    lines.push(S.ui.advice);
-  } else {
+  } else if(S.ui.mode==='claim') main=S.ui.advice;
+  else {
     const c=counts(pl.hand), m=pl.melds.length;
-    if(pl.hand.length%3===1){
-      const w=waitsOf(c,m);
-      if(w.length) lines.push(`You're ready. Waiting on ${waitsLine(w)}.`);
-      else lines.push(`${shantenStd(c,m)} tile${shantenStd(c,m)>1?'s':''} from ready.`);
-    }
+    if(pl.hand.length%3===1){ const w=waitsOf(c,m), s=shantenStd(c,m); main=w.length?`You're ready. Waiting on ${waitsLine(w)}.`:`You're ${s} tile${s>1?'s':''} from ready. Watch what others throw.`; }
+    else main='Watching the table…';
   }
-  lines.push(bank.length?`Tai banked: <b>${bank.reduce((a,x)=>a+x.tai,0)}</b> (${bank.map(x=>x.label).join(', ')}).`:`No tai banked yet. You need at least ${MIN_TAI} to win.`);
-  for(const n of dangerNotes().slice(0,2)) lines.push(n);
-  return `<div class="coachbox" role="status"><span class="ttl">Coach</span>${lines.map(l=>`<p>${l}</p>`).join('')}</div>`;
+  const bank=bankedItems(0), chips=[];
+  chips.push(bank.length?`<span class="chip-s good">${bank.reduce((a,x)=>a+x.tai,0)} tai in hand · ${bank.map(x=>x.label.replace(' tile','').replace('Seat flower: ','')).join(', ')}</span>`:`<span class="chip-s">No tai yet · need ${MIN_TAI} to win</span>`);
+  const dn=[]; for(const p of [1,2,3]) dn.push(...dangerFor(p,true)); if(S.wall.length-DEAD<24) dn.push('Short wall: play safe tiles');
+  for(const d of dn.slice(0,2)) chips.push(`<span class="chip-s warn">${d}</span>`);
+  return `<div class="coach" role="status"><div class="coach-main">${ICON.bulb}<div><p>${main}</p>${sub?`<p class="coach-sub">${sub}</p>`:''}</div></div><div class="coach-chips">${chips.join('')}</div></div>`;
 }
 
-/* ---- play rendering ---- */
-function meldHTML(md,cls){
-  const ts=meldTiles(md);
-  return `<span class="meld">${ts.map((k,i)=>md.concealed&&(i===0||i===3)?TB(cls):T(k,cls)).join('')}</span>`;
+/* ---- table ---- */
+const POSN={0:'b',1:'r',2:'t',3:'l'};
+function meldHTML(md,cls){ const ts=meldTiles(md); return `<span class="meld">${ts.map((k,i)=>md.concealed&&(i===0||i===3)?TB(cls):T(k,cls)).join('')}</span>`; }
+function seatHTML(p){
+  const pl=S.players[p], seat=seatOf(p), live=S.ui.mode!=='result', active=live&&S.turn===p;
+  const think=active&&S.ui.mode==='wait'&&p!==0?'<span class="think" aria-hidden="true"><i></i><i></i><i></i></span>':'';
+  const sets=pl.melds.map(m=>meldHTML(m,'t-m')).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,'t-m')).join('')}</span>`:'');
+  const sub=p===0?`flowers ${seat+1} · <span class="num">${pl.chips}</span>`:`<span class="num">${pl.hand.length}</span> tiles · <span class="num">${pl.chips}</span>`;
+  return `<div class="seat seat-${POSN[p]}${active?' active':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${pl.name}, ${WINDS[seat]} seat. Show details">
+    <div class="who"><span class="av han">${WINDS_ZH[seat]}</span><span class="nm"><b>${pl.name}</b><small>${sub}</small>${think}</span>${p===S.dealer?'<span class="dealer" title="Dealer">D</span>':''}</div>
+    ${sets?`<div class="sets">${sets}</div>`:''}</div>`;
 }
-function setsHTML(pl,cls){ return pl.melds.map(m=>meldHTML(m,cls)).join('')+(pl.bonus.length?`<span class="bonus">${pl.bonus.map(k=>T(k,cls)).join('')}</span>`:''); }
-function riverHTML(p){
-  const pl=S.players[p], ld=S.lastDiscard;
-  return pl.discards.map((k,i)=>T(k,'t-xs'+(ld&&ld.p===p&&i===pl.discards.length-1&&S.ui.mode!=='result'?' last':''))).join('');
+function pondHTML(p){
+  const pl=S.players[p], ld=S.lastDiscard, live=S.ui.mode!=='result', fresh=S.discardCount!==S.animKey;
+  const ts=pl.discards.map((k,i)=>{ const last=live&&ld&&ld.p===p&&i===pl.discards.length-1; return T(k,'t-p'+(last?' last'+(fresh?' fresh':''):'')); }).join('');
+  return `<div class="pond pond-${POSN[p]}${live&&S.turn===p?' active':''}" role="button" tabindex="0" data-inspect="${p}" aria-label="${p===0?'Your':pl.name+"'s"} discards">${ts}</div>`;
 }
-const POS={1:'Right · plays after you',2:'Across',3:'Left · you chi from them'};
-function oppHTML(p){
-  const pl=S.players[p], seat=seatOf(p);
-  return `<section class="opp ${S.turn===p&&S.ui.mode!=='result'?'active':''}" aria-label="${pl.name}">
-    <div class="who"><span class="wind han" title="${WINDS[seat]} seat">${WINDS_ZH[seat]}</span><b>${pl.name}</b><span class="pos">${POS[p]}</span>${p===S.dealer?'<span class="tag">Dealer</span>':''}<span class="sp"></span><span class="num" title="Chips">${pl.chips}</span></div>
-    <div class="sets"><span class="backs">${pl.hand.length} in hand</span>${setsHTML(pl,'t-xs')}</div>
-    <div class="river">${riverHTML(p)}</div></section>`;
+function compassHTML(){
+  const live=S.ui.mode!=='result', ld=S.lastDiscard;
+  const winds=[0,1,2,3].map(p=>`<span class="cw cw-${POSN[p]}${live&&S.turn===p?' on':''} han" title="${S.players[p].name}">${WINDS_ZH[seatOf(p)]}</span>`).join('');
+  let mid;
+  if(!live) mid=`<span class="cap"><b>${S.result.type==='draw'?'Draw game':(S.result.w===0?'You win!':S.players[S.result.w].name+' wins')}</b></span>`;
+  else if(ld) mid=`${T(ld.k,'t-c')}<span class="cap one">${ld.p===0?'You':S.players[ld.p].name}</span>`;
+  else mid=`<span class="cap"><b>${WINDS[S.prevailing]} round</b><br>${S.dealer===0?'You deal':S.players[S.dealer].name+' deals'}</span>`;
+  return `<div class="compass">${winds}<div class="cc">${mid}</div></div>`;
 }
-function statusText(){
-  if(S.ui.mode==='result') return S.result.type==='draw'?'Draw game':`${S.players[S.result.w].name} won`;
-  if(S.ui.mode==='turn') return 'Your turn';
-  if(S.ui.mode==='claim') return `${S.players[S.ui.d].name} discarded`;
-  return S.turn===0?'Your turn':`${S.players[S.turn].name} is thinking…`;
+function mineHTML(){
+  const me=S.players[0], seat=seatOf(0);
+  const sets=me.melds.map(m=>meldHTML(m,'t-sm')).join('')+(me.bonus.length?`<span class="bonus">${me.bonus.map(k=>T(k,'t-sm')).join('')}</span>`:'');
+  return `<span class="av han">${WINDS_ZH[seat]}</span><span><b>You</b> · ${WINDS[seat]} seat · flowers ${seat+1}${S.dealer===0?' · dealer':''} · <span class="num">${me.chips}</span> chips</span>${sets?`<span class="mine-sets">${sets}</span>`:''}`;
 }
 function handHTML(){
   const pl=S.players[0]; const arr=pl.hand.slice(); let drawn=null;
   if(S.ui.mode==='turn'&&S.lastDrawn&&S.lastDrawn.p===0){ const i=arr.lastIndexOf(S.lastDrawn.k); if(i>=0) drawn=arr.splice(i,1)[0]; }
   arr.sort((a,b)=>a-b); const disp=drawn!=null?[...arr,drawn]:arr; S.disp=disp;
-  let hintK=null;
-  if(SET.coach&&S.ui.mode==='turn'&&!S.ui.opts.hu) hintK=coachDiscard().best.k;
-  let hinted=false;
-  const live=S.ui.mode==='turn';
+  const hintK=SET.coach&&S.ui.mode==='turn'&&!S.ui.opts.hu?coachDiscard().best.k:null;
   const use=new Set();
-  if(S.ui.mode==='claim'){ const {o,k}=S.ui; let need=[]; if(o.pong||o.kong) need=[k,k,k].slice(0,o.kong?3:2); if(o.chows) for(const s of o.chows) need.push(...[s,s+1,s+2].filter(x=>x!==k)); const left=need.slice(); disp.forEach((x,i)=>{ const j=left.indexOf(x); if(j>=0){ use.add(i); left.splice(j,1); } }); }
+  if(S.ui.mode==='claim'){
+    const {o,k}=S.ui; let need=[];
+    if(o.pong||o.kong) need=o.kong?[k,k,k]:[k,k];
+    if(o.chows) for(const s of o.chows) need.push(...[s,s+1,s+2].filter(x=>x!==k));
+    disp.forEach((x,i)=>{ const j=need.indexOf(x); if(j>=0){ use.add(i); need.splice(j,1); } });
+  }
+  let hinted=false; const live=S.ui.mode==='turn';
   return `<div class="hand ${live?'':'idle'}" role="group" aria-label="Your hand">${disp.map((k,i)=>{
     let c='t-hand'; if(S.sel===i) c+=' sel';
     if(hintK===k&&!hinted){ c+=' hint'; hinted=true; }
@@ -1226,15 +1294,15 @@ function actionsHTML(){
   const m=S.ui.mode;
   if(m==='turn'){
     const o=S.ui.opts, k=S.sel!=null?S.disp[S.sel]:null;
-    let h=`<p class="prompt">${S.justClaimed?'Now discard a tile.':'Tap a tile to pick it, tap it again to discard.'}</p>`;
+    let h=`<p class="prompt">${S.justClaimed?'Now discard one tile.':'Tap a tile to pick it, tap again to discard.'}</p>`;
     if(o.hu) h+=`<button class="btn hu" data-act="hu" type="button">Hu! <span class="han">${S.discardCount===0&&S.dealer===0?'天胡':'自摸'}</span> · ${o.hu.tai} tai</button>`;
     for(const kg of o.kongs) h+=`<button class="btn" data-act="kong" data-k="${kg.k}" type="button">Kong <span class="han">杠</span> ${nm(kg.k)}</button>`;
     h+=`<button class="btn primary" data-act="discard" type="button" ${k==null?'disabled':''}>${k==null?'Discard':'Discard '+nm(k)}</button>`;
     return h;
   }
   if(m==='claim'){
-    const {o,d,k}=S.ui; const can=[o.hu&&'Hu',o.kong&&'Kong',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean);
-    let h=`<p class="claimhead">You can ${can.join(' or ')}!</p><p class="prompt">${S.players[d].name} discarded ${T(k)} <b>${nm(k)}</b>. The tiles you'd use are lifted.</p>`;
+    const {o,d,k}=S.ui, can=[o.hu&&'Hu',o.kong&&'Kong',o.pong&&'Pong',o.chows&&'Chi'].filter(Boolean);
+    let h=`<p class="claimhead">You can ${can.join(' or ')}</p><p class="prompt">${S.players[d].name} discarded ${T(k)} <b>${nm(k)}</b>. The tiles you'd use are lifted.</p>`;
     if(o.hu) h+=`<button class="btn hu" data-act="c-hu" type="button">Hu! <span class="han">胡</span> · ${o.hu.tai} tai</button>`;
     if(o.kong) h+=`<button class="btn" data-act="c-kong" type="button">Kong <span class="han">杠</span></button>`;
     if(o.pong) h+=`<button class="btn" data-act="c-pong" type="button">Pong <span class="han">碰</span></button>`;
@@ -1243,45 +1311,57 @@ function actionsHTML(){
     return h;
   }
   if(m==='result') return `<button class="btn" data-act="show" type="button">Show scoring</button><button class="btn primary" data-act="next" type="button">Next hand</button>`;
-  return `<p class="prompt">${statusText()}</p>`;
+  return `<p class="prompt">${S.turn===0?'Your turn':S.players[S.turn].name+' is playing…'}</p>`;
+}
+function syncIcons(){
+  const c=$('#ib-coach'), s=$('#ib-sound'); if(!c) return;
+  c.setAttribute('aria-pressed',String(!!SET.coach));
+  const on=SET.sound||SET.music; s.innerHTML=on?ICON.sound:ICON.mute; s.setAttribute('aria-label',on?'Mute sound and music':'Turn on sound and music');
 }
 function renderPlay(){
   if(!S) return;
-  const me=S.players[0], seat0=seatOf(0);
-  $('#meta').innerHTML=`<span><b class="han">${WINDS_ZH[S.prevailing]}</b> ${WINDS[S.prevailing]} round · hand ${S.handNo}</span><span>Wall: <b class="num">${Math.max(0,S.wall.length-DEAD)}</b> tiles left</span>`;
-  $('#felt').innerHTML=`<div class="opps">${oppHTML(3)}${oppHTML(2)}${oppHTML(1)}</div>
-    <div class="center">${S.lastDiscard&&S.ui.mode!=='result'?T(S.lastDiscard.k,'t-md'):''}<div><div class="status">${statusText()}</div><div class="sub">${S.lastDiscard&&S.ui.mode!=='result'?`Last discard: ${nm(S.lastDiscard.k)} by ${S.players[S.lastDiscard.p].name}`:'Counter-clockwise: you → right → across → left'}</div></div></div>
-    <div class="mine-river"><div class="label">Your discards</div><div class="river">${riverHTML(0)}</div></div>
-    <details class="log" id="log" ${S.logOpen?'open':''}><summary>Table log</summary><ol>${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol></details>`;
-  $('#dock').classList.toggle('alert',S.ui.mode==='claim'||(S.ui.mode==='turn'&&!!S.ui.opts.hu));
-  $('#dock').innerHTML=`${coachHTML()}
-    <div class="mine"><span class="wind han">${WINDS_ZH[seat0]}</span><b>You</b><span>${WINDS[seat0]} seat · flowers <b>${seat0+1}</b>${S.dealer===0?' · Dealer':''} · <span class="num">${me.chips}</span> chips</span>${setsHTML(me,'t-sm')}</div>
-    ${handHTML()}
-    <div class="actions">${actionsHTML()}</div>`;
-  const lg=$('#log'); if(lg) lg.addEventListener('toggle',()=>{S.logOpen=lg.open;});
-  renderModal();
+  $('#tb-info').innerHTML=`<span class="pill"><span class="han">${WINDS_ZH[S.prevailing]}</span>${WINDS[S.prevailing]} round</span><span class="hide-sm">Hand ${S.handNo}</span><span>Wall <b class="num">${Math.max(0,S.wall.length-DEAD)}</b></span>`;
+  syncIcons();
+  const dock=$('#dock');
+  dock.classList.toggle('alert',S.ui.mode==='claim'||(S.ui.mode==='turn'&&!!S.ui.opts.hu));
+  dock.innerHTML=`${coachHTML()}${handHTML()}<div class="actions">${actionsHTML()}</div>`;
+  $('#table').innerHTML=`${seatHTML(2)}${seatHTML(1)}${seatHTML(3)}${seatHTML(0)}${pondHTML(2)}${pondHTML(3)}${compassHTML()}${pondHTML(1)}${pondHTML(0)}`;
+  S.animKey=S.discardCount;
+  fitTable();
+  renderModal(false);
 }
+function fitTable(){
+  const t=$('#table'); if(!t||$('#v-play').hidden) return;
+  const W=t.clientWidth; if(!W) return;
+  const pwW=(W-16)/14-2;
+  const avail=window.innerHeight-($('#dock').offsetHeight||200)-($('.topbar').offsetHeight||50)-34;
+  const pwH=avail/(14*1.43)-1;
+  const floor=W>700?28:18;
+  let pw=Math.min(pwW,Math.max(pwH,floor)); pw=Math.max(14,Math.min(48,pw));
+  t.style.setProperty('--pw',pw.toFixed(1)+'px');
+  t.style.setProperty('--mw',Math.max(11,Math.min(22,pw*.6)).toFixed(1)+'px');
+}
+
+/* ---- sheets ---- */
+function closeBtn(){ return `<button class="ib" data-act="close" type="button" aria-label="Close">${ICON.x}</button>`; }
 function handShow(pl,sc,winTile){
   let h='', marked=false;
   const mark=k=>{ if(!marked&&k===winTile){marked=true;return 'win';} return ''; };
   if(sc&&sc.decomp){
     const d=sc.decomp;
-    for(const s of d.sets){ const ts=s.t==='chow'?[s.k,s.k+1,s.k+2]:[s.k,s.k,s.k]; h+=`<span class="tiles">${ts.map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`; }
-    h+=`<span class="tiles">${[d.pair,d.pair].map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`;
-  } else h+=`<span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k,'t-sm '+mark(k))).join('')}</span>`;
-  h+=pl.melds.map(m=>meldHTML(m,'t-sm')).join('');
-  if(pl.bonus.length) h+=`<span class="tiles">${pl.bonus.map(k=>T(k,'t-sm')).join('')}</span>`;
+    for(const s of d.sets){ const ts=s.t==='chow'?[s.k,s.k+1,s.k+2]:[s.k,s.k,s.k]; h+=`<span class="tiles">${ts.map(k=>T(k,'t-md '+mark(k))).join('')}</span>`; }
+    h+=`<span class="tiles">${[d.pair,d.pair].map(k=>T(k,'t-md '+mark(k))).join('')}</span>`;
+  } else h+=`<span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k,'t-md '+mark(k))).join('')}</span>`;
+  h+=pl.melds.map(m=>meldHTML(m,'t-md')).join('');
+  if(pl.bonus.length) h+=`<span class="tiles">${pl.bonus.map(k=>T(k,'t-md')).join('')}</span>`;
   return `<div class="handshow">${h}</div>`;
 }
-function renderModal(){
-  const md=$('#modal');
-  if(!S||!S.showResult||!S.result||$('#v-play').hidden){ md.hidden=true; md.innerHTML=''; return; }
+function resultHTML(){
   const r=S.result; let h='';
-  if(r.type==='draw'){
-    h=`<div><h2>Draw game <span class="han">流局</span></h2><p class="sub">The wall ran down to the 15-tile dead wall with no winner. The dealer keeps the deal.</p></div>`;
-  } else {
+  if(r.type==='draw') h=`<div class="sheet-head"><div><h2>Draw game <span class="han">流局</span></h2><p class="sub">The wall ran down to the 15-tile dead wall with no winner. The dealer keeps the deal.</p></div>${closeBtn()}</div>`;
+  else {
     const pl=S.players[r.w], sc=r.sc;
-    h=`<div><h2>${r.w===0?'You win! <span class="han">胡</span>':`${pl.name} wins`}</h2><p class="sub">${r.selfDrawn?'By self-draw <span class="han">自摸</span>: everyone pays double.':`On ${S.players[r.d].name==='You'?'your':S.players[r.d].name+"'s"} discard. The shooter pays double.`} ${WINDS[r.seat]} seat, ${WINDS[r.prevailing]} round.</p></div>
+    h=`<div class="sheet-head"><div><h2>${r.w===0?'You win! <span class="han">胡</span>':`${pl.name} wins`}</h2><p class="sub">${r.selfDrawn?'By self-draw <span class="han">自摸</span>, so everyone pays double.':`On ${r.d===0?'your':S.players[r.d].name+"'s"} discard. The shooter pays double.`} ${WINDS[r.seat]} seat, ${WINDS[r.prevailing]} round.</p></div>${closeBtn()}</div>
     ${handShow(pl,sc,r.winTile)}
     <table class="scoretbl"><tbody>
       ${sc.items.map(i=>`<tr><td>${i.label}${i.zh?`<span class="zh">${i.zh}</span>`:''}</td><td>+${i.tai}</td></tr>`).join('')}
@@ -1291,26 +1371,63 @@ function renderModal(){
     <ul class="pays">${r.pays.map(p=>`<li>${S.players[p.p].name} pay${p.p===0?'':'s'} <b class="num">${p.amt}</b>${!r.selfDrawn&&p.p===r.d?' (shooter, double)':''}</li>`).join('')}</ul>`;
   }
   const others=S.players.map((pl,i)=>(r.type==='win'&&i===r.w)?'':`<div><b>${pl.name}</b> held: <span class="tiles">${pl.hand.slice().sort((a,b)=>a-b).map(k=>T(k)).join('')}</span></div>`).join('');
-  h+=`<details><summary>Everyone's hands</summary><div class="others">${others}</div></details>
+  return h+`<details><summary>Everyone's hands</summary><div class="others">${others}</div></details>
     <div class="row"><button class="btn" data-act="close" type="button">View table</button><button class="btn primary" data-act="next" type="button">Next hand</button></div>`;
-  md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="Hand result">${h}</div>`;
+}
+function inspectHTML(p){
+  const pl=S.players[p], seat=seatOf(p), notes=dangerFor(p,false);
+  return `<div class="sheet-head"><span class="av han">${WINDS_ZH[seat]}</span><div><h2>${p===0?'Your table':pl.name}</h2><p class="sub">${WINDS[seat]} seat · flowers ${seat+1}${p===S.dealer?' · dealer':''} · ${pl.chips} chips${p!==0?` · ${pl.hand.length} tiles in hand`:''}</p></div>${closeBtn()}</div>
+    ${notes.map(n=>`<p class="note warn">${n}</p>`).join('')}
+    <h3>Exposed sets</h3>${pl.melds.length?`<div class="handshow">${pl.melds.map(m=>meldHTML(m,'t-md')).join('')}</div>`:'<p class="sub">None. The whole hand is still concealed.</p>'}
+    <h3>Flowers & animals</h3>${pl.bonus.length?`<div class="handshow">${pl.bonus.map(k=>T(k,'t-md')).join('')}</div>`:'<p class="sub">None yet.</p>'}
+    <h3>Discards · ${pl.discards.length}, oldest first</h3>${pl.discards.length?`<div class="bigpond">${pl.discards.map(k=>T(k,'t-md')).join('')}</div>`:'<p class="sub">No discards yet.</p>'}`;
+}
+function settingsHTML(){
+  const sw=(id,label,desc,on)=>`<label class="setrow" for="${id}"><span><b>${label}</b><span class="sub">${desc}</span></span><input type="checkbox" class="switch" id="${id}" ${on?'checked':''}></label>`;
+  return `<div class="sheet-head"><div><h2>Settings</h2></div>${closeBtn()}</div>
+    <div class="setlist">
+      ${sw('s-coach','Coach hints','Suggested discards, waits and claim advice',SET.coach)}
+      ${sw('s-labels','English numbers on tiles','1–9 and E S W N in the top-right corner',SET.labels)}
+      ${sw('s-sound','Sound effects','Tile clacks, plus chimes for your turn and claims',SET.sound)}
+      ${sw('s-music','Music','Soft background music',SET.music)}
+      <div class="setrow"><span><b>Bot speed</b></span><div class="seg" role="radiogroup" aria-label="Bot speed">${[['1100','Relaxed'],['650','Normal'],['250','Fast']].map(([v,l])=>`<button type="button" role="radio" aria-checked="${String(SET.speed)===v}" data-speed="${v}">${l}</button>`).join('')}</div></div>
+    </div>
+    <div class="row"><button class="btn" data-act="newgame" type="button">${newArmed?'Tap again to restart':'Start a new game'}</button></div>`;
+}
+function logHTML(){ return `<div class="sheet-head"><div><h2>Table log</h2><p class="sub">Newest first</p></div>${closeBtn()}</div><ol class="loglist">${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol>`; }
+function renderModal(force){
+  const md=$('#modal');
+  if(!S||$('#v-play').hidden){ md.hidden=true; md.dataset.kind=''; return; }
+  let kind='', body='';
+  if(SHEET){ kind=typeof SHEET==='object'?'inspect'+SHEET.p:SHEET; }
+  else if(S.showResult&&S.result) kind='result'+S.handNo;
+  if(!kind){ md.hidden=true; md.dataset.kind=''; return; }
+  if(force||md.dataset.kind!==kind){
+    body= kind.startsWith('result')?resultHTML(): kind==='settings'?settingsHTML(): kind==='log'?logHTML(): inspectHTML(SHEET.p);
+    md.innerHTML=`<div class="sheet" role="dialog" aria-modal="true">${body}</div>`;
+    md.dataset.kind=kind;
+  }
   md.hidden=false;
 }
+function openSheet(x){ SHEET=x; renderModal(true); }
 
 /* ---- play events ---- */
 function onAct(el){
   const a=el.dataset.act;
   if(a==='discard'&&S.sel!=null) act({type:'discard',k:S.disp[S.sel]});
-  else if(a==='hu') act({type:'hu'});
+  else if(a==='hu'||a==='c-hu') act({type:'hu'});
   else if(a==='kong') act({type:'kong',k:+el.dataset.k});
-  else if(a==='c-hu') act({type:'hu'});
   else if(a==='c-pong') act({type:'pong'});
   else if(a==='c-kong') act({type:'kong'});
   else if(a==='c-chow') act({type:'chow',s:+el.dataset.s});
   else if(a==='pass') act({type:'pass'});
-  else if(a==='next') nextHand();
-  else if(a==='show'){ S.showResult=true; renderModal(); }
-  else if(a==='close'){ S.showResult=false; renderModal(); }
+  else if(a==='next'){ SHEET=null; nextHand(); }
+  else if(a==='show'){ SHEET=null; S.showResult=true; renderModal(true); }
+  else if(a==='close'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
+  else if(a==='newgame'){
+    if(newArmed){ clearTimeout(newArmed); newArmed=null; SHEET=null; newMatch(); renderModal(true); }
+    else { newArmed=setTimeout(()=>{ newArmed=null; if(SHEET==='settings') renderModal(true); },3000); renderModal(true); }
+  }
 }
 $('#dock').addEventListener('click',e=>{
   const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
@@ -1318,24 +1435,35 @@ $('#dock').addEventListener('click',e=>{
   const i=+t.dataset.i;
   if(S.sel===i) act({type:'discard',k:S.disp[i]}); else { S.sel=i; SFX.tap(); renderPlay(); }
 });
-$('#modal').addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(b) onAct(b); else if(e.target.id==='modal'){ S.showResult=false; renderModal(); } });
-
-const cbCoach=$('#opt-coach'), cbLabels=$('#opt-labels'), selSpeed=$('#opt-speed');
-cbCoach.checked=SET.coach; cbLabels.checked=SET.labels; selSpeed.value=String(SET.speed);
-document.body.classList.toggle('nolabels',!SET.labels);
-cbCoach.addEventListener('change',()=>{SET.coach=cbCoach.checked;saveSet();renderPlay();});
-cbLabels.addEventListener('change',()=>{SET.labels=cbLabels.checked;document.body.classList.toggle('nolabels',!SET.labels);saveSet();});
-selSpeed.addEventListener('change',()=>{SET.speed=+selSpeed.value;saveSet();});
-const cbSound=$('#opt-sound'), cbMusic=$('#opt-music');
-cbSound.checked=SET.sound; cbMusic.checked=SET.music;
-cbSound.addEventListener('change',()=>{SET.sound=cbSound.checked;saveSet();});
-cbMusic.addEventListener('change',()=>{SET.music=cbMusic.checked;saveSet();audioInit();SET.music?musicOn():musicOff();});
-let newArmed=null;
-$('#btn-new').addEventListener('click',e=>{
-  const b=e.currentTarget;
-  if(newArmed){ clearTimeout(newArmed); newArmed=null; b.textContent='New game'; newMatch(); return; }
-  b.textContent='Tap again to restart'; newArmed=setTimeout(()=>{newArmed=null;b.textContent='New game';},3000);
+$('#table').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
+  const s=e.target.closest('[data-inspect]'); if(s) openSheet({p:+s.dataset.inspect});
 });
+$('#table').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const s=e.target.closest('[data-inspect]'); if(s){ e.preventDefault(); openSheet({p:+s.dataset.inspect}); }
+});
+$('#modal').addEventListener('click',e=>{
+  const sp=e.target.closest('[data-speed]'); if(sp){ SET.speed=+sp.dataset.speed; saveSet(); renderModal(true); return; }
+  const b=e.target.closest('[data-act]'); if(b){ onAct(b); return; }
+  if(e.target.id==='modal'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
+});
+$('#modal').addEventListener('change',e=>{
+  const id=e.target.id, on=e.target.checked;
+  if(id==='s-coach'){ SET.coach=on; renderPlay(); }
+  else if(id==='s-labels'){ SET.labels=on; document.body.classList.toggle('nolabels',!on); }
+  else if(id==='s-sound'){ SET.sound=on; }
+  else if(id==='s-music'){ SET.music=on; audioInit(); on?musicOn():musicOff(); }
+  saveSet(); syncIcons();
+});
+$('#ib-coach').addEventListener('click',()=>{ SET.coach=!SET.coach; saveSet(); renderPlay(); });
+$('#ib-sound').addEventListener('click',()=>{
+  const on=!(SET.sound||SET.music); SET.sound=on; SET.music=on; saveSet(); audioInit(); on?musicOn():musicOff(); syncIcons();
+});
+$('#ib-log').addEventListener('click',()=>openSheet('log'));
+$('#ib-set').addEventListener('click',()=>openSheet('settings'));
+$('#ib-coach').innerHTML=ICON.bulb; $('#ib-log').innerHTML=ICON.log; $('#ib-set').innerHTML=ICON.set;
+window.addEventListener('resize',()=>fitTable());
 
 /* ---- tiles guide ---- */
 const GROUPS=[
@@ -1453,10 +1581,10 @@ function route(){
   document.querySelectorAll('.tabs a').forEach(a=>{ if(a.getAttribute('href')==='#'+v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   if(v==='tiles') renderTiles();
   if(v==='quiz'&&!Q.data) newQ();
-  if(v!=='play'&&S&&S.showResult){ /* keep result for when they return */ $('#modal').hidden=true; }
-  if(v==='play') renderModal();
+  if(v==='play'){ renderPlay(); renderModal(true); } else $('#modal').hidden=true;
 }
 window.addEventListener('hashchange',()=>{ route(); window.scrollTo(0,0); });
+document.body.classList.toggle('nolabels',!SET.labels);
 newMatch();
 route();
 </script>
