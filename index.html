@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Singapore Mahjong Coach</title>
-<meta name="app-version" content="v14">
+<meta name="app-version" content="v16">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
@@ -221,7 +221,7 @@ body.playing .masthead{display:none}
 .why{font:600 11.5px var(--f-ui); color:#3b2408; background:var(--gold); border:0; border-radius:999px; padding:2px 9px; margin-left:4px; cursor:pointer; vertical-align:1px}
 .coachfloat .chip-s[data-tip]{cursor:pointer}
 .tipex{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; padding:10px 12px; background:var(--surface-2); border-radius:12px; font-size:14px}
-.banners{position:absolute; right:0; top:50%; transform:translateY(-50%); z-index:4; display:flex; flex-direction:column; gap:12px; align-items:flex-end; max-height:100%; overflow:auto; padding:10px 10px 10px 12px}
+.banners{position:absolute; right:0; top:50%; transform:translateY(-50%); z-index:20; display:flex; flex-direction:column; gap:12px; align-items:flex-end; max-height:100%; overflow:auto; padding:10px 10px 10px 12px}
 .ban{display:flex; align-items:center; gap:10px; background:var(--banner); border:0; border-radius:12px; padding:6px 10px 6px 14px; cursor:pointer; box-shadow:0 0 0 3px #3b1d0e, 0 0 0 5px var(--gold-dim), 0 8px 18px rgba(0,0,0,.35); animation:slidein .25s ease-out}
 @keyframes slidein{from{transform:translateX(30px); opacity:0} to{transform:none; opacity:1}}
 .ban .bl{font:400 22px/1 'Lilita One', var(--f-ui); color:var(--banner-ink); letter-spacing:.03em; text-shadow:0 1px 0 rgba(0,0,0,.08)}
@@ -256,11 +256,11 @@ body.playing .masthead{display:none}
 #v-play.wide .myrow{flex-direction:column-reverse; align-items:flex-start; justify-content:flex-end; width:auto; max-width:170px; gap:4px; min-height:0}
 #v-play.wide .myprompt{text-align:left; font-size:13px; line-height:1.25}
 #v-play.wide .plane{--rackw:calc(var(--pw)*.7); --sidew:calc(var(--mw)*3.3 + 22px)}
-#v-play.wide .pz{grid-template-columns:calc(3*var(--slot)) calc(14*var(--slot)) calc(3*var(--slot));
-  grid-template-rows:minmax(calc(2*var(--row)),auto) minmax(calc(3*var(--row)),auto) minmax(calc(2*var(--row)),auto);
+#v-play.wide .pz{grid-template-columns:calc(var(--ps,3)*var(--slot)) calc(var(--pc,14)*var(--slot)) calc(var(--ps,3)*var(--slot));
+  grid-template-rows:minmax(calc(var(--pr,2)*var(--row)),auto) minmax(calc(2*var(--row)),auto) minmax(calc(var(--pr,2)*var(--row)),auto);
   grid-template-areas:"l t r" "l c r" "l b r"}
-#v-play.wide .pond-t,#v-play.wide .pond-b{grid-template-columns:repeat(14,var(--pw))}
-#v-play.wide .pond-l,#v-play.wide .pond-r{grid-template-columns:repeat(3,var(--pw))}
+#v-play.wide .pond-t,#v-play.wide .pond-b{grid-template-columns:repeat(var(--pc,14),var(--pw))}
+#v-play.wide .pond-l,#v-play.wide .pond-r{grid-template-columns:repeat(var(--ps,3),var(--pw))}
 #v-play.wide .pond-l{align-content:center} #v-play.wide .pond-r{align-content:center}
 #v-play.wide .rack-l .bk,#v-play.wide .rack-r .bk{height:calc(var(--pw)*.55)}
 /* landscape: the top player's name sits on the same line as their rack, their sets and flowers to the right */
@@ -270,8 +270,12 @@ body.playing .masthead{display:none}
 #v-play.wide .info-t .sets{grid-area:rT; justify-self:end; align-self:center; margin-right:calc(var(--rackw) + var(--sidew))}
 #v-play.wide .rack-t{justify-self:center}
 #v-play.wide .info-b{display:none}
+#v-play.wide .compass{min-height:0}
+#v-play.wide .t-c{--w:calc(var(--pw)*1.05)}
+#v-play.wide .cc{inset:24% 18%; gap:2px}
+#v-play.wide .cc .tile+.cap{display:none}
 .cw .me{display:none}
-#v-play.wide .cw .me{display:inline}
+#v-play.wide .cw{font-size:calc(var(--pw)*.48)}
 .cw .me b{font-weight:400}
 
 /* call bubbles: PONG! CHI! GANG! HU! on the caller's side */
@@ -284,14 +288,21 @@ body.playing .masthead{display:none}
 @keyframes callpop{0%{opacity:0; scale:.5} 70%{opacity:1; scale:1.1} 100%{scale:1}}
 
 /* the discard showcase: the tile just thrown appears big and flat in the middle, sliding in from the discarder's side */
-#showcase{position:absolute; left:50%; top:46%; z-index:5; pointer-events:none; translate:-50% -50%}
+#showcase{position:absolute; left:50%; top:46%; z-index:5; pointer-events:none; translate:-50% -50%; transition:left .25s ease}
+.stage.has-banners #showcase{left:calc((100% - var(--banw,190px)) / 2)}
+.stage.has-banners .sc-cap{white-space:normal; max-width:160px}
+.ban-head{display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:12px; background:rgba(20,12,8,.7); color:#fbf3df; font:500 13px/1.2 var(--f-ui); max-width:220px; pointer-events:none}
+.ban-head b{color:var(--gold); font-weight:600}
+.stage.has-banners #callouts{opacity:0; transition:opacity .2s}
+.stage.has-banners .c-r{right:auto; left:calc(100% - var(--banw,190px) - 12px); translate:-100% 0; top:16%}
+#intro,#callouts .callout,#showcase{pointer-events:none}
 .sc{display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 14px 8px; border-radius:16px; background:rgba(20,12,8,.55);
   box-shadow:0 10px 30px rgba(0,0,0,.35); transition:scale .4s ease, opacity .4s ease}
 .sc .tile{--w:clamp(44px, 10vh, 76px)}
 .sc-cap{font:500 13px/1.2 var(--f-ui); color:#fbf3df; text-align:center; white-space:nowrap}
 .sc-cap b{color:var(--gold); font-weight:600}
 .sc.settled{scale:.72; opacity:.55}
-.sc.gone{scale:.6; opacity:0}
+.sc.gone{scale:.6; opacity:0; visibility:hidden}
 .sc-t{animation:sc-t .42s cubic-bezier(.2,.9,.3,1.2)} .sc-b{animation:sc-b .42s cubic-bezier(.2,.9,.3,1.2)}
 .sc-l{animation:sc-l .42s cubic-bezier(.2,.9,.3,1.2)} .sc-r{animation:sc-r .42s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes sc-t{from{transform:translateY(-140%) scale(.5); opacity:0}}
@@ -1306,7 +1317,7 @@ function bankedItems(p){
 
 <script>
 /* ======== UI ======== */
-const APP_VERSION='v14';
+const APP_VERSION='v16';
 const $=s=>document.querySelector(s);
 const SET={coach:true,labels:true,speed:450,sound:true,music:true,voice:'en',coachStyle:'strategic',level:'normal',sayTiles:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
@@ -1458,7 +1469,7 @@ function showDiscard(p,k){
   const who=p===0?'You':S.players[p].name;
   el.innerHTML=`<div class="sc sc-${POSN[p]}" role="status"><span class="tile">${SVG[k]}</span><span class="sc-cap"><b>${who}</b> ${p===0?'discard':'discards'} ${nm(k)}</span></div>`;
   clearTimeout(SC_TIMER);
-  SC_TIMER=setTimeout(()=>{ const c=el.querySelector('.sc'); if(c) c.classList.add('settled'); },1300);
+  SC_TIMER=setTimeout(fadeDiscard,Math.max(700,Math.min(1200,(SET.speed||450)*2.2)));
 }
 function clearDiscard(){ clearTimeout(SC_TIMER); const el=document.getElementById('showcase'); if(el) el.innerHTML=''; }
 function fadeDiscard(){ clearTimeout(SC_TIMER); const c=document.querySelector('#showcase .sc'); if(!c) return; c.classList.add('gone'); SC_TIMER=setTimeout(clearDiscard,260); }
@@ -1549,8 +1560,8 @@ var ui={
   render(){ renderPlay(); },
   sleep(ms){ return sleep(ms); },
   speed(){ return +SET.speed||450; },
-  humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
-  humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k}; S.ui.advice=strategic()?claimAdviceStrategic(o,d,k):claimAdvice(o,d,k); S.resolve=res; { const c=document.querySelector('#showcase .sc'); if(c){ clearTimeout(SC_TIMER); c.classList.remove('settled'); c.classList.add('claimable'); } } setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
+  humanTurn(){ return new Promise(res=>{ S.ui={mode:'turn',opts:turnOptions(0)}; S.sel=null; S.resolve=res; fadeDiscard(); S.ui.opts.hu?SFX.claim():SFX.turn(); renderPlay(); }); },
+  humanClaim(o,d,k){ return new Promise(res=>{ S.ui={mode:'claim',o,d,k}; S.ui.advice=strategic()?claimAdviceStrategic(o,d,k):claimAdvice(o,d,k); S.resolve=res; fadeDiscard(); setTimeout(()=>SFX.claim(),140); renderPlay(); }); },
   handOver(){ S.showResult=true; SHEET=null; renderPlay(); },
   note(msg){ if(SET.coach) log('Coach: '+msg,'coach'); },
   event(name,d){ if(name==='newhand'){ setTimeout(showIntro,60); return; } if(name==='turn'){ fadeDiscard(); return; } if(name==='discard'){ SFX.discard(); showDiscard(d.p,d.k); sayTile(d.k,d.p); } else if(name==='meld'){ SFX.meld(); clearDiscard(); callout(d.type,d.p); } else if(name==='bonus'){ SFX.bonus(); sayFlower(d.p); } else if(name==='win'){ clearDiscard(); callout(d.selfDrawn?'zimo':'hu',d.w); setTimeout(()=>d.w===0?SFX.win():SFX.lose(),500); } else if(name==='draw'){ clearDiscard(); SFX.drawGame(); } }
@@ -1765,7 +1776,7 @@ function bannersHTML(){
     for(const kg of o.kongs) h+=B('kong','GANG',[kg.k,kg.k,kg.k,kg.k],'',`data-k="${kg.k}"`);
     if(S.sel!=null) h+=B('discard','DISCARD',[S.disp[S.sel]]);
   } else if(m==='claim'){
-    const {o,k}=S.ui;
+    const {o,k,d}=S.ui;
     if(o.hu) h+=B('c-hu','HU!',[k],'hu','',`${o.hu.tai} tai`);
     if(o.kong) h+=B('c-kong','GANG',[k,k,k,k]);
     if(o.pong) h+=B('c-pong','PONG',[k,k,k]);
@@ -1790,7 +1801,9 @@ function renderPlay(){
   if(!S) return;
   syncIcons();
   $('#coachfloat').innerHTML=coachHTML();
-  $('#banners').innerHTML=bannersHTML();
+  const bn=$('#banners'); bn.innerHTML=bannersHTML();
+  const hasB=!!bn.firstElementChild; $('#stage').classList.toggle('has-banners',hasB);
+  if(hasB) $('#stage').style.setProperty('--banw',(bn.offsetWidth+8)+'px');
   $('#myarea').innerHTML=myareaHTML();
   $('#plane').innerHTML=planeHTML();
   const me=S.players[0];
@@ -1812,19 +1825,40 @@ function fitTable(force){
   v.style.setProperty('--hw',hw.toFixed(1)+'px');
   const cf=$('#coachfloat');
   const sw=st.clientWidth, sh=st.clientHeight-(portrait&&cf?cf.offsetHeight+6:0); if(!sw||sh<=0) return;
-  const tilt=portrait?12:wide?38:24;
-  pl.style.setProperty('--tilt',tilt+'deg');
+  if(!wide){ fitPass(pl,st,sw,sh,portrait?12:24); return; }
+  /* landscape: try a few pond shapes and table angles once per screen size, keep whichever makes the discards biggest */
+  const lk='lay4|'+W+'x'+H;
+  if(lk!==LAYKEY){
+    LAYKEY=lk; LAY=null;
+    try{ const c=JSON.parse(localStorage.getItem(lk)||'null'); if(c&&c.pc) LAY=c; }catch(e){}
+    if(!LAY){
+      const measure=(pc,ps,tilt)=>{ setPonds(pl,pc,ps); fitPass(pl,st,sw,sh,tilt);
+        const t=pl.querySelector('.pond-t').getBoundingClientRect().width/pc, b=pl.querySelector('.pond-b').getBoundingClientRect().width/pc;
+        return {score:Math.sqrt(t*b),pc,ps,tilt}; };
+      let best=null; const keep=r=>{ if(!best||r.score>best.score+0.05) best=r; };
+      for(const pc of [14,12,10,9,8,7,6]) for(const ps of [2,3,4]) if(ps*(2*Math.ceil(14/pc)+2)>=14) keep(measure(pc,ps,40));  /* side ponds must hold a typical hand's discards too */
+      for(const tilt of [30,35,45,50]) keep(measure(best.pc,best.ps,tilt));
+      LAY={pc:best.pc,ps:best.ps,tilt:best.tilt};
+      try{ localStorage.setItem(lk,JSON.stringify(LAY)); }catch(e){}
+    }
+  }
+  setPonds(pl,LAY.pc,LAY.ps); fitPass(pl,st,sw,sh,LAY.tilt);
+}
+let LAYKEY='', LAY=null;
+function setPonds(pl,pc,ps){ pl.style.setProperty('--pc',pc); pl.style.setProperty('--ps',ps); pl.style.setProperty('--pr',Math.ceil(14/pc)); }
+function fitPass(pl,st,sw,sh,tilt){
+  pl.style.setProperty('--tilt',tilt+'deg'); pl.style.setProperty('--fit','1');
   let pw=parseFloat(pl.style.getPropertyValue('--pw'))||20;
   const cos=Math.cos(tilt*Math.PI/180);
-  for(let i=0;i<3;i++){
+  for(let i=0;i<5;i++){
     const w=pl.offsetWidth, h=pl.offsetHeight*cos*1.04;
     if(!w||!h) break;
-    pw=Math.max(10,Math.min(44,pw*Math.min((sw-6)/w,(sh-6)/h)));
-    pl.style.setProperty('--pw',pw.toFixed(2)+'px');
-    pl.style.setProperty('--mw',Math.max(12,Math.min(26,pw*.76)).toFixed(2)+'px');
+    const npw=Math.max(10,Math.min(64,pw*Math.min((sw-6)/w,(sh-6)/h)));
+    pl.style.setProperty('--pw',npw.toFixed(2)+'px');
+    pl.style.setProperty('--mw',Math.max(12,Math.min(28,npw*.76)).toFixed(2)+'px');
+    if(Math.abs(npw-pw)<0.05){ pw=npw; break; } pw=npw;
   }
   /* final exact fit: measure the real projected size (perspective included) and scale down if it still overflows */
-  pl.style.setProperty('--fit','1');
   const r=pl.getBoundingClientRect(), sr=st.getBoundingClientRect();
   const over=Math.max(0, sr.top-r.top);
   const fit=Math.min(1,(sw-4)/r.width,(sh-4)/(r.height+over));
