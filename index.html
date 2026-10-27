@@ -13,6 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Singapore Mahjong Coach</title>
+<meta name="app-version" content="v9">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Lilita+One&family=Noto+Serif+TC:wght@700&display=swap">
@@ -63,7 +64,7 @@ body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-bod
 .num{font-variant-numeric:tabular-nums}
 h1,h2,h3{font-family:var(--f-ui); font-weight:600; text-wrap:balance; line-height:1.2; margin:0; letter-spacing:-.01em}
 a{color:inherit}
-button{font:inherit; color:inherit}
+button{font:inherit; color:inherit; touch-action:manipulation}
 :focus-visible{outline:2px solid var(--go); outline-offset:2px}
 
 /* header */
@@ -127,15 +128,16 @@ body.playing .masthead{display:none}
 #v-play{--gold:#f4cd6a; --gold-dim:#d6a94a; --cream:#fbf3df; --felt-a:#2f8d4f; --felt-b:#1e6a38; --rim:#4b2414; --rim-2:#6e3b1d;
   --back:#2f5fb3; --back-2:#1e4489; --banner:#fffaf0; --banner-ink:#c41f1c;
   display:flex; flex-direction:column; gap:6px; height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); min-height:0; padding-bottom:6px}
-.gbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:6px}
+.gbar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:2px; position:relative; z-index:10}
 .gl{display:flex; align-items:center; gap:10px; min-width:0}
 .ginfo{font:500 12.5px var(--f-ui); color:rgba(251,243,223,.8); white-space:nowrap}
 .ginfo b{color:var(--gold)}
 .gr{display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end}
-.gb{font:400 15px/1 'Lilita One', var(--f-ui); letter-spacing:.04em; text-transform:uppercase; color:var(--gold); background:transparent; border:0; padding:8px 9px; border-radius:10px; cursor:pointer; text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.gb{font:400 15px/1 'Lilita One', var(--f-ui); letter-spacing:.04em; text-transform:uppercase; color:var(--gold); background:transparent; border:0; min-height:44px; min-width:44px; padding:0 10px; border-radius:10px; cursor:pointer; text-shadow:0 2px 0 rgba(0,0,0,.35); touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none}
+.gb:active{background:rgba(0,0,0,.28); transform:scale(.96)}
 .gb:hover{background:rgba(0,0,0,.15)}
 .gb[aria-pressed="false"]{color:rgba(244,205,106,.5)}
-.stage{flex:1; min-height:0; position:relative; perspective:1150px; perspective-origin:50% 0%; display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
+.stage{flex:1; min-height:0; position:relative; z-index:1; contain:paint; perspective:1150px; perspective-origin:50% 0%; display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
 .plane{--pw:20px; --mw:12px; --tilt:28deg; --rackw:calc(var(--pw)*1.1); --rackh:calc(var(--pw)*1.25); --sidew:calc(var(--mw)*3.4 + 26px); --rw:calc(var(--pw)*.5);
   width:max-content; transform-origin:50% 100%; transform:scale(var(--fit,1)) rotateX(var(--tilt));
   display:grid; gap:calc(var(--pw)*.3); padding:calc(var(--pw)*.5) calc(var(--pw)*.5) calc(var(--pw)*.35);
@@ -258,8 +260,8 @@ body.playing .masthead{display:none}
 .gstatus b{color:var(--gold); font-weight:600}
 .rot-tip{display:none}
 @media (orientation:portrait) and (max-width:620px){ .rot-tip{display:inline} }
-@media (max-width:440px){ .gb{font-size:12px; padding:6px 5px} .ginfo{display:none} .coachfloat{max-width:calc(100% - 8px)} }
-@media (max-height:520px){ .coachfloat{max-width:min(290px,38%)} .coachfloat .coach{font-size:12px; padding:6px 8px} .coachfloat .coach-sub{display:none} .gb{font-size:13px; padding:6px 7px} .gbar{padding-top:2px} .gstatus{display:none} .myprompt{font-size:13px} .hand{padding-top:6px} #v-play{gap:3px} .ban .bl{font-size:18px} .t-ban{--w:20px} }
+@media (max-width:440px){ .gb{font-size:12px; padding:0 5px; min-width:36px} .ginfo{display:none} .coachfloat{max-width:calc(100% - 8px)} }
+@media (max-height:520px){ .coachfloat{max-width:min(290px,38%)} .coachfloat .coach{font-size:12px; padding:6px 8px} .coachfloat .coach-sub{display:none} .gb{font-size:13px; padding:0 7px; min-height:38px} .gbar{padding-top:2px} .gstatus{display:none} .myprompt{font-size:13px} .hand{padding-top:6px} #v-play{gap:3px} .ban .bl{font-size:18px} .t-ban{--w:20px} }
 
 /* menu sheet */
 .menu-list{display:flex; flex-direction:column}
@@ -1095,6 +1097,7 @@ function bankedItems(p){
 
 <script>
 /* ======== UI ======== */
+const APP_VERSION='v9';
 const $=s=>document.querySelector(s);
 const SET={coach:true,labels:true,speed:450,sound:true,music:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sgmj-set')||'{}'));}catch(e){}
@@ -1105,9 +1108,14 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 /* ---- sound: everything synthesised with Web Audio, nothing to download ---- */
 const AU={ctx:null,sfx:null,mus:null,noise:null,timer:null,next:0,step:0,deg:4,last:{}};
 function audioInit(){
-  if(AU.ctx){ if(AU.ctx.state==='suspended'&&!document.hidden) AU.ctx.resume().catch(()=>{}); return; }
+  /* iOS can leave the context 'suspended' or 'interrupted' (after a call or app switch), so resume anything not running */
+  if(AU.ctx){ if(AU.ctx.state!=='running'&&!document.hidden) AU.ctx.resume().catch(()=>{}); if(SET.music&&!AU.timer) musicOn(); return; }
   const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+  /* play like media, so the iPhone's silent switch doesn't mute the game (the in-app switches still do) */
+  try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
   try{ AU.ctx=new AC(); }catch(e){ return; }
+  /* classic iOS unlock: start a one-sample silent buffer inside the tap */
+  try{ const sb=AU.ctx.createBufferSource(); sb.buffer=AU.ctx.createBuffer(1,1,22050); sb.connect(AU.ctx.destination); sb.start(0); }catch(e){}
   const c=AU.ctx, master=c.createGain(); master.gain.value=.9; master.connect(c.destination);
   AU.sfx=c.createGain(); AU.sfx.gain.value=.75; AU.sfx.connect(master);
   AU.mus=c.createGain(); AU.mus.gain.value=0; AU.mus.connect(master);
@@ -1121,9 +1129,11 @@ function audioInit(){
   if(c.state==='suspended') c.resume().catch(()=>{});
   if(SET.music) musicOn();
 }
-['pointerdown','touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,audioInit,{capture:true,passive:true}));
+/* touchend and click count as a real tap on iOS; pointerdown does not */
+['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,audioInit,{capture:true,passive:true}));
 document.addEventListener('visibilitychange',()=>{ if(!AU.ctx) return; if(document.hidden) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}); });
-function ok(name,gap=.06){ if(!AU.ctx||!SET.sound||AU.ctx.state!=='running') return false; const t=AU.ctx.currentTime; if(AU.last[name]&&t-AU.last[name]<gap) return false; AU.last[name]=t; return true; }
+window.addEventListener('pageshow',()=>{ if(AU.ctx&&!document.hidden) AU.ctx.resume().catch(()=>{}); });
+function ok(name,gap=.06){ if(!AU.ctx||!SET.sound) return false; if(AU.ctx.state!=='running'){ AU.ctx.resume().catch(()=>{}); return false; } const t=AU.ctx.currentTime; if(AU.last[name]&&t-AU.last[name]<gap) return false; AU.last[name]=t; return true; }
 function env(g,t,peak,dur){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+dur); }
 function clack(when=0,vol=1,pitch=1){
   const c=AU.ctx, t=c.currentTime+when;
@@ -1433,7 +1443,7 @@ function syncIcons(){
   s.setAttribute('aria-pressed',String(!!SET.sound));
   const mu=$('#gb-music'); mu.setAttribute('aria-pressed',String(!!SET.music));
   s.setAttribute('aria-label',SET.sound?'Sound effects on':'Sound effects off'); mu.setAttribute('aria-label',SET.music?'Music on':'Music off');
-  sp.innerHTML='<span class="hide-sm">Speed </span>'+speedLabel();
+  const sl='<span class="hide-sm">Speed </span>'+speedLabel(); if(sp.dataset.l!==sl){ sp.innerHTML=sl; sp.dataset.l=sl; }
 }
 function renderPlay(){
   if(!S) return;
@@ -1449,8 +1459,11 @@ function renderPlay(){
   fitTable();
   renderModal(!!(SHEET&&typeof SHEET==='object'&&SHEET.p!=null));
 }
-function fitTable(){
+let FITKEY='';
+function fitTable(force){
   const v=$('#v-play'), st=$('#stage'), pl=$('#plane'); if(!st||!pl||v.hidden) return;
+  const key=[window.innerWidth,window.innerHeight,st.clientWidth,st.clientHeight,$('#coachfloat').offsetHeight,...S.players.map(p=>p.discards.length+'.'+p.melds.length+'.'+p.bonus.length+'.'+p.hand.length)].join('|');
+  if(!force&&key===FITKEY) return; FITKEY=key;
   const W=v.clientWidth||window.innerWidth, H=window.innerHeight;
   const hw=Math.max(20,Math.min(64,(W-30)/14.9,H<520?H*.1:H*.12));
   v.style.setProperty('--hw',hw.toFixed(1)+'px');
@@ -1528,6 +1541,8 @@ function settingsHTML(){
       ${sw('s-music','Music','Soft background music',SET.music)}
       <div class="setrow"><span><b>Bot speed</b></span><div class="seg" role="radiogroup" aria-label="Bot speed">${SPEEDS.map(([v,l])=>`<button type="button" role="radio" aria-checked="${speedLabel()===l}" data-speed="${v}">${l}</button>`).join('')}</div></div>
     </div>
+    <div class="setrow"><span><b>Test sound</b><span class="sub" id="snd-state">Plays a chime and shows whether this device allows sound</span></span><button class="btn small" data-act="testsound" type="button">Play</button></div>
+    <p class="sub">Singapore Mahjong Coach ${APP_VERSION}</p>
     <div class="row"><button class="btn" data-act="log" type="button">Table log</button><button class="btn" data-act="newgame" type="button">${newArmed?'Tap again to restart':'Start a new game'}</button></div>`;
 }
 function logHTML(){ return `<div class="sheet-head"><div><h2>Table log</h2><p class="sub">Newest first</p></div>${closeBtn()}</div><ol class="loglist">${S.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${e.msg}</li>`).join('')}</ol>`; }
@@ -1574,6 +1589,14 @@ function onAct(el){
   else if(a==='show'){ if(!S.result) return; SHEET=null; S.showResult=true; renderModal(true); }
   else if(a==='close'){ if(SHEET) SHEET=null; else S.showResult=false; renderModal(true); }
   else if(a==='log') openSheet('log');
+  else if(a==='testsound'){
+    audioInit();
+    const el=$('#snd-state'), c=AU.ctx;
+    if(!c){ if(el) el.textContent='This browser has no web audio, so the game can\'t play sound here.'; return; }
+    const play=()=>{ AU.last={}; const was=SET.sound; SET.sound=true; SFX.win(); SET.sound=was; };
+    c.resume().then(()=>{ play(); if(el) el.textContent=`Audio is ${c.state}. ${c.state==='running'?'You should hear a chime. If not, check the volume buttons'+(navigator.audioSession?'':' and the silent switch')+'.':'The device is blocking sound; try tapping Play again.'}`; })
+      .catch(()=>{ if(el) el.textContent=`Audio is ${c.state}: the device refused to start sound.`; });
+  }
   else if(a==='newgame'){
     if(newArmed){ clearTimeout(newArmed); newArmed=null; SHEET=null; newMatch(); renderModal(true); }
     else { newArmed=setTimeout(()=>{ newArmed=null; if(SHEET==='settings') renderModal(true); },3000); renderModal(true); }
@@ -1615,9 +1638,9 @@ $('#coachfloat').addEventListener('click',tipFrom);
 $('#coachfloat').addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-tip]')){ e.preventDefault(); tipFrom(e); } });
 $('#gb-speed').addEventListener('click',()=>{ const i=SPEEDS.findIndex(s=>s[1]===speedLabel()); SET.speed=SPEEDS[(i+1)%SPEEDS.length][0]; saveSet(); syncIcons(); });
 $('#gb-opt').addEventListener('click',()=>openSheet('settings'));
-window.addEventListener('resize',()=>fitTable());
+window.addEventListener('resize',()=>fitTable(true));
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#modal').hidden){ if(SHEET) SHEET=null; else if(S) S.showResult=false; renderModal(true); } });
-window.addEventListener('orientationchange',()=>setTimeout(fitTable,300));
+window.addEventListener('orientationchange',()=>setTimeout(()=>fitTable(true),300));
 
 /* ---- tiles guide ---- */
 const GROUPS=[
@@ -1736,7 +1759,7 @@ function route(){
   if(v==='tiles') renderTiles();
   if(v==='quiz'&&!Q.data) newQ();
   document.body.classList.toggle('playing',v==='play');
-  if(v==='play'){ renderPlay(); renderModal(true); requestAnimationFrame(fitTable); } else { SHEET=null; $('#modal').hidden=true; }
+  if(v==='play'){ renderPlay(); renderModal(true); requestAnimationFrame(()=>fitTable(true)); } else { SHEET=null; $('#modal').hidden=true; }
 }
 window.addEventListener('hashchange',()=>{ route(); window.scrollTo(0,0); });
 document.body.classList.toggle('nolabels',!SET.labels);
